@@ -1,0 +1,34 @@
+{
+  "ocr_status": "识别成功",
+  "ocr_text": "已知函数 f(x) = ln x - ax (a ∈ R)<br>(1) 讨论 f(x) 的单调性；<br>(2) 若 f(x) ≤ 0 恒成立，求 a 的取值范围。",
+  "confidence": 98,
+  "confidence_desc": "AI识别准确度极高",
+  "steps": [
+    {
+      "no": 1,
+      "title": "分析题意",
+      "border_color": "var(--primary)",
+      "bg": "var(--primary)",
+      "content": "本题考查导数与函数单调性。对 f(x) = ln x - ax 求导得 f'(x) = 1/x - a，需对参数 a 分类讨论。"
+    },
+    {
+      "no": 2,
+      "title": "解题过程",
+      "border_color": "var(--warning)",
+      "bg": "var(--warning)",
+      "content": "① 当 a ≤ 0 时，f'(x) = 1/x - a > 0 恒成立，f(x) 在 (0,+∞) 单调递增；<br>② 当 a > 0 时，令 f'(x) = 0 得 x = 1/a，f(x) 在 (0,1/a) 递增，在 (1/a,+∞) 递减；<br>③ 由 f(x) ≤ 0 恒成立，结合最大值分析得 a ≥ 1。"
+    },
+    {
+      "no": 3,
+      "title": "最终答案",
+      "border_color": "var(--success)",
+      "bg": "var(--success)",
+      "content": "(1) a ≤ 0 时单调递增；a > 0 时在 (0,1/a) 递增，(1/a,+∞) 递减。<br>(2) a 的取值范围为 [1, +∞)。"
+    }
+  ],
+  "actions": [
+    { "type": "outline", "icon": "fa-copy", "label": "相似题", "page": "photo-similar" },
+    { "type": "primary", "icon": "fa-robot", "label": "问AI老师", "page": "photo-video" }
+  ],
+  "detail_action": { "type": "outline", "icon": "fa-list-ul", "label": "查看详细解析", "page": "photo-similar" }
+}

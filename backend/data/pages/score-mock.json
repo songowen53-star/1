@@ -1,0 +1,16 @@
+{
+  "exam_name": "2026届高三第三次模考",
+  "total_score": 598,
+  "total_max": 750,
+  "change": "+30",
+  "grade_rank": 45,
+  "grade_total": 580,
+  "rank_change": 8,
+  "radar_chart_label": "各科得分率雷达图",
+  "compare_chart_label": "与上次模考各科对比柱状图",
+  "suggestions": [
+    { "icon": "fa-square-root-variable", "bg": "#3B82F6", "title": "数学", "desc": "圆锥曲线专题强化，预计可提升8-12分" },
+    { "icon": "fa-language", "bg": "#8B5CF6", "title": "英语", "desc": "完形填空专项训练，预计可提升6-10分" },
+    { "icon": "fa-atom", "bg": "#06B6D4", "title": "物理", "desc": "电磁感应综合题突破，预计可提升5-8分" }
+  ]
+}

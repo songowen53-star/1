@@ -1,0 +1,15 @@
+[
+  {
+    "teacher_id": "t1",
+    "class_id": "c1",
+    "question_ids": [
+      "q_001"
+    ],
+    "duration_min": 30,
+    "status": "published",
+    "time": "2026-09-15T07:48:05.192Z",
+    "id": "teacher_exercises_1789458485193_atefhs",
+    "created_at": "2026-09-15T07:48:05.193Z",
+    "updated_at": "2026-09-15T07:48:05.193Z"
+  }
+]

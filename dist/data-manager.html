@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据文件管理 - AI高考系统</title>
+    <link rel="stylesheet" href="./css/fontawesome/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2563EB;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --bg: #F3F4F6;
+            --card: #FFFFFF;
+            --border: #E5E7EB;
+            --text: #111827;
+            --text-2: #6B7280;
+        }
+        body { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        .header {
+            background: linear-gradient(135deg, #1E3A8A, #2563EB);
+            color: white; padding: 24px 40px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .header h1 { font-size: 22px; display: flex; align-items: center; gap: 10px; }
+        .header .back { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+        .section {
+            background: var(--card); border-radius: 16px; padding: 24px; margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .section h2 { font-size: 17px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .section h2 i { color: var(--primary); }
+
+        /* 上传区 */
+        .upload-zone {
+            border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center;
+            transition: all 0.3s; cursor: pointer; position: relative;
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--primary); background: #EFF6FF;
+        }
+        .upload-zone i { font-size: 48px; color: var(--primary); margin-bottom: 12px; }
+        .upload-zone p { color: var(--text-2); font-size: 14px; margin-bottom: 8px; }
+        .upload-zone .hint { font-size: 12px; color: #9CA3AF; }
+        .upload-zone input { display: none; }
+
+        /* 文件信息 */
+        .file-info {
+            display: none; margin-top: 16px; padding: 16px; background: #F0FDF4; border-radius: 10px;
+            border: 1px solid #BBF7D0;
+        }
+        .file-info.show { display: block; }
+        .file-info .row { display: flex; gap: 16px; margin-bottom: 8px; }
+        .file-info .item { font-size: 13px; }
+        .file-info .item span { color: var(--text-2); }
+        .file-info .item strong { color: var(--text); }
+
+        /* 预览 */
+        .preview-box {
+            margin-top: 12px; max-height: 300px; overflow: auto; background: #1E293B; color: #E2E8F0;
+            border-radius: 10px; padding: 16px; font-size: 12px; font-family: 'SF Mono', 'Consolas', monospace;
+            white-space: pre-wrap; word-break: break-all;
+        }
+
+        /* 按钮 */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 10px 20px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .actions { margin-top: 16px; display: flex; gap: 10px; }
+
+        /* 文件列表表格 */
+        .file-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .file-table th { background: #F9FAFB; padding: 10px 14px; text-align: left; font-weight: 600; color: var(--text-2); border-bottom: 1px solid var(--border); }
+        .file-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+        .file-table tr:hover td { background: #F9FAFB; }
+        .file-table .fname { font-weight: 600; color: var(--primary); }
+        .file-table .fsize { color: var(--text-2); }
+        .file-table .ftime { color: var(--text-2); font-size: 12px; }
+        .file-table .ops { display: flex; gap: 6px; }
+
+        .badge { padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        .badge-json { background: #DBEAFE; color: #1E40AF; }
+        .badge-txt { background: #FEF3C7; color: #92400E; }
+        .badge-csv { background: #D1FAE5; color: #065F46; }
+
+        /* 提示 */
+        .alert { padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .alert-info { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
+        .alert-success { background: #F0FDF4; color: #065F46; border: 1px solid #BBF7D0; }
+        .alert-warning { background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
+
+        /* 文件名输入 */
+        .filename-input {
+            width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+            font-size: 14px; margin-top: 12px; outline: none; transition: border-color 0.2s;
+        }
+        .filename-input:focus { border-color: var(--primary); }
+
+        .empty { text-align: center; padding: 40px; color: var(--text-2); }
+        .empty i { font-size: 40px; margin-bottom: 12px; color: #D1D5DB; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-database"></i> 数据文件管理</h1>
+        <a class="back" href="/"><i class="fas fa-arrow-left"></i> 返回首页</a>
+    </div>
+
+    <div class="container">
+        <!-- 说明 -->
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <span>将本地电脑（如 D:\新资料\五层架构成果）的文件上传到项目 <code>backend/data/</code> 目录。支持 JSON / TXT / CSV 格式，上传后可在主应用中直接使用。</span>
+        </div>
+
+        <!-- 上传区 -->
+        <div class="section">
+            <h2><i class="fas fa-cloud-upload-alt"></i> 上传本地文件</h2>
+            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+                <i class="fas fa-file-arrow-up"></i>
+                <p><strong>点击选择文件</strong> 或拖拽文件到此处</p>
+                <p class="hint">支持 .json / .txt / .csv 文件 · 从 D:\新资料\五层架构成果 选择文件上传</p>
+                <input type="file" id="file-input" accept=".json,.txt,.csv,.md" multiple>
+            </div>
+
+            <div class="file-info" id="file-info">
+                <div id="file-details"></div>
+                <input type="text" class="filename-input" id="save-filename" placeholder="保存文件名（如 questions.json）">
+                <div class="actions">
+                    <button class="btn btn-success" id="upload-btn" onclick="uploadFiles()">
+                        <i class="fas fa-upload"></i> 上传到 backend/data/
+                    </button>
+                    <button class="btn btn-outline" onclick="clearSelection()">
+                        <i class="fas fa-times"></i> 清除选择
+                    </button>
+                </div>
+                <div class="preview-box" id="preview-box" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- 真题批量导入 -->
+        <div class="section">
+            <h2><i class="fas fa-file-import"></i> 真题文本批量导入</h2>
+            <div class="alert alert-warning">
+                <i class="fas fa-lightbulb"></i>
+                <span>将五层架构成果中的真题文本粘贴到下方，系统会自动解析并导入题库。</span>
+            </div>
+            <textarea id="text-import" placeholder="格式示例：&#10;【题干】已知椭圆C: x²/4 + y² = 1...&#10;【答案】(1)|AB|=16/5&#10;【解析】联立直线与椭圆方程...&#10;【年份】2024&#10;【省份】全国甲卷&#10;【试卷】理科数学&#10;【科目】数学&#10;【题型】解答题&#10;【难度】5&#10;【分值】12&#10;---&#10;【题干】下一道题..." style="width:100%;height:200px;padding:14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:monospace;resize:vertical;outline:none;"></textarea>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="importTextQuestions()">
+                    <i class="fas fa-magic"></i> 解析并导入题库
+                </button>
+                <button class="btn btn-outline" onclick="loadSample()">
+                    <i class="fas fa-file-alt"></i> 填入示例
+                </button>
+            </div>
+            <div id="import-result" style="margin-top:12px;"></div>
+        </div>
+
+        <!-- 文件列表 -->
+        <div class="section">
+            <h2><i class="fas fa-folder-open"></i> backend/data/ 目录文件</h2>
+            <div id="file-list">
+                <div class="empty">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>加载中...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let selectedFiles = [];
+
+    // 文件选择
+    document.getElementById('file-input').addEventListener('change', function(e) {
+        handleFiles(e.target.files);
+    });
+
+    // 拖拽
+    const zone = document.getElementById('upload-zone');
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    function handleFiles(files) {
+        selectedFiles = Array.from(files);
+        const details = document.getElementById('file-details');
+        const info = document.getElementById('file-info');
+        const preview = document.getElementById('preview-box');
+
+        if (selectedFiles.length === 0) { info.classList.remove('show'); return; }
+
+        let html = '';
+        selectedFiles.forEach((f, i) => {
+            const ext = f.name.split('.').pop().toLowerCase();
+            const badge = `<span class="badge badge-${ext === 'json' ? 'json' : ext === 'csv' ? 'csv' : 'txt'}">${ext.toUpperCase()}</span>`;
+            html += `<div class="row"><div class="item"><span>文件${i+1}:</span> <strong>${f.name}</strong> ${badge}</div><div class="item"><span>大小:</span> <strong>${(f.size/1024).toFixed(1)} KB</strong></div></div>`;
+        });
+        details.innerHTML = html;
+
+        // 默认文件名
+        document.getElementById('save-filename').value = selectedFiles[0].name;
+        info.classList.add('show');
+
+        // 预览第一个文件
+        if (selectedFiles[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                preview.textContent = e.target.result.substring(0, 3000);
+                preview.style.display = 'block';
+            };
+            reader.readAsText(selectedFiles[0]);
+        }
+    }
+
+    function clearSelection() {
+        selectedFiles = [];
+        document.getElementById('file-input').value = '';
+        document.getElementById('file-info').classList.remove('show');
+        document.getElementById('preview-box').style.display = 'none';
+    }
+
+    // 上传文件
+    async function uploadFiles() {
+        if (selectedFiles.length === 0) return;
+
+        const btn = document.getElementById('upload-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 上传中...';
+
+        let results = [];
+        for (const file of selectedFiles) {
+            try {
+                const content = await file.text();
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename: file.name, content })
+                });
+                const data = await res.json();
+                results.push({ name: file.name, success: data.code === 0, msg: data.msg, stats: data.data });
+            } catch (e) {
+                results.push({ name: file.name, success: false, msg: e.message });
+            }
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-upload"></i> 上传到 backend/data/';
+
+        // 显示结果
+        let html = '';
+        results.forEach(r => {
+            const cls = r.success ? 'alert-success' : 'alert-warning';
+            const icon = r.success ? 'fa-check-circle' : 'fa-exclamation-circle';
+            let extra = '';
+            if (r.stats && r.stats.records) extra = ` · ${r.stats.records} 条记录`;
+            html += `<div class="alert ${cls}"><i class="fas ${icon}"></i><span><strong>${r.name}</strong> — ${r.msg}${extra}</span></div>`;
+        });
+        document.getElementById('file-details').innerHTML += '<div id="upload-results">' + html + '</div>';
+
+        // 刷新文件列表
+        loadFileList();
+        clearSelection();
+    }
+
+    // 真题文本导入
+    async function importTextQuestions() {
+        const text = document.getElementById('text-import').value.trim();
+        const resultDiv = document.getElementById('import-result');
+        if (!text) { resultDiv.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i><span>请先粘贴真题文本</span></div>'; return; }
+
+        resultDiv.innerHTML = '<div class="alert alert-info"><i class="fas fa-spinner fa-spin"></i><span>正在解析并导入...</span></div>';
+
+        try {
+            const res = await fetch('/api/questions/import', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ format: 'text', data: text })
+            });
+            const data = await res.json();
+            if (data.code === 0) {
+                resultDiv.innerHTML = `<div class="alert alert-success"><i class="fas fa-check-circle"></i><span>${data.msg}</span></div>`;
+            } else {
+                resultDiv.innerHTML = `<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i><span>${data.msg}</span></div>`;
+            }
+        } catch (e) {
+            resultDiv.innerHTML = `<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i><span>导入失败: ${e.message}</span></div>`;
+        }
+    }
+
+    // 填入示例
+    function loadSample() {
+        document.getElementById('text-import').value = `【题干】已知函数 f(x) = x³ - 3x + 1，求 f(x) 在区间 [-2, 2] 上的最大值和最小值。
+【答案】最大值为3（x=-1时），最小值为-1（x=1时）
+【解析】f'(x)=3x²-3，令f'(x)=0得x=±1。f(-2)=-1, f(-1)=3, f(1)=-1, f(2)=3。故最大值3，最小值-1。
+【年份】2024
+【省份】全国甲卷
+【试卷】理科数学
+【科目】数学
+【题型】解答题
+【难度】3
+【分值】12
+---
+【题干】设椭圆 C: x²/4 + y² = 1 的右焦点为 F，过 F 的直线 l 交椭圆于 A, B 两点，求 |AB| 的最大值。
+【答案】|AB|最大值为4
+【解析】右焦点F(√3,0)，当l垂直于x轴时A,B为(√3, ±1/2)，|AB|=1；当l为x轴时A,B为(±2,0)，|AB|=4。故最大值4。
+【年份】2024
+【省份】新高考I卷
+【试卷】数学
+【科目】数学
+【题型】解答题
+【难度】4
+【分值】12`;
+    }
+
+    // 加载文件列表
+    async function loadFileList() {
+        const container = document.getElementById('file-list');
+        try {
+            const res = await fetch('/api/data-files');
+            const data = await res.json();
+            if (data.code !== 0 || !data.data || data.data.length === 0) {
+                container.innerHTML = '<div class="empty"><i class="fas fa-folder"></i><p>目录为空</p></div>';
+                return;
+            }
+
+            let html = '<table class="file-table"><thead><tr><th>文件名</th><th>大小</th><th>修改时间</th><th>操作</th></tr></thead><tbody>';
+            data.data.forEach(f => {
+                const ext = f.name.split('.').pop().toLowerCase();
+                const badge = ext === 'json' ? '<span class="badge badge-json">JSON</span>' : ext === 'csv' ? '<span class="badge badge-csv">CSV</span>' : '<span class="badge badge-txt">TXT</span>';
+                const size = f.size < 1024 ? f.size + ' B' : (f.size / 1024).toFixed(1) + ' KB';
+                const time = new Date(f.mtime).toLocaleString('zh-CN');
+                html += `<tr>
+                    <td class="fname">${f.name} ${badge}</td>
+                    <td class="fsize">${size}</td>
+                    <td class="ftime">${time}</td>
+                    <td class="ops">
+                        <button class="btn btn-outline btn-sm" onclick="viewFile('${f.name}')"><i class="fas fa-eye"></i> 查看</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteFile('${f.name}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        } catch (e) {
+            container.innerHTML = `<div class="empty"><i class="fas fa-exclamation-circle"></i><p>加载失败: ${e.message}</p></div>`;
+        }
+    }
+
+    // 查看文件
+    async function viewFile(name) {
+        try {
+            const res = await fetch(`/api/data-files/${encodeURIComponent(name)}`);
+            const data = await res.json();
+            if (data.code === 0) {
+                const content = data.data.content;
+                const w = window.open('', '_blank');
+                w.document.write(`<pre style="padding:20px;font-size:13px;font-family:monospace;white-space:pre-wrap;word-break:break-all;">${content.replace(/</g,'&lt;')}</pre>`);
+                w.document.title = name;
+            }
+        } catch (e) { alert('查看失败: ' + e.message); }
+    }
+
+    // 删除文件
+    async function deleteFile(name) {
+        if (!confirm(`确认删除 ${name}？`)) return;
+        try {
+            const res = await fetch(`/api/data-files/${encodeURIComponent(name)}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.code === 0) { loadFileList(); }
+            else { alert(data.msg); }
+        } catch (e) { alert('删除失败: ' + e.message); }
+    }
+
+    // 初始化
+    loadFileList();
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "total": 4,
+  "banners": [
+    { "title": "暑期冲刺特惠", "link": "/vip", "sort": 1, "status": "上线" },
+    { "title": "AI讲题新功能上线", "link": "/ai-explain", "sort": 2, "status": "上线" },
+    { "title": "高考倒计时提醒", "link": "/countdown", "sort": 3, "status": "下线" },
+    { "title": "邀请好友得会员", "link": "/invite", "sort": 4, "status": "上线" }
+  ]
+}

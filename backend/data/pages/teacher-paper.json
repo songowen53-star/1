@@ -1,0 +1,185 @@
+{
+  "paperName": "高三三模数学卷",
+  "previewInfo": "高三三模数学卷 · 18题 · 共132分",
+  "settings": {
+    "subjects": [
+      "数学",
+      "物理",
+      "化学"
+    ],
+    "fullScore": 150,
+    "knowledgeScopes": [
+      "高考全部考点",
+      "函数与导数",
+      "解析几何",
+      "立体几何"
+    ],
+    "difficulty": 80,
+    "difficultyLabel": "0.80(困难)",
+    "distribution": [
+      {
+        "type": "选择题",
+        "count": 8,
+        "score": 5
+      },
+      {
+        "type": "填空题",
+        "count": 4,
+        "score": 5
+      },
+      {
+        "type": "解答题",
+        "count": 6,
+        "score": 12
+      }
+    ]
+  },
+  "paperQuestions": [
+    {
+      "no": 1,
+      "type": "选择题",
+      "score": 5,
+      "point": "集合运算",
+      "diff": "困难"
+    },
+    {
+      "no": 2,
+      "type": "选择题",
+      "score": 5,
+      "point": "复数运算",
+      "diff": "困难"
+    },
+    {
+      "no": 3,
+      "type": "选择题",
+      "score": 5,
+      "point": "平面向量",
+      "diff": "困难"
+    },
+    {
+      "no": 4,
+      "type": "选择题",
+      "score": 5,
+      "point": "三角函数",
+      "diff": "困难"
+    },
+    {
+      "no": 5,
+      "type": "选择题",
+      "score": 5,
+      "point": "数列综合",
+      "diff": "困难"
+    },
+    {
+      "no": 6,
+      "type": "选择题",
+      "score": 5,
+      "point": "立体几何",
+      "diff": "困难"
+    },
+    {
+      "no": 7,
+      "type": "选择题",
+      "score": 5,
+      "point": "概率统计",
+      "diff": "困难"
+    },
+    {
+      "no": 8,
+      "type": "选择题",
+      "score": 5,
+      "point": "导数综合",
+      "diff": "困难"
+    },
+    {
+      "no": 9,
+      "type": "填空题",
+      "score": 5,
+      "point": "解析几何",
+      "diff": "困难"
+    },
+    {
+      "no": 10,
+      "type": "填空题",
+      "score": 5,
+      "point": "函数与导数",
+      "diff": "困难"
+    },
+    {
+      "no": 11,
+      "type": "填空题",
+      "score": 5,
+      "point": "集合运算",
+      "diff": "困难"
+    },
+    {
+      "no": 12,
+      "type": "填空题",
+      "score": 5,
+      "point": "复数运算",
+      "diff": "困难"
+    },
+    {
+      "no": 13,
+      "type": "解答题",
+      "score": 12,
+      "point": "平面向量",
+      "diff": "困难"
+    },
+    {
+      "no": 14,
+      "type": "解答题",
+      "score": 12,
+      "point": "三角函数",
+      "diff": "困难"
+    },
+    {
+      "no": 15,
+      "type": "解答题",
+      "score": 12,
+      "point": "数列综合",
+      "diff": "困难"
+    },
+    {
+      "no": 16,
+      "type": "解答题",
+      "score": 12,
+      "point": "立体几何",
+      "diff": "困难"
+    },
+    {
+      "no": 17,
+      "type": "解答题",
+      "score": 12,
+      "point": "概率统计",
+      "diff": "困难"
+    },
+    {
+      "no": 18,
+      "type": "解答题",
+      "score": 12,
+      "point": "导数综合",
+      "diff": "困难"
+    }
+  ],
+  "sections": [
+    {
+      "title": "一、选择题（每题5分，共40分）",
+      "start": 0,
+      "end": 8,
+      "color": "#3B82F6"
+    },
+    {
+      "title": "二、填空题（每题5分，共20分）",
+      "start": 8,
+      "end": 12,
+      "color": "#10B981"
+    },
+    {
+      "title": "三、解答题（共62分）",
+      "start": 12,
+      "end": 18,
+      "color": "#F59E0B"
+    }
+  ]
+}

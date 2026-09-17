@@ -1,0 +1,37 @@
+[
+  {
+    "user_id": "guest",
+    "question": "什么是导数？",
+    "subject": "通用",
+    "answer_preview": "求导 f'(x)，令 f'(x)>0 得增区间，f'(x)<0 得减区间。",
+    "tokens": 342,
+    "time": "2026-09-15T07:41:24.991Z",
+    "id": "qa_history_1789458084991_mdy7vf",
+    "created_at": "2026-09-15T07:41:24.991Z",
+    "updated_at": "2026-09-15T07:41:24.991Z"
+  },
+  {
+    "user_id": "guest",
+    "question": "什么是导数",
+    "subject": "通用",
+    "answer_preview": "求导 f'(x)，令 f'(x)>0 得增区间，f'(x)<0 得减区间。",
+    "tokens": 342,
+    "time": "2026-09-15T07:47:59.580Z",
+    "id": "qa_history_1789458479580_6qv4i5",
+    "created_at": "2026-09-15T07:47:59.580Z",
+    "updated_at": "2026-09-15T07:47:59.580Z"
+  },
+  {
+    "user_id": "guest",
+    "question": "[拍照提问]",
+    "subject": "待识别",
+    "answer_preview": "",
+    "tokens": 0,
+    "time": "2026-09-15T07:47:59.764Z",
+    "type": "photo",
+    "status": "pending_ocr",
+    "id": "qa_history_1789458479764_9ssz9b",
+    "created_at": "2026-09-15T07:47:59.764Z",
+    "updated_at": "2026-09-15T07:47:59.764Z"
+  }
+]

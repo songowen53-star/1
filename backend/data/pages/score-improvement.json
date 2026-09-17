@@ -1,0 +1,17 @@
+{
+  "total_gain": 70,
+  "from_score": 565,
+  "to_score": 635,
+  "bar_chart_label": "各科提分空间柱状图",
+  "improvements": [
+    { "subject": "数学", "gain": 20, "color": "#3B82F6", "icon": "fa-square-root-variable", "points": "导数 + 圆锥曲线" },
+    { "subject": "物理", "gain": 15, "color": "#06B6D4", "icon": "fa-atom", "points": "电磁感应 + 力学综合" },
+    { "subject": "语文", "gain": 13, "color": "#EC4899", "icon": "fa-book", "points": "作文 + 古诗文" },
+    { "subject": "英语", "gain": 12, "color": "#8B5CF6", "icon": "fa-language", "points": "阅读理解 + 完形填空" },
+    { "subject": "化学", "gain": 10, "color": "#10B981", "icon": "fa-flask", "points": "有机推断 + 实验题" }
+  ],
+  "ai_advice": {
+    "title": "AI优先级建议",
+    "content": "先攻数学导数（提分最快），预计2周可提升8-10分；其次突破物理电磁感应综合题。"
+  }
+}

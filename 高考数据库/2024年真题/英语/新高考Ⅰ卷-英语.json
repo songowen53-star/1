@@ -1,0 +1,39 @@
+[
+  {
+    "id": "q_db_2024_english_new1_d",
+    "source": "real_exam",
+    "year": 2024,
+    "province": "全国新高考Ⅰ卷",
+    "paper_name": "英语",
+    "question_number": "阅读理解D篇",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_05",
+    "type": "阅读理解",
+    "difficulty": 5,
+    "score": 10,
+    "content": "（节选）Artificial intelligence is increasingly being used to accelerate scientific discovery. One area where AI has made remarkable progress is protein structure prediction. For decades, determining the 3D shape of a protein took months or even years using experimental methods like X-ray crystallography and cryo-EM. DeepMind's AlphaFold2 changed this dramatically—it can now predict a protein's structure with atomic-level accuracy in minutes, sometimes seconds.\n\nThe impact reaches far beyond basic biology. Drug developers are using AlphaFold-derived structures to speed up the discovery of new medicines, particularly for diseases where protein structures were previously unknown. Scientists are also designing entirely new proteins, from enzymes that break down plastic waste to components for new vaccines. However, researchers caution that the technology is not infallible: some complex proteins and protein complexes still resist accurate prediction, and experimental validation remains essential.\n\n1. What was the main problem with protein structure determination before AlphaFold?\n  A. It lacked experimental methods.\n  B. It was extremely time-consuming.\n  C. It could only handle simple proteins.\n  D. It required expensive AI hardware.\n\n2. What is the author's attitude toward the future of AI-aided scientific research?\n  A. Fully optimistic without reservations.\n  B. Dismissive of AI's contributions.\n  C. Positive but mindful of limitations.\n  D. Doubtful about its practical value.",
+    "options": [
+      {"label": "1", "text": "A.缺方法 / B.极耗时 / C.只能简单 / D.需要AI硬件"},
+      {"label": "2", "text": "A.完全乐观 / B.轻视贡献 / C.积极但留意局限 / D.怀疑价值"}
+    ],
+    "answer": "1.B  2.C",
+    "analysis": "1.细节题。第2句“For decades, determining ... took months or even years using experimental methods...”直接对应B“极其耗时”。A错误：文中仍有X-RAY和cryo-EM，不是缺方法；C未提及；D的AI硬件与题干“before AlphaFold”矛盾。\n2.观点态度题。先写impact far beyond...speed up...designing entirely new protein—正面；再用however转折：“not infallible（并非万无一失）...resist accurate prediction...validation remains essential”—指出局限，因此是“积极但留意限制”=C。"
+  },
+  {
+    "id": "q_db_2024_english_new1_write",
+    "source": "real_exam",
+    "year": 2024,
+    "province": "全国新高考Ⅰ卷",
+    "paper_name": "英语",
+    "question_number": "书面表达",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_06",
+    "type": "书面表达",
+    "difficulty": 4,
+    "score": 25,
+    "content": "你校英语社团将举办以“我最敬佩的科学家”为主题的英语演讲比赛，请你写一篇演讲稿，内容包括：\n1. 你最敬佩的科学家是谁；\n2. 他/她的主要成就；\n3. 你从他/她身上学到了什么。\n\n注意：\n1. 词数100左右；\n2. 可以适当增加细节，以使行文连贯。",
+    "options": [],
+    "answer": "参考范文：\nGood morning, everyone!\n\nThe scientist I admire most is Yuan Longping, the father of hybrid rice. Born in 1930, he devoted his entire life to improving rice production. Through decades of hard work, he developed hybrid rice varieties that greatly increased yields, helping feed billions of people not only in China but also around the world.\n\nWhat inspires me most is his lifelong dedication and humility. Even after achieving global fame, he continued working in the fields until his nineties. From him, I have learned that true greatness comes from persistent effort, a sense of responsibility to society, and the courage to keep learning.\n\nThank you!",
+    "analysis": "演讲稿结构：称呼+开篇点题（敬佩对象）+主体（生平+核心成就）+个人感悟（学到什么）+致谢。\n得分要点：(1)开篇直接切入，不跑题；(2)成就部分用具体数字和影响（feed billions）更有说服力；(3)感悟从具体品质（dedication/humility/persistent effort）升华，不是空话；(4)高级句型（主语从句、让步状语从句、宾语从句）+高级词汇（devoted, decades, yields, inspires, dedication, persistent）可加分。注意格式：口语化，段落短，衔接自然。"
+  }
+]

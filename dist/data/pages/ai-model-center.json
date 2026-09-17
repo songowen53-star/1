@@ -1,0 +1,185 @@
+{
+  "header_card": {
+    "icon": "fa-microchip",
+    "title": "AI模型中心",
+    "subtitle": "集成全球顶尖开源AI能力",
+    "description": "本平台集成了来自GitHub的最新开源AI模型与框架，覆盖推理、多模态、知识图谱、RAG等核心能力。",
+    "stats": [
+      {
+        "label": "集成模型",
+        "value": "18",
+        "icon": "fa-cube"
+      },
+      {
+        "label": "开源框架",
+        "value": "12",
+        "icon": "fa-layer-group"
+      },
+      {
+        "label": "日均调用",
+        "value": "2.4M",
+        "icon": "fa-bolt"
+      },
+      {
+        "label": "平均延迟",
+        "value": "1.2s",
+        "icon": "fa-tachometer-alt"
+      }
+    ]
+  },
+  "categories": [
+    {
+      "name": "大语言模型推理",
+      "icon": "fa-robot",
+      "color": "#3B82F6",
+      "models": [
+        {
+          "name": "DeepSeek-R1",
+          "desc": "深度推理模型，思维链推理",
+          "license": "MIT",
+          "stars": "80k+",
+          "use": "AI教练、讲题引擎",
+          "status": "running"
+        },
+        {
+          "name": "Qwen3-72B",
+          "desc": "通义千问3，通用大模型",
+          "license": "Apache-2.0",
+          "stars": "40k+",
+          "use": "答疑、组卷、预测",
+          "status": "running"
+        },
+        {
+          "name": "vLLM",
+          "desc": "高吞吐推理引擎，PagedAttention",
+          "license": "Apache-2.0",
+          "stars": "91k+",
+          "use": "推理加速",
+          "status": "running"
+        }
+      ]
+    },
+    {
+      "name": "多模态与OCR",
+      "icon": "fa-eye",
+      "color": "#8B5CF6",
+      "models": [
+        {
+          "name": "Pix2Text",
+          "desc": "图文公式混合OCR识别",
+          "license": "MIT",
+          "stars": "10k+",
+          "use": "自动入库OCR",
+          "status": "running"
+        },
+        {
+          "name": "Skywork-R1V",
+          "desc": "多模态推理视觉语言模型",
+          "license": "Apache-2.0",
+          "stars": "3k+",
+          "use": "讲题图片理解",
+          "status": "running"
+        },
+        {
+          "name": "PaddleOCR",
+          "desc": "通用中英文OCR引擎",
+          "license": "Apache-2.0",
+          "stars": "44k+",
+          "use": "试卷扫描识别",
+          "status": "running"
+        }
+      ]
+    },
+    {
+      "name": "知识图谱与RAG",
+      "icon": "fa-project-diagram",
+      "color": "#10B981",
+      "models": [
+        {
+          "name": "DeepKE",
+          "desc": "知识图谱抽取与构建",
+          "license": "Apache-2.0",
+          "stars": "4.5k+",
+          "use": "知识图谱、知识点标注",
+          "status": "running"
+        },
+        {
+          "name": "BGE-M3",
+          "desc": "多语言向量检索模型",
+          "license": "MIT",
+          "stars": "6k+",
+          "use": "RAG检索增强",
+          "status": "running"
+        },
+        {
+          "name": "Milvus",
+          "desc": "向量数据库",
+          "license": "Apache-2.0",
+          "stars": "30k+",
+          "use": "知识库存储",
+          "status": "running"
+        }
+      ]
+    },
+    {
+      "name": "机器学习与预测",
+      "icon": "fa-chart-line",
+      "color": "#F59E0B",
+      "models": [
+        {
+          "name": "XGBoost",
+          "desc": "梯度提升决策树",
+          "license": "Apache-2.0",
+          "stars": "26k+",
+          "use": "高考分数预测",
+          "status": "running"
+        },
+        {
+          "name": "LightGBM",
+          "desc": "快速梯度提升框架",
+          "license": "MIT",
+          "stars": "17k+",
+          "use": "趋势预测",
+          "status": "running"
+        },
+        {
+          "name": "OR-Tools",
+          "desc": "运筹优化工具包",
+          "license": "Apache-2.0",
+          "stars": "9k+",
+          "use": "学习规划排程",
+          "status": "running"
+        }
+      ]
+    }
+  ],
+  "model_card": {
+    "title": "模型运行状态",
+    "metrics": [
+      {
+        "label": "GPU利用率",
+        "value": "78%",
+        "color": "#3B82F6",
+        "trend": "+5%"
+      },
+      {
+        "label": "吞吐量",
+        "value": "12.4K tok/s",
+        "color": "#10B981",
+        "trend": "+12%"
+      },
+      {
+        "label": "P99延迟",
+        "value": "3.2s",
+        "color": "#F59E0B",
+        "trend": "-8%"
+      },
+      {
+        "label": "显存使用",
+        "value": "168GB",
+        "color": "#8B5CF6",
+        "trend": "200GB"
+      }
+    ]
+  }
+}

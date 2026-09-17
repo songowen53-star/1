@@ -1,0 +1,330 @@
+[
+  {
+    "job_id": "import_1789458096074",
+    "file_path": "/tmp/test.pdf",
+    "source": "real_exam",
+    "year": 2025,
+    "subject": "数学",
+    "total_steps": 9,
+    "current_step": 7,
+    "current_status": "AI审核校验",
+    "completed_steps": 6,
+    "progress_percent": 67,
+    "status": "running",
+    "steps": [
+      {
+        "num": 1,
+        "title": "PDF上传",
+        "desc": "上传试卷文件",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 2,
+        "title": "OCR文字识别",
+        "desc": "识别全部文字内容",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 3,
+        "title": "公式识别（LaTeX）",
+        "desc": "识别数学公式转为 LaTeX",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 4,
+        "title": "图片识别与提取",
+        "desc": "识别图表/函数图像/几何图形",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 5,
+        "title": "LLM智能切题",
+        "desc": "识别独立题目，含题型/分值",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 6,
+        "title": "JSON结构化",
+        "desc": "题目/选项/答案/解析结构化",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 7,
+        "title": "AI审核校验",
+        "desc": "校验内容完整性、公式准确性",
+        "status": "active",
+        "time": "进行中"
+      },
+      {
+        "num": 8,
+        "title": "知识图谱标注",
+        "desc": "关联知识点节点，标注考点与难度",
+        "status": "locked",
+        "time": "待处理"
+      },
+      {
+        "num": 9,
+        "title": "入库完成",
+        "desc": "写入题库数据库，建立索引",
+        "status": "locked",
+        "time": "待处理"
+      }
+    ],
+    "created_at": "2026-09-15T07:41:36.074Z",
+    "id": "import_jobs_1789458096074_u1g4ni",
+    "updated_at": "2026-09-15T07:41:38.076Z"
+  },
+  {
+    "job_id": "import_1789458129584",
+    "file_path": "/tmp/t.pdf",
+    "source": "real_exam",
+    "year": 2025,
+    "subject": "数学",
+    "total_steps": 9,
+    "current_step": 7,
+    "current_status": "AI审核校验",
+    "completed_steps": 6,
+    "progress_percent": 67,
+    "status": "running",
+    "steps": [
+      {
+        "num": 1,
+        "title": "PDF上传",
+        "desc": "上传试卷文件",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 2,
+        "title": "OCR文字识别",
+        "desc": "识别全部文字内容",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 3,
+        "title": "公式识别（LaTeX）",
+        "desc": "识别数学公式转为 LaTeX",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 4,
+        "title": "图片识别与提取",
+        "desc": "识别图表/函数图像/几何图形",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 5,
+        "title": "LLM智能切题",
+        "desc": "识别独立题目，含题型/分值",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 6,
+        "title": "JSON结构化",
+        "desc": "题目/选项/答案/解析结构化",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 7,
+        "title": "AI审核校验",
+        "desc": "校验内容完整性、公式准确性",
+        "status": "active",
+        "time": "进行中"
+      },
+      {
+        "num": 8,
+        "title": "知识图谱标注",
+        "desc": "关联知识点节点，标注考点与难度",
+        "status": "locked",
+        "time": "待处理"
+      },
+      {
+        "num": 9,
+        "title": "入库完成",
+        "desc": "写入题库数据库，建立索引",
+        "status": "locked",
+        "time": "待处理"
+      }
+    ],
+    "created_at": "2026-09-15T07:42:09.584Z",
+    "id": "import_jobs_1789458129584_0nk0tc",
+    "updated_at": "2026-09-15T07:42:11.586Z"
+  },
+  {
+    "job_id": "import_1789458159836",
+    "file_path": "/tmp/t.pdf",
+    "source": "real_exam",
+    "year": 2025,
+    "subject": "数学",
+    "total_steps": 9,
+    "current_step": 7,
+    "current_status": "AI审核校验",
+    "completed_steps": 6,
+    "progress_percent": 67,
+    "status": "running",
+    "steps": [
+      {
+        "num": 1,
+        "title": "PDF上传",
+        "desc": "上传试卷文件",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 2,
+        "title": "OCR文字识别",
+        "desc": "识别全部文字内容",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 3,
+        "title": "公式识别（LaTeX）",
+        "desc": "识别数学公式转为 LaTeX",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 4,
+        "title": "图片识别与提取",
+        "desc": "识别图表/函数图像/几何图形",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 5,
+        "title": "LLM智能切题",
+        "desc": "识别独立题目，含题型/分值",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 6,
+        "title": "JSON结构化",
+        "desc": "题目/选项/答案/解析结构化",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 7,
+        "title": "AI审核校验",
+        "desc": "校验内容完整性、公式准确性",
+        "status": "active",
+        "time": "进行中"
+      },
+      {
+        "num": 8,
+        "title": "知识图谱标注",
+        "desc": "关联知识点节点，标注考点与难度",
+        "status": "locked",
+        "time": "待处理"
+      },
+      {
+        "num": 9,
+        "title": "入库完成",
+        "desc": "写入题库数据库，建立索引",
+        "status": "locked",
+        "time": "待处理"
+      }
+    ],
+    "created_at": "2026-09-15T07:42:39.836Z",
+    "id": "import_jobs_1789458159836_2onwzk",
+    "updated_at": "2026-09-15T07:42:42.451Z",
+    "reviewer": "admin",
+    "reviewed_at": "2026-09-15T07:42:42.451Z"
+  },
+  {
+    "job_id": "import_1789458480613",
+    "file_path": "/tmp/t.pdf",
+    "source": "real_exam",
+    "year": 2025,
+    "subject": "数学",
+    "total_steps": 9,
+    "current_step": 7,
+    "current_status": "AI审核校验",
+    "completed_steps": 6,
+    "progress_percent": 67,
+    "status": "running",
+    "steps": [
+      {
+        "num": 1,
+        "title": "PDF上传",
+        "desc": "上传试卷文件",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 2,
+        "title": "OCR文字识别",
+        "desc": "识别全部文字内容",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 3,
+        "title": "公式识别（LaTeX）",
+        "desc": "识别数学公式转为 LaTeX",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 4,
+        "title": "图片识别与提取",
+        "desc": "识别图表/函数图像/几何图形",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 5,
+        "title": "LLM智能切题",
+        "desc": "识别独立题目，含题型/分值",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 6,
+        "title": "JSON结构化",
+        "desc": "题目/选项/答案/解析结构化",
+        "status": "done",
+        "time": "已完成"
+      },
+      {
+        "num": 7,
+        "title": "AI审核校验",
+        "desc": "校验内容完整性、公式准确性",
+        "status": "active",
+        "time": "进行中"
+      },
+      {
+        "num": 8,
+        "title": "知识图谱标注",
+        "desc": "关联知识点节点，标注考点与难度",
+        "status": "locked",
+        "time": "待处理"
+      },
+      {
+        "num": 9,
+        "title": "入库完成",
+        "desc": "写入题库数据库，建立索引",
+        "status": "locked",
+        "time": "待处理"
+      }
+    ],
+    "created_at": "2026-09-15T07:48:00.613Z",
+    "id": "import_jobs_1789458480613_53guc6",
+    "updated_at": "2026-09-15T07:48:03.217Z",
+    "reviewer": "admin",
+    "reviewed_at": "2026-09-15T07:48:03.217Z"
+  }
+]

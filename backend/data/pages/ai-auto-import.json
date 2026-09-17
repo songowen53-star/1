@@ -1,0 +1,42 @@
+{
+  "header_card": {
+    "icon": "fa-cogs",
+    "title": "AI自动入库流程",
+    "description": "PDF → OCR → 公式识别 → 图片识别 → LLM切题 → JSON → AI审核 → 知识图谱 → 数据库",
+    "progress_label": "整体进度",
+    "progress_percent": 67,
+    "progress_color": "#FFFFFF",
+    "completed_steps": 6,
+    "total_steps": 9,
+    "current_step": "AI审核校验"
+  },
+  "flow_section": {
+    "title": "完整流程",
+    "title_icon": "fa-stream",
+    "steps": [
+      { "num": 1, "status": "done", "title": "PDF上传", "desc": "已上传《2024高考数学模拟卷.pdf》，共 12 页，包含 20 道题目。", "time": "已完成" },
+      { "num": 2, "status": "done", "title": "OCR文字识别", "desc": "识别全部文字内容，准确率 96.8%，点击查看识别详情。", "time": "已完成" },
+      { "num": 3, "status": "done", "title": "公式识别（LaTeX）", "desc": "识别 48 个数学公式并转为 LaTeX 格式，3 处需人工确认。", "time": "已完成" },
+      { "num": 4, "status": "done", "title": "图片识别与提取", "desc": "识别 6 张图表/函数图像/几何图形，已标注区域。", "time": "已完成" },
+      { "num": 5, "status": "done", "title": "LLM智能切题", "desc": "识别出 12 道独立题目，含选择题/填空题/解答题，置信度 92-98%。", "time": "已完成" },
+      { "num": 6, "status": "done", "title": "JSON结构化", "desc": "题目、选项、答案、解析已结构化为 JSON，字段完整率 100%。", "time": "已完成" },
+      { "num": 7, "status": "active", "title": "AI审核校验", "desc": "正在校验题目内容完整性、公式准确性、知识点标注合理性...", "time": "进行中" },
+      { "num": 8, "status": "locked", "title": "知识图谱标注", "desc": "将题目关联到知识图谱节点，标注考点与难度等级。", "time": "待处理" },
+      { "num": 9, "status": "locked", "title": "入库完成", "desc": "写入题库数据库，建立索引，可在组卷/刷题中使用。", "time": "待处理" }
+    ]
+  },
+  "step_summary": {
+    "title": "步骤说明",
+    "title_icon": "fa-info-circle",
+    "stats": [
+      { "value": 6, "label": "已完成步骤", "bg": "#D1FAE5", "color": "var(--success)", "label_color": "#065F46" },
+      { "value": 1, "label": "进行中步骤", "bg": "#FEF3C7", "color": "var(--warning)", "label_color": "#92400E" },
+      { "value": 2, "label": "待处理步骤", "bg": "#F3F4F6", "color": "var(--text-tertiary)", "label_color": "var(--text-secondary)" },
+      { "value": 12, "label": "识别题目数", "bg": "#DBEAFE", "color": "var(--primary)", "label_color": "var(--primary-dark)" }
+    ]
+  },
+  "buttons": [
+    { "text": "查看当前步骤", "icon": "fa-eye", "type": "primary", "page": "ai-auto-import-ocr" },
+    { "text": "查看全部日志", "icon": "fa-list", "type": "outline" }
+  ]
+}

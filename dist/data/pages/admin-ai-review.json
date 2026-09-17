@@ -1,0 +1,14 @@
+{
+  "stats": [
+    { "label": "待审内容", "value": "32", "change": 0, "color": "orange" },
+    { "label": "今日已审", "value": "158", "change": 0, "color": "green" },
+    { "label": "平均AI评分", "value": "89", "change": 0, "color": "blue" },
+    { "label": "需复审", "value": "5", "change": 0, "color": "red" }
+  ],
+  "notice": "AI评分低于 80 分的内容需人工复审后再发布",
+  "items": [
+    { "type": "AI解析", "content": "本题考查导数的极值求法，需先求导再令其等于零...", "score": 95, "status": "待审核" },
+    { "type": "AI讲题", "content": "第一步：求导数 f(x)=3x²-3，第二步：令 f(x)=0 解得驻点...", "score": 88, "status": "待审核" },
+    { "type": "AI答疑", "content": "椭圆是到两定点距离之和为常数的轨迹，双曲线则是距离之差...", "score": 72, "status": "需复审" }
+  ]
+}

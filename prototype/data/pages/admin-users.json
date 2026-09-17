@@ -1,0 +1,13 @@
+{
+  "total": 12568,
+  "filters": {
+    "grades": ["全部年级", "高三", "高二", "高一"]
+  },
+  "users": [
+    { "name": "张同学", "phone": "138****8888", "grade": "高三", "time": "2026-07-28", "status": "正常", "avatar": 12 },
+    { "name": "李明", "phone": "139****6666", "grade": "高二", "time": "2026-07-26", "status": "正常", "avatar": 33 },
+    { "name": "王芳", "phone": "137****1234", "grade": "高三", "time": "2026-07-25", "status": "VIP", "avatar": 45 },
+    { "name": "赵磊", "phone": "135****5678", "grade": "高一", "time": "2026-07-20", "status": "禁用", "avatar": 8 },
+    { "name": "陈静", "phone": "136****9012", "grade": "高三", "time": "2026-07-15", "status": "正常", "avatar": 27 }
+  ]
+}

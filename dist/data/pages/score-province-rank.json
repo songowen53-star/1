@@ -1,0 +1,23 @@
+{
+  "predicted_rank": "8,231",
+  "province": "浙江省",
+  "category": "物理类",
+  "confidence": 92,
+  "basis": [
+    "基于近3次模考成绩加权（598/585/572）",
+    "校排名580人第45名，校际系数换算",
+    "参考近3年浙江高考一分一段表",
+    "考虑试题难度系数调整"
+  ],
+  "distribution_chart_label": "全省580-620分数段分布图",
+  "tiers": [
+    { "name": "985院校", "percent": 67, "color": "var(--danger)", "desc": "录取概率中等" },
+    { "name": "211院校", "percent": 85, "color": "var(--warning)", "desc": "录取概率较高" },
+    { "name": "一本院校", "percent": 95, "color": "var(--success)", "desc": "录取概率极高" }
+  ],
+  "history": [
+    { "year": "2025", "rank": "8,100", "college": "湖南大学" },
+    { "year": "2024", "rank": "8,500", "college": "重庆大学" },
+    { "year": "2023", "rank": "8,200", "college": "大连理工" }
+  ]
+}

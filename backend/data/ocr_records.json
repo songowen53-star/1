@@ -1,0 +1,71 @@
+[
+  {
+    "ocr_id": "ocr_1789458096097",
+    "user_id": "guest",
+    "subject": "数学",
+    "confidence": 0.96,
+    "content": "已知函数 f(x) = ln x - ax，讨论 f(x) 的单调性",
+    "formulas": [
+      {
+        "latex": "f(x) = \\ln x - ax",
+        "bbox": [
+          120,
+          80,
+          280,
+          120
+        ]
+      }
+    ],
+    "images": [],
+    "time": "2026-09-15T07:41:36.097Z",
+    "id": "ocr_records_1789458096097_hfv1xr",
+    "created_at": "2026-09-15T07:41:36.097Z",
+    "updated_at": "2026-09-15T07:41:36.097Z"
+  },
+  {
+    "ocr_id": "ocr_1789458162477",
+    "user_id": "guest",
+    "subject": "数学",
+    "confidence": 0.96,
+    "content": "已知函数 f(x) = ln x - ax，讨论 f(x) 的单调性",
+    "formulas": [
+      {
+        "latex": "f(x) = \\ln x - ax",
+        "bbox": [
+          120,
+          80,
+          280,
+          120
+        ]
+      }
+    ],
+    "images": [],
+    "time": "2026-09-15T07:42:42.477Z",
+    "id": "ocr_records_1789458162477_4o1doh",
+    "created_at": "2026-09-15T07:42:42.477Z",
+    "updated_at": "2026-09-15T07:42:42.477Z"
+  },
+  {
+    "ocr_id": "ocr_1789458483878",
+    "user_id": "guest",
+    "subject": "数学",
+    "confidence": 0.96,
+    "content": "已知函数 f(x) = ln x - ax，讨论 f(x) 的单调性",
+    "formulas": [
+      {
+        "latex": "f(x) = \\ln x - ax",
+        "bbox": [
+          120,
+          80,
+          280,
+          120
+        ]
+      }
+    ],
+    "images": [],
+    "time": "2026-09-15T07:48:03.878Z",
+    "id": "ocr_records_1789458483878_o1loml",
+    "created_at": "2026-09-15T07:48:03.878Z",
+    "updated_at": "2026-09-15T07:48:03.878Z"
+  }
+]

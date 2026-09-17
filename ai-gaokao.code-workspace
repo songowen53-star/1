@@ -1,0 +1,67 @@
+{
+    "folders": [
+        {
+            "path": ".",
+            "name": "开发在线教育平台"
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/node_modules": true,
+            "**/dist": false
+        },
+        "search.exclude": {
+            "**/node_modules": true,
+            "**/dist": true
+        },
+        "editor.tabSize": 4,
+        "editor.formatOnSave": false,
+        "liveServer.settings.port": 5500,
+        "liveServer.settings.root": "/workspace"
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "构建静态资源",
+                "type": "shell",
+                "command": "node scripts/sync.js build-static",
+                "group": "build",
+                "problemMatcher": []
+            },
+            {
+                "label": "推送数据到云端KV",
+                "type": "shell",
+                "command": "node scripts/sync.js push-data",
+                "group": "build",
+                "problemMatcher": []
+            },
+            {
+                "label": "部署到Cloudflare Pages",
+                "type": "shell",
+                "command": "node scripts/sync.js deploy",
+                "group": "build",
+                "problemMatcher": [],
+                "options": {
+                    "env": {
+                        "CLOUDFLARE_API_TOKEN": "${env:CLOUDFLARE_API_TOKEN}"
+                    }
+                }
+            },
+            {
+                "label": "完整同步(构建+推送+部署)",
+                "type": "shell",
+                "command": "node scripts/sync.js all",
+                "group": "build",
+                "dependsOn": [],
+                "problemMatcher": []
+            }
+        ]
+    },
+    "extensions": {
+        "recommendations": [
+            "ritwickdey.LiveServer",
+            "esbenp.prettier-vscode"
+        ]
+    }
+}

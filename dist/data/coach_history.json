@@ -1,0 +1,86 @@
+[
+  {
+    "user_id": "u_001",
+    "message": "今天怎么样",
+    "reply": "今天学习时长 0 分钟，做题 0 道，正确率 0%。继续保持！",
+    "context": {
+      "todayDuration": 0,
+      "todayQuestions": 0,
+      "correctRate": 0
+    },
+    "time": "2026-09-15T07:41:25.623Z",
+    "id": "coach_history_1789458085624_yyfhe0",
+    "created_at": "2026-09-15T07:41:25.624Z",
+    "updated_at": "2026-09-15T07:41:25.624Z"
+  },
+  {
+    "user_id": "u_001",
+    "message": "今天怎么样",
+    "reply": "今天学习时长 0 分钟，做题 0 道，正确率 0%。继续保持！",
+    "context": {
+      "todayDuration": 0,
+      "todayQuestions": 0,
+      "correctRate": 0
+    },
+    "time": "2026-09-15T07:48:00.442Z",
+    "id": "coach_history_1789458480443_ockuh5",
+    "created_at": "2026-09-15T07:48:00.443Z",
+    "updated_at": "2026-09-15T07:48:00.443Z"
+  },
+  {
+    "user_id": "0",
+    "message": "我今天学得怎么样",
+    "reply": "今天学习时长 45 分钟，做题 8 道，正确率 75%。继续保持！",
+    "context": {
+      "todayDuration": 45,
+      "todayQuestions": 8,
+      "correctRate": 75
+    },
+    "time": "2026-09-15T08:28:14.979Z",
+    "id": "coach_history_1789460894979_7ea618",
+    "created_at": "2026-09-15T08:28:14.979Z",
+    "updated_at": "2026-09-15T08:28:14.979Z"
+  },
+  {
+    "user_id": "0",
+    "message": "今天怎么样",
+    "reply": "今天学习时长 95 分钟，做题 18 道，正确率 72%。继续保持！",
+    "context": {
+      "todayDuration": 95,
+      "todayQuestions": 18,
+      "correctRate": 72
+    },
+    "time": "2026-09-15T08:28:31.315Z",
+    "id": "coach_history_1789460911315_qh94yf",
+    "created_at": "2026-09-15T08:28:31.315Z",
+    "updated_at": "2026-09-15T08:28:31.315Z"
+  },
+  {
+    "user_id": "0",
+    "message": "今天怎么样",
+    "reply": "今天学习时长 145 分钟，做题 28 道，正确率 71%。继续保持！",
+    "context": {
+      "todayDuration": 145,
+      "todayQuestions": 28,
+      "correctRate": 71
+    },
+    "time": "2026-09-15T08:29:22.193Z",
+    "id": "coach_history_1789460962193_isonhi",
+    "created_at": "2026-09-15T08:29:22.193Z",
+    "updated_at": "2026-09-15T08:29:22.193Z"
+  },
+  {
+    "user_id": "u_mu2etuk5",
+    "message": "今天怎么样",
+    "reply": "今天学习时长 50 分钟，做题 10 道，正确率 70%。继续保持！",
+    "context": {
+      "todayDuration": 50,
+      "todayQuestions": 10,
+      "correctRate": 70
+    },
+    "time": "2026-09-15T08:29:46.599Z",
+    "id": "coach_history_1789460986599_jjxhms",
+    "created_at": "2026-09-15T08:29:46.599Z",
+    "updated_at": "2026-09-15T08:29:46.599Z"
+  }
+]

@@ -1,0 +1,65 @@
+[
+  {
+    "id": "bind_ms738ah2",
+    "student_id": "u_ms738a0r",
+    "parent_phone": "13987654321",
+    "relation": "父亲",
+    "status": "pending",
+    "created_at": "2026-07-30T05:43:24.422Z",
+    "updated_at": "2026-07-30T05:43:24.422Z"
+  },
+  {
+    "id": "bind_ms73fokn",
+    "student_id": "u_ms738a0r",
+    "parent_phone": "13911112222",
+    "relation": "父亲",
+    "status": "pending",
+    "created_at": "2026-07-30T05:49:09.287Z",
+    "updated_at": "2026-07-30T05:49:09.287Z"
+  },
+  {
+    "id": "bind_ms76dkoa",
+    "student_id": "u_ms76d7z4",
+    "parent_phone": "13900139001",
+    "relation": "父亲",
+    "status": "pending",
+    "created_at": "2026-07-30T07:11:29.770Z",
+    "updated_at": "2026-07-30T07:11:29.770Z"
+  },
+  {
+    "id": "bind_ms7bj5hk",
+    "student_id": "u_ms7biwkm",
+    "parent_phone": "13888888888",
+    "relation": "父亲",
+    "status": "confirmed",
+    "created_at": "2026-07-30T09:35:48.104Z",
+    "updated_at": "2026-07-30T09:36:05.644Z"
+  },
+  {
+    "id": "bind_ms7bj5jm",
+    "student_id": "u_ms7biwkm",
+    "parent_phone": "13877777777",
+    "relation": "母亲",
+    "status": "pending",
+    "created_at": "2026-07-30T09:35:48.178Z",
+    "updated_at": "2026-07-30T09:35:48.178Z"
+  },
+  {
+    "id": "bind_ms7bj5k4",
+    "student_id": "u_ms7biwkm",
+    "parent_phone": "13866666666",
+    "relation": "其他",
+    "status": "pending",
+    "created_at": "2026-07-30T09:35:48.196Z",
+    "updated_at": "2026-07-30T09:35:48.196Z"
+  },
+  {
+    "id": "bind_ms8fqzwv",
+    "student_id": "u_ms76d7z4",
+    "parent_phone": "13800000002",
+    "relation": "父亲",
+    "status": "pending",
+    "created_at": "2026-07-31T04:21:38.767Z",
+    "updated_at": "2026-07-31T04:21:38.767Z"
+  }
+]

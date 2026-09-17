@@ -1,0 +1,25 @@
+[
+  {
+    "model_key": "deepseek-r1",
+    "model_name": "DeepSeek-R1",
+    "keywords": [
+      "导数",
+      "极值"
+    ],
+    "priority": 1,
+    "updated_at": "2026-09-15T07:42:12.145Z",
+    "id": "model_routes_1789458132145_2fkxnz",
+    "created_at": "2026-09-15T07:42:12.145Z"
+  },
+  {
+    "model_key": "deepseek-r1",
+    "model_name": "DeepSeek-R1",
+    "keywords": [
+      "导数"
+    ],
+    "priority": 1,
+    "updated_at": "2026-09-15T07:48:03.829Z",
+    "id": "model_routes_1789458483829_aqftwj",
+    "created_at": "2026-09-15T07:48:03.829Z"
+  }
+]

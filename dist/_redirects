@@ -1,0 +1,34 @@
+# Cloudflare Pages Functions API - 不重写
+/api/*        /api/:splat              200
+
+# 静态资源目录 - 不重写
+/prototype/*  /prototype/:splat        200
+/js/*         /js/:splat               200
+/css/*        /css/:splat              200
+/data/*       /data/:splat             200
+
+# 常见扩展名 - 不重写
+/*.js         /:splat.js               200
+/*.css        /:splat.css              200
+/*.json       /:splat.json             200
+/*.html       /:splat.html             200
+/*.png        /:splat.png              200
+/*.jpg        /:splat.jpg              200
+/*.jpeg       /:splat.jpeg             200
+/*.svg        /:splat.svg              200
+/*.gif        /:splat.gif              200
+/*.ico        /:splat.ico              200
+/*.woff       /:splat.woff             200
+/*.woff2      /:splat.woff2            200
+/*.ttf        /:splat.ttf              200
+/*.map        /:splat.map              200
+/*.md         /:splat.md               200
+
+# 根级 HTML 页面 - 不重写
+/index.html            /index.html              200
+/index-home.html       /index-home.html         200
+/index-static.html     /index-static.html       200
+/data-manager.html     /data-manager.html       200
+
+# 其他路径 - SPA fallback 到根 index.html
+/*            /index.html              200

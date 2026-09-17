@@ -1,0 +1,252 @@
+{
+  "subjects": ["数学", "语文", "英语", "物理", "化学", "生物", "政治", "历史", "地理"],
+  "info": "统计近5年高考真题，按出现频率排序",
+  "hotpoints": {
+    "数学": [
+      {
+        "name": "导数的综合应用", "freq": 5, "mastery": 52, "exercises": 28, "expanded": true,
+        "analysis": "近5年每年必考，常以压轴题出现，重点考查分类讨论思想",
+        "types": "极值与最值、零点问题、不等式证明、恒成立问题",
+        "tips": "先求导再列表，分类讨论要全面，注意端点值与极限"
+      },
+      {
+        "name": "圆锥曲线方程", "freq": 5, "mastery": 68, "exercises": 24, "expanded": false,
+        "analysis": "高频考点，常与直线、向量结合考查",
+        "types": "标准方程、离心率、焦点弦、轨迹方程",
+        "tips": "设而不求法，联立方程后韦达定理"
+      },
+      {
+        "name": "三角函数图象与性质", "freq": 4, "mastery": 75, "exercises": 18, "expanded": false,
+        "analysis": "基础题为主，常考周期、单调性、最值",
+        "types": "化简求值、图象变换、周期最值",
+        "tips": "辅助角公式是核心工具"
+      },
+      {
+        "name": "数列求和", "freq": 4, "mastery": 71, "exercises": 20, "expanded": false,
+        "analysis": "常考裂项相消与错位相减",
+        "types": "等差等比通项、裂项、错位相减、放缩",
+        "tips": "错位相减注意首末项，裂项注意符号"
+      },
+      {
+        "name": "立体几何", "freq": 5, "mastery": 64, "exercises": 22, "expanded": false,
+        "analysis": "必考解答题，建系法是主流",
+        "types": "线面平行垂直、二面角、空间距离",
+        "tips": "建系法求二面角，法向量要单位化"
+      },
+      {
+        "name": "概率与统计", "freq": 5, "mastery": 70, "exercises": 19, "expanded": false,
+        "analysis": "应用题为主，阅读量大",
+        "types": "分布列期望、回归分析、独立性检验",
+        "tips": "审清题意，列对分布列是关键"
+      }
+    ],
+    "语文": [
+      {
+        "name": "文言文阅读", "freq": 5, "mastery": 58, "exercises": 15, "expanded": true,
+        "analysis": "每年必考，重点考查实词虚词、翻译、内容理解",
+        "types": "实词释义、虚词辨析、句子翻译、内容概括",
+        "tips": "积累120个常见实词，翻译注意逐字对应、特殊句式"
+      },
+      {
+        "name": "现代文阅读理解", "freq": 5, "mastery": 65, "exercises": 18, "expanded": false,
+        "analysis": "论述类和文学类均考，重点考查分析综合能力",
+        "types": "理解重要句子、分析文章思路、鉴赏表达技巧",
+        "tips": "先读题再读文，标注关键句，答案在文中找依据"
+      },
+      {
+        "name": "作文", "freq": 5, "mastery": 72, "exercises": 12, "expanded": false,
+        "analysis": "占60分，审题立意是关键",
+        "types": "材料作文、命题作文、任务驱动型作文",
+        "tips": "审题抓关键词，立意要深刻，素材要新颖，结构要清晰"
+      },
+      {
+        "name": "古诗词鉴赏", "freq": 5, "mastery": 55, "exercises": 14, "expanded": false,
+        "analysis": "考查意象、手法、情感分析",
+        "types": "意象分析、表现手法、思想感情、炼字",
+        "tips": "牢记常见意象含义，手法+效果+情感三步走"
+      }
+    ],
+    "英语": [
+      {
+        "name": "阅读理解", "freq": 5, "mastery": 68, "exercises": 25, "expanded": true,
+        "analysis": "占分最大，考查细节理解、推理判断、主旨大意",
+        "types": "细节理解、推理判断、主旨大意、词义猜测",
+        "tips": "先看题目再读文章，标注出题段落，注意同义替换"
+      },
+      {
+        "name": "完形填空", "freq": 5, "mastery": 60, "exercises": 20, "expanded": false,
+        "analysis": "考查语境理解和词汇辨析",
+        "types": "词义辨析、固定搭配、逻辑连接、上下文推断",
+        "tips": "通读全文把握主旨，先做易后攻难，注意复现词"
+      },
+      {
+        "name": "语法填空", "freq": 5, "mastery": 75, "exercises": 15, "expanded": false,
+        "analysis": "考查语法和词汇运用",
+        "types": "时态语态、非谓语动词、从句关系词、词性转换",
+        "tips": "分析句子结构，判断填实词还是虚词，注意动词形式"
+      },
+      {
+        "name": "书面表达", "freq": 5, "mastery": 63, "exercises": 10, "expanded": false,
+        "analysis": "考查综合语言输出能力",
+        "types": "应用文写作、读后续写、概要写作",
+        "tips": "审题列提纲，用连接词过渡，首尾呼应，注意字数"
+      }
+    ],
+    "物理": [
+      {
+        "name": "牛顿运动定律", "freq": 5, "mastery": 62, "exercises": 22, "expanded": true,
+        "analysis": "力学核心，常考综合应用",
+        "types": "受力分析、运动学综合、连接体问题、传送带",
+        "tips": "画好受力图，选正方向列方程，注意临界条件"
+      },
+      {
+        "name": "电磁感应", "freq": 5, "mastery": 55, "exercises": 20, "expanded": false,
+        "analysis": "电学核心，常考计算大题",
+        "types": "感应电动势、安培力、能量转化、图象问题",
+        "tips": "判断感应电流方向用楞次定律，能量守恒列方程"
+      },
+      {
+        "name": "万有引力与航天", "freq": 4, "mastery": 68, "exercises": 16, "expanded": false,
+        "analysis": "常考卫星变轨、双星问题",
+        "types": "轨道参量、变轨问题、双星系统、天体质量",
+        "tips": "黄金代换式GM=gR²是核心，注意近地与同步卫星区别"
+      },
+      {
+        "name": "功能关系与动能定理", "freq": 5, "mastery": 64, "exercises": 18, "expanded": false,
+        "analysis": "贯穿力电综合题",
+        "types": "变力做功、动能定理、机械能守恒、功能关系",
+        "tips": "列动能定理方程，注意重力势能参考面选取"
+      }
+    ],
+    "化学": [
+      {
+        "name": "氧化还原反应", "freq": 5, "mastery": 66, "exercises": 20, "expanded": true,
+        "analysis": "化学核心，贯穿无机和有机",
+        "types": "配平、电子转移、氧化还原反应方程式书写",
+        "tips": "标价态、列电子得失、守恒配平，注意介质条件"
+      },
+      {
+        "name": "化学反应速率与化学平衡", "freq": 5, "mastery": 58, "exercises": 18, "expanded": false,
+        "analysis": "常考计算和图象题",
+        "types": "速率计算、平衡常数、等效平衡、图象分析",
+        "tips": "三段式计算平衡，看图先看点、线、面"
+      },
+      {
+        "name": "电化学", "freq": 5, "mastery": 60, "exercises": 16, "expanded": false,
+        "analysis": "常考原电池和电解池",
+        "types": "原电池正负极判断、电解池计算、电极反应式",
+        "tips": "判断正负极，写电极反应式注意守恒，电镀池精炼池"
+      },
+      {
+        "name": "有机化学基础", "freq": 5, "mastery": 63, "exercises": 22, "expanded": false,
+        "analysis": "常考同分异构体和合成路线",
+        "types": "官能团性质、同分异构体、有机合成、反应类型判断",
+        "tips": "记熟官能团性质，逆推法分析合成路线，注意条件"
+      }
+    ],
+    "生物": [
+      {
+        "name": "光合作用与细胞呼吸", "freq": 5, "mastery": 60, "exercises": 18, "expanded": true,
+        "analysis": "每年必考，常结合实验设计",
+        "types": "光反应暗反应、有氧无氧呼吸、影响因素、实验设计",
+        "tips": "理清光合呼吸过程图，注意O₂的产生和消耗场所"
+      },
+      {
+        "name": "遗传规律", "freq": 5, "mastery": 55, "exercises": 20, "expanded": false,
+        "analysis": "常考遗传推断和概率计算",
+        "types": "基因型推断、概率计算、系谱分析、变异类型",
+        "tips": "先判断显隐性，再写基因型，概率计算用乘法加法定理"
+      },
+      {
+        "name": "细胞的生命历程", "freq": 4, "mastery": 72, "exercises": 14, "expanded": false,
+        "analysis": "考查有丝分裂和减数分裂",
+        "types": "细胞周期、有丝分裂图象、减数分裂、分化凋亡",
+        "tips": "记住各时期特征，注意同源染色体和姐妹染色单体区别"
+      },
+      {
+        "name": "生态系统与稳态", "freq": 4, "mastery": 68, "exercises": 12, "expanded": false,
+        "analysis": "常考种群数量和生态功能",
+        "types": "种群增长曲线、群落演替、物质循环、信息传递",
+        "tips": "K值和K/2的应用，注意抵抗力与恢复力稳定性区别"
+      }
+    ],
+    "政治": [
+      {
+        "name": "经济生活：价格变动与影响", "freq": 5, "mastery": 65, "exercises": 16, "expanded": true,
+        "analysis": "常以选择题考查价格与供求关系",
+        "types": "价格变动影响因素、价格对需求和供给的影响、交叉价格",
+        "tips": "牢记价格-需求曲线，区分需求量变动与需求变动"
+      },
+      {
+        "name": "政治生活：公民与政府", "freq": 5, "mastery": 70, "exercises": 14, "expanded": false,
+        "analysis": "常考政府职能和公民权利",
+        "types": "公民权利与义务、政府职能性质、权力监督",
+        "tips": "区分政府职能（4项）与政府工作原则，注意主体对应"
+      },
+      {
+        "name": "文化生活：文化传承与创新", "freq": 4, "mastery": 62, "exercises": 12, "expanded": false,
+        "analysis": "考查文化继承与发展关系",
+        "types": "文化多样性与传播、传统文化、文化创新途径",
+        "tips": "注意'取其精华去其糟粕'与'推陈出新革故鼎新'的区别"
+      },
+      {
+        "name": "生活与哲学：唯物辩证法", "freq": 5, "mastery": 58, "exercises": 15, "expanded": false,
+        "analysis": "常考矛盾观和发展观",
+        "types": "联系观、发展观、矛盾观、辩证否定观",
+        "tips": "区分矛盾普遍性与特殊性，记住'两点论'和'重点论'"
+      }
+    ],
+    "历史": [
+      {
+        "name": "中国古代政治制度", "freq": 5, "mastery": 68, "exercises": 16, "expanded": true,
+        "analysis": "常考中央集权制度的演变",
+        "types": "分封制宗法制、皇帝制度、三省六部制、行省制",
+        "tips": "画时间轴梳理朝代脉络，注意制度演变的延续与创新"
+      },
+      {
+        "name": "中国近代史：侵略与抗争", "freq": 5, "mastery": 60, "exercises": 18, "expanded": false,
+        "analysis": "常考不平等条约和救亡图存",
+        "types": "鸦片战争、甲午战争、八国联军、太平天国、辛亥革命",
+        "tips": "按时间线梳理重大事件，注意条约内容与影响区分"
+      },
+      {
+        "name": "世界经济全球化", "freq": 4, "mastery": 64, "exercises": 14, "expanded": false,
+        "analysis": "常考布雷顿森林体系和WTO",
+        "types": "布雷顿森林体系、WTO、区域集团化、经济全球化",
+        "tips": "区分IMF与世界银行职能，记住全球化表现与认识"
+      },
+      {
+        "name": "中国改革开放史", "freq": 5, "mastery": 72, "exercises": 12, "expanded": false,
+        "analysis": "常考经济体制改革和对外开放",
+        "types": "家庭联产承包责任制、国企改革、对外开放格局、市场经济",
+        "tips": "农村改革与城市改革对比，经济特区→沿海开放城市→沿江"
+      }
+    ],
+    "地理": [
+      {
+        "name": "地球运动与时间计算", "freq": 5, "mastery": 52, "exercises": 18, "expanded": true,
+        "analysis": "常考时差计算和昼夜长短",
+        "types": "时区计算、昼夜长短变化、正午太阳高度角、日出日落",
+        "tips": "画侧视图辅助理解，牢记'东加西减'，二至日是关键"
+      },
+      {
+        "name": "气候类型与成因分析", "freq": 5, "mastery": 60, "exercises": 16, "expanded": false,
+        "analysis": "常考气候特征及成因",
+        "types": "气温降水图判读、气候成因、气候对农业影响",
+        "tips": "以气温定球、以降水定型，记住13种气候类型分布规律"
+      },
+      {
+        "name": "区域可持续发展", "freq": 5, "mastery": 66, "exercises": 14, "expanded": false,
+        "analysis": "常结合区域图考查",
+        "types": "区域定位、资源开发、生态问题、产业转移",
+        "tips": "先区域定位（经纬度+轮廓），再分析自然和人文条件"
+      },
+      {
+        "name": "人口与城市", "freq": 4, "mastery": 70, "exercises": 12, "expanded": false,
+        "analysis": "常考城市化问题和人口迁移",
+        "types": "人口增长模式、人口迁移因素、城市化阶段与问题",
+        "tips": "区分人口增长模式特征，城市化标志用城镇人口比重"
+      }
+    ]
+  }
+}

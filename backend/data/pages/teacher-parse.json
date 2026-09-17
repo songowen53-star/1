@@ -1,0 +1,98 @@
+{
+  "paperName": "本地后端验证试卷.pdf",
+  "totalQuestions": 8,
+  "parsedCount": 8,
+  "qList": [
+    {
+      "no": 1,
+      "type": "选择题",
+      "score": 5,
+      "diff": "简单",
+      "done": true,
+      "active": true
+    },
+    {
+      "no": 2,
+      "type": "选择题",
+      "score": 5,
+      "diff": "简单",
+      "done": true,
+      "active": false
+    },
+    {
+      "no": 3,
+      "type": "选择题",
+      "score": 5,
+      "diff": "中等",
+      "done": true,
+      "active": false
+    },
+    {
+      "no": 4,
+      "type": "选择题",
+      "score": 5,
+      "diff": "中等",
+      "done": true,
+      "active": false
+    },
+    {
+      "no": 5,
+      "type": "填空题",
+      "score": 5,
+      "diff": "中等",
+      "done": true,
+      "active": false
+    },
+    {
+      "no": 6,
+      "type": "填空题",
+      "score": 5,
+      "diff": "中等",
+      "done": true,
+      "active": false
+    },
+    {
+      "no": 7,
+      "type": "解答题",
+      "score": 14,
+      "diff": "困难",
+      "done": true,
+      "active": false
+    },
+    {
+      "no": 8,
+      "type": "解答题",
+      "score": 16,
+      "diff": "困难",
+      "done": true,
+      "active": false
+    }
+  ],
+  "detail": {
+    "no": 1,
+    "type": "选择题",
+    "score": 5,
+    "difficulty": "★★☆☆☆",
+    "content": "设集合 A={x|x²-3x+2=0}，B={x|0<x<3}，则 A∩B =（  ）",
+    "answer": "C",
+    "analysis": [
+      {
+        "step": "第一步：",
+        "text": "解方程 x²-3x+2=0，得 (x-1)(x-2)=0，故 A={1,2}。"
+      },
+      {
+        "step": "第二步：",
+        "text": "B={x|0<x<3}=(0,3)，A∩B 取 A 中满足 0<x<3 的元素。"
+      },
+      {
+        "step": "第三步：",
+        "text": "1 和 2 均在 (0,3) 内，故 A∩B={1,2}，选 C。"
+      }
+    ],
+    "points": [
+      "集合运算",
+      "一元二次方程",
+      "交集"
+    ]
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "total_recommend": 20,
+  "reasons": [
+    {
+      "text": "薄弱知识点",
+      "icon": "fa-exclamation-circle",
+      "bg": "#FEE2E2",
+      "color": "#991B1B"
+    },
+    {
+      "text": "高频考点",
+      "icon": "fa-fire",
+      "bg": "#FEF3C7",
+      "color": "#92400E"
+    },
+    {
+      "text": "易错题",
+      "icon": "fa-bug",
+      "bg": "#EDE9FE",
+      "color": "#5B21B6"
+    }
+  ],
+  "recommends": [
+    {
+      "subject": "数学",
+      "subjectColor": "blue",
+      "reason": "薄弱知识点",
+      "reasonColor": "red",
+      "q": "已知函数f(x)=lnx-ax²有极值，求a的取值范围",
+      "level": 5,
+      "time": 12,
+      "match": 92,
+      "type": "解答题",
+      "knowledge_point": "导数与极值",
+      "question": "已知函数 f(x) = lnx - ax² (a∈R, x>0) 有极值，求 a 的取值范围。",
+      "options": [],
+      "answer": "a 的取值范围是 a > 0。",
+      "analysis": "f(x) 有极值 ⟺ f'(x) = 0 有变号零点。\nf'(x) = 1/x - 2ax = (1 - 2ax²)/x\n令 f'(x) = 0：1 - 2ax² = 0，得 x² = 1/(2a)，故 a > 0 时方程有解 x = 1/√(2a)。\n验证变号：当 a > 0 时，x 从小到大经过 1/√(2a) 时，1-2ax² 由正变负，f'(x) 由正变负，故 f(x) 在该点取得极大值。\n当 a ≤ 0 时，1-2ax² ≥ 1 > 0 恒成立，f'(x) > 0，f(x) 在 (0,+∞) 上单调递增，无极值。\n综上，a 的取值范围是 a > 0。"
+    },
+    {
+      "subject": "物理",
+      "subjectColor": "orange",
+      "reason": "高频考点",
+      "reasonColor": "orange",
+      "q": "一带电粒子在匀强磁场中做圆周运动...",
+      "level": 4,
+      "time": 8,
+      "match": 88,
+      "type": "单选题",
+      "knowledge_point": "带电粒子在磁场中的运动",
+      "question": "一质量为 m、电荷量为 q 的带正电粒子，以速度 v 垂直射入磁感应强度为 B 的匀强磁场中，做匀速圆周运动。已知粒子在磁场中运动了半圈后射出。求粒子在磁场中运动的时间。（粒子重力不计）",
+      "options": [
+        "A. πm/(qB)",
+        "B. 2πm/(qB)",
+        "C. πm/(2qB)",
+        "D. qB/(πm)"
+      ],
+      "answer": "A",
+      "analysis": "带电粒子在匀强磁场中做匀速圆周运动，洛伦兹力提供向心力：\nqvB = mv²/r\n解得半径 r = mv/(qB)\n周期 T = 2πr/v = 2πm/(qB)\n粒子运动半圈，对应时间 t = T/2 = πm/(qB)\n故选A。\n关键公式：T = 2πm/(qB)，与粒子的速度 v 和半径 r 无关，只与 m、q、B 有关。"
+    },
+    {
+      "subject": "数学",
+      "subjectColor": "blue",
+      "reason": "易错题",
+      "reasonColor": "purple",
+      "q": "椭圆x²/9+y²/5=1中过右焦点的弦长",
+      "level": 4,
+      "time": 10,
+      "match": 85,
+      "type": "解答题",
+      "knowledge_point": "椭圆的弦长",
+      "question": "已知椭圆 C：x²/9 + y²/5 = 1，过右焦点 F 的直线 l 与椭圆交于 A、B 两点。若直线 l 的倾斜角为 45°，求弦长 |AB|。",
+      "options": [],
+      "answer": "|AB| = 30/7。",
+      "analysis": "椭圆 x²/9 + y²/5 = 1 中：a²=9, b²=5，c²=a²-b²=4，c=2，故右焦点 F(2, 0)。\n直线 l 倾斜角 45°，斜率 k=tan45°=1，方程为 y = x - 2。\n与椭圆方程联立：x²/9 + (x-2)²/5 = 1\n化简：5x² + 9(x-2)² = 45\n5x² + 9(x²-4x+4) = 45\n14x² - 36x + 36 = 45\n14x² - 36x - 9 = 0\n判别式 Δ = 36² + 4·14·9 = 1296 + 504 = 1800\n设 A(x1,y1), B(x2,y2)，则 x1+x2 = 36/14 = 18/7, x1·x2 = -9/14\n弦长 |AB| = √(1+k²)·|x1-x2| = √2·√[(x1+x2)²-4x1x2]\n= √2·√[(18/7)²-4·(-9/14)]\n= √2·√[324/49 + 36/14]\n= √2·√[324/49 + 126/49]\n= √2·√(450/49)\n= √2·(15√2/7)\n= 30/7"
+    },
+    {
+      "subject": "英语",
+      "subjectColor": "green",
+      "reason": "薄弱知识点",
+      "reasonColor": "red",
+      "q": "完形填空：The scientist devoted his life to...",
+      "level": 3,
+      "time": 15,
+      "match": 90,
+      "type": "完形填空",
+      "knowledge_point": "词义辨析与语境",
+      "question": "阅读下面短文，从各题所给的四个选项中选出最佳选项：\n\nThe scientist devoted his life to ___1___ the mystery of the universe. Despite numerous failures, he never ___2___ his research. His perseverance finally paid ___3___ when he made a groundbreaking discovery at the age of 70.\n\n1. A. unlock  B. unlocking  C. unlocked  D. to unlock\n2. A. gave up  B. gave in  C. gave away  D. gave out\n3. A. back  B. for  C. off  D. out",
+      "options": [],
+      "answer": "1-3: B A C",
+      "analysis": "1. 选B。'devote...to doing sth.'是固定搭配，to是介词，后接动名词。故选unlocking。\n2. 选A。'give up'意为'放弃'，符合'尽管失败多次，他从未放弃研究'的语境。'give in'是'屈服'，'give away'是'赠送/泄露'，'give out'是'分发/耗尽'，均不符合。\n3. 选C。'pay off'意为'取得成功/得到回报'，符合'70岁时的突破性发现让他的坚持终于有了回报'。'pay back'是'偿还'，'pay for'是'为...付款'，'pay out'是'付出(钱)'，均不符合。"
+    },
+    {
+      "subject": "化学",
+      "subjectColor": "purple",
+      "reason": "高频考点",
+      "reasonColor": "orange",
+      "q": "电解池中阳极反应式的书写与判断",
+      "level": 4,
+      "time": 7,
+      "match": 87,
+      "type": "单选题",
+      "knowledge_point": "电解池",
+      "question": "用惰性电极电解 CuSO₄ 溶液时，阳极的电极反应式是：",
+      "options": [
+        "A. Cu²⁺ + 2e⁻ → Cu",
+        "B. 2H⁺ + 2e⁻ → H₂↑",
+        "C. 2H₂O - 4e⁻ → O₂↑ + 4H⁺",
+        "D. 2Cl⁻ - 2e⁻ → Cl₂↑"
+      ],
+      "answer": "C",
+      "analysis": "电解 CuSO₄ 溶液用惰性电极（如铂、石墨）：\n• 阳极：阴离子放电。溶液中阴离子有 SO₄²⁻ 和 OH⁻（来自水的电离）。放电顺序：OH⁻ > SO₄²⁻（含氧酸根难放电），故 OH⁻ 先放电。\n  电极反应：4OH⁻ - 4e⁻ → 2H₂O + O₂↑\n  由于 OH⁻ 来自水的电离，常写作：2H₂O - 4e⁻ → O₂↑ + 4H⁺\n• 阴极：阳离子放电。Cu²⁺ > H⁺，故 Cu²⁺ 先放电：Cu²⁺ + 2e⁻ → Cu\n选项分析：A 是阴极反应；B 是阴极可能反应（但本题Cu²⁺优先）；C 是阳极反应，正确；D 是 Cl⁻ 的放电，但本题溶液中无 Cl⁻。\n故选C。"
+    },
+    {
+      "subject": "数学",
+      "subjectColor": "blue",
+      "reason": "易错题",
+      "reasonColor": "purple",
+      "q": "数列{an}前n项和Sn=2n²-n，求通项公式",
+      "level": 3,
+      "time": 6,
+      "match": 89,
+      "type": "解答题",
+      "knowledge_point": "数列通项",
+      "question": "已知数列 {aₙ} 的前 n 项和 Sₙ = 2n² - n，求数列 {aₙ} 的通项公式。",
+      "options": [],
+      "answer": "aₙ = 4n - 3。",
+      "analysis": "由前 n 项和求通项的公式：\n当 n = 1 时：a₁ = S₁ = 2·1² - 1 = 1\n当 n ≥ 2 时：aₙ = Sₙ - Sₙ₋₁ = (2n² - n) - [2(n-1)² - (n-1)]\n= 2n² - n - [2(n²-2n+1) - n + 1]\n= 2n² - n - [2n² - 4n + 2 - n + 1]\n= 2n² - n - 2n² + 5n - 3\n= 4n - 3\n验证 n = 1 时：4·1 - 3 = 1 = a₁ ✓\n故通项公式为 aₙ = 4n - 3 (n∈N*)。\n说明：因为 n=1 时公式也成立，所以不需要分段表示。这是等差数列，首项 a₁=1，公差 d=4。"
+    }
+  ]
+}

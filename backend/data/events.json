@@ -1,0 +1,50 @@
+[
+  {
+    "user_id": "u_mu2etuk5",
+    "type": "answer",
+    "payload": {
+      "question_id": "q_real_001",
+      "is_correct": true,
+      "time_cost_sec": 70
+    },
+    "source": "app",
+    "ts": "2026-09-15T08:37:25.151Z",
+    "processed": true,
+    "id": "events_1789461445151_y5hbn4",
+    "created_at": "2026-09-15T08:37:25.151Z",
+    "updated_at": "2026-09-15T08:37:25.152Z",
+    "processed_at": "2026-09-15T08:37:25.152Z"
+  },
+  {
+    "user_id": "u_mu2etuk5",
+    "type": "answer",
+    "payload": {
+      "question_id": "q_real_001",
+      "is_correct": true,
+      "time_cost_sec": 80
+    },
+    "source": "app",
+    "ts": "2026-09-15T08:37:25.179Z",
+    "processed": true,
+    "id": "events_1789461445179_nyox0n",
+    "created_at": "2026-09-15T08:37:25.179Z",
+    "updated_at": "2026-09-15T08:37:25.179Z",
+    "processed_at": "2026-09-15T08:37:25.179Z"
+  },
+  {
+    "user_id": "u_mu2etuk5",
+    "type": "answer",
+    "payload": {
+      "question_id": "q_real_001",
+      "is_correct": true,
+      "time_cost_sec": 90
+    },
+    "source": "app",
+    "ts": "2026-09-15T08:37:25.205Z",
+    "processed": true,
+    "id": "events_1789461445205_chafwh",
+    "created_at": "2026-09-15T08:37:25.205Z",
+    "updated_at": "2026-09-15T08:37:25.206Z",
+    "processed_at": "2026-09-15T08:37:25.206Z"
+  }
+]
