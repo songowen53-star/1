@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>高分AI-AI高考智能提分教练</title>
+    <link rel="stylesheet" href="/css/fontawesome/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1e40af 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+        .hero {
+            padding: 80px 40px 40px;
+            text-align: center;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px; left: 50%;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(59,130,246,0.25) 0%, transparent 70%);
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #93c5fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .hero .subtitle {
+            font-size: 18px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .hero .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(59,130,246,0.2);
+            border: 1px solid rgba(59,130,246,0.4);
+            border-radius: 20px;
+            font-size: 13px;
+            color: #93c5fd;
+            margin-top: 12px;
+            position: relative;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin: 40px auto 0;
+            max-width: 900px;
+            position: relative;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat .num {
+            font-size: 36px;
+            font-weight: 800;
+            color: #fbbf24;
+        }
+        .stat .label {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 4px;
+        }
+
+        .cards {
+            max-width: 1200px;
+            margin: 60px auto 0;
+            padding: 0 40px 40px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .entry-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+        .entry-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            transition: left 0.6s ease;
+        }
+        .entry-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(59,130,246,0.5);
+            box-shadow: 0 20px 60px rgba(59,130,246,0.25);
+        }
+        .entry-card:hover::before { left: 100%; }
+        .entry-card .icon {
+            width: 64px; height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .entry-card h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .entry-card .desc {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .entry-card .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+        .entry-card .feat {
+            font-size: 11px;
+            padding: 3px 10px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            color: rgba(255,255,255,0.7);
+        }
+        .entry-card .go-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #3b82f6;
+        }
+        .entry-card:hover .go-btn { color: #60a5fa; }
+
+        .tech {
+            background: rgba(255,255,255,0.03);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 40px;
+            margin-top: 40px;
+        }
+        .tech-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .tech h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: rgba(255,255,255,0.85);
+        }
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .tech-item {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 10px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.75);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: rgba(255,255,255,0.4);
+            font-size: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .cards { grid-template-columns: 1fr; }
+            .stats { gap: 32px; flex-wrap: wrap; }
+            .hero h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1><i class="fas fa-graduation-cap"></i> 高分AI-AI高考智能提分教练</h1>
+        <p class="subtitle">AI学习教练 · 智能组卷 · 拍照搜题 · 志愿填报 · 成绩预测 · 真题演练</p>
+        <span class="badge"><i class="fas fa-rocket"></i> 完整七阶段产品 · 62页面原型 · 功能联动引擎</span>
+
+        <div class="stats">
+            <div class="stat"><div class="num">62</div><div class="label">产品原型页面</div></div>
+            <div class="stat"><div class="num">11</div><div class="label">功能模块</div></div>
+            <div class="stat"><div class="num">6</div><div class="label">核心AI能力</div></div>
+            <div class="stat"><div class="num">27+</div><div class="label">真题题库</div></div>
+        </div>
+    </div>
+
+    <div class="cards">
+        <a class="entry-card" href="index-home.html">
+            <div class="icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>主应用 · AI智能提分</h3>
+            <p class="desc">完整的高中生AI提分平台，支持登录认证、9大首页模块联动、真题演练、可编辑动态卡片、AI推荐、成绩预测。</p>
+            <div class="features">
+                <span class="feat">登录/注册</span>
+                <span class="feat">模块联动</span>
+                <span class="feat">真题演练</span>
+                <span class="feat">编辑模式</span>
+                <span class="feat">导入资料</span>
+            </div>
+            <div class="go-btn">进入主应用 <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a class="entry-card" href="prototype/index.html">
+            <div class="icon" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <h3>完整产品原型 · 62页</h3>
+            <p class="desc">覆盖全部7阶段产品设计：登录注册、AI学习中心、智能刷题、拍照搜题、成绩分析、志愿填报、运营后台、教师后台、AI核心模块、自动入库。</p>
+            <div class="features">
+                <span class="feat">7阶段</span>
+                <span class="feat">手机/平板/桌面</span>
+                <span class="feat">可搜索导航</span>
+                <span class="feat">后台管理</span>
+                <span class="feat">AI入库流程</span>
+            </div>
+            <div class="go-btn">浏览产品原型 <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a class="entry-card" href="prototype/flutter-technical-plan.md">
+            <div class="icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h3>Flutter · 技术方案</h3>
+            <p class="desc">一套代码覆盖 Android/iOS/iPad/Web，Riverpod状态管理、Dio网络请求、AI核心模块技术实现、Spring Boot微服务后端架构、14个Sprint开发计划。</p>
+            <div class="features">
+                <span class="feat">Flutter 3.x</span>
+                <span class="feat">Spring Boot</span>
+                <span class="feat">微服务</span>
+                <span class="feat">Milvus向量库</span>
+                <span class="feat">CI/CD</span>
+            </div>
+            <div class="go-btn">查看技术方案 <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a class="entry-card" href="index-home.html#profile">
+            <div class="icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h3>个人中心 · 登录体验</h3>
+            <p class="desc">支持手机号/密码注册登录、微信登录、手机验证码登录、家长账号绑定，登录后可查看学习报告、VIP会员、学习数据。</p>
+            <div class="features">
+                <span class="feat">JWT认证</span>
+                <span class="feat">登录表单</span>
+                <span class="feat">VIP会员</span>
+                <span class="feat">家长中心</span>
+                <span class="feat">学习报告</span>
+            </div>
+            <div class="go-btn">前往个人中心 <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a class="entry-card" href="prototype/index.html">
+            <div class="icon" style="background: linear-gradient(135deg, #ec4899, #be185d);">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h3>AI核心模块 · 6大竞争力</h3>
+            <p class="desc">AI学习教练、AI讲题引擎（分步讲解直到会）、AI智能组卷（分析1000道题选20道）、AI知识图谱、AI高考预测、AI自动入库（PDF→数据库）。</p>
+            <div class="features">
+                <span class="feat">AI教练</span>
+                <span class="feat">分步讲题</span>
+                <span class="feat">智能组卷</span>
+                <span class="feat">知识图谱</span>
+                <span class="feat">高考预测</span>
+            </div>
+            <div class="go-btn">体验AI模块 <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a class="entry-card" href="prototype/index.html">
+            <div class="icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <h3>运营后台 · 教师后台</h3>
+            <p class="desc">运营后台：用户管理、会员管理、真题/OCR/AI/内容审核、Banner管理、数据统计、留存分析。教师后台：上传试卷、AI切题、AI解析、AI标知识点、AI组卷。</p>
+            <div class="features">
+                <span class="feat">用户管理</span>
+                <span class="feat">审核队列</span>
+                <span class="feat">数据看板</span>
+                <span class="feat">AI切题</span>
+                <span class="feat">教师组卷</span>
+            </div>
+            <div class="go-btn">进入管理端 <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a class="entry-card" href="data-manager.html">
+            <div class="icon" style="background: linear-gradient(135deg, #6366f1, #4338ca);">
+                <i class="fas fa-database"></i>
+            </div>
+            <h3>数据文件管理 · 导入本地资料</h3>
+            <p class="desc">将本地电脑（D:\新资料\五层架构成果）的文件上传到项目 backend/data/ 目录。支持文件拖拽上传、真题文本批量导入、文件查看与管理。</p>
+            <div class="features">
+                <span class="feat">文件上传</span>
+                <span class="feat">拖拽支持</span>
+                <span class="feat">真题导入</span>
+                <span class="feat">文件管理</span>
+                <span class="feat">预览查看</span>
+            </div>
+            <div class="go-btn">上传本地数据 <i class="fas fa-arrow-right"></i></div>
+        </a>
+    </div>
+
+    <div class="tech">
+        <div class="tech-inner">
+            <h2><i class="fas fa-layer-group"></i> 技术栈</h2>
+            <div class="tech-stack">
+                <span class="tech-item"><i class="fab fa-node-js"></i> Node.js + Express</span>
+                <span class="tech-item"><i class="fas fa-database"></i> JSON 数据库（可平滑迁移 MySQL）</span>
+                <span class="tech-item"><i class="fab fa-js"></i> 原生 JavaScript</span>
+                <span class="tech-item"><i class="fas fa-palette"></i> CSS 3 设计系统</span>
+                <span class="tech-item"><i class="fas fa-mobile-alt"></i> Flutter 3.x（移动端）</span>
+                <span class="tech-item"><i class="fab fa-java"></i> Spring Boot（微服务）</span>
+                <span class="tech-item"><i class="fas fa-robot"></i> LLM + Milvus 向量检索</span>
+                <span class="tech-item"><i class="fas fa-search"></i> ElasticSearch</span>
+                <span class="tech-item"><i class="fas fa-bolt"></i> Redis 缓存</span>
+                <span class="tech-item"><i class="fas fa-file-alt"></i> MinIO 对象存储</span>
+                <span class="tech-item"><i class="fas fa-link"></i> API Gateway</span>
+                <span class="tech-item"><i class="fas fa-chart-pie"></i> Chart.js</span>
+                <span class="tech-item"><i class="fas fa-icons"></i> Font Awesome 6</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        高分AI-AI高考智能提分教练 © 2026 · 让每一个高三学生都能考上理想大学
+    </footer>
+
+    <script>
+    // 入口卡片跳转 —— 兼容 solo-remote-file 协议和预览代理
+    (function() {
+        'use strict';
+        function initCards() {
+            var cards = document.querySelectorAll('.entry-card');
+            cards.forEach(function(card) {
+                card.removeAttribute('target');
+                // 阻止 <a> 标签默认导航，避免 solo-remote-file 协议弹出系统对话框
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var href = card.getAttribute('href');
+                    if (!href) return;
+                    // solo-remote-file 协议下，使用相对路径在同协议内跳转
+                    if (window.location.protocol === 'solo-remote-file:') {
+                        var base = window.location.href.replace(/[^/]*$/, '');
+                        window.location.href = base + href.replace(/^\.?\//, '');
+                        return;
+                    }
+                    // 预览代理模式：保留 _port 参数
+                    var portParam = new URLSearchParams(window.location.search).get('_port');
+                    var url = new URL(href, window.location.origin + window.location.pathname);
+                    if (portParam) url.searchParams.set('_port', portParam);
+                    window.location.href = url.toString();
+                });
+            });
+            console.log('[入口页] ' + cards.length + ' 个入口卡片已就绪');
+        }
+        // 脚本在页面底部，DOM 可能已加载完成，需检查 readyState
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCards);
+        } else {
+            initCards();
+        }
+    })();
+    </script>
+</body>
+</html>

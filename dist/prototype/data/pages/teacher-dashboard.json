@@ -1,0 +1,33 @@
+{
+  "teacher": {
+    "name": "王老师",
+    "subject": "数学",
+    "school": "杭州第二中学",
+    "title": "高三年级组长",
+    "years": 12,
+    "students": 144
+  },
+  "stats": [
+    { "label": "待批改", "value": "16", "change": 0, "color": "orange" },
+    { "label": "今日上传", "value": "3", "change": 0, "color": "green" },
+    { "label": "班级均分", "value": "111.7", "change": 0, "color": "blue" },
+    { "label": "AI任务", "value": "7", "change": 0, "color": "purple" }
+  ],
+  "classes": [
+    { "name": "高三(1)班", "students": 48, "subject": "数学", "color": "#3B82F6", "avg": 118, "pending": 5 },
+    { "name": "高三(2)班", "students": 46, "subject": "数学", "color": "#8B5CF6", "avg": 112, "pending": 3 },
+    { "name": "高三(3)班", "students": 50, "subject": "数学", "color": "#10B981", "avg": 105, "pending": 8 }
+  ],
+  "tasks": [
+    { "title": "批改高三(1)班周测卷", "desc": "共48份，已完成32份", "progress": 67, "color": "#3B82F6" },
+    { "title": "上传2025年浙江高考真题", "desc": "待AI切题与解析", "progress": 0, "color": "#F59E0B" },
+    { "title": "生成高三(2)班课堂练习", "desc": "导数专题 10题", "progress": 100, "color": "#10B981" },
+    { "title": "组卷：高三三模数学卷", "desc": "难度系数 0.65", "progress": 40, "color": "#8B5CF6" }
+  ],
+  "quickTiles": [
+    { "icon": "fa-upload", "bg": "linear-gradient(135deg,#3B82F6,#1D4ED8)", "label": "上传试卷", "page": "teacher-upload" },
+    { "icon": "fa-scissors", "bg": "linear-gradient(135deg,#8B5CF6,#6D28D9)", "label": "AI切题", "page": "teacher-split" },
+    { "icon": "fa-magic", "bg": "linear-gradient(135deg,#EC4899,#BE185D)", "label": "AI解析", "page": "teacher-parse" },
+    { "icon": "fa-file-export", "bg": "linear-gradient(135deg,#10B981,#059669)", "label": "AI组卷", "page": "teacher-paper" }
+  ]
+}

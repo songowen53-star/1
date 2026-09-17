@@ -1,0 +1,108 @@
+[
+  {
+    "file_path": "/tmp/paper.pdf",
+    "teacher_id": "t_001",
+    "total_questions": 6,
+    "questions": [
+      {
+        "no": 1,
+        "type": "选择题",
+        "score": 5,
+        "difficulty": "简单",
+        "content_preview": "已知集合 A={1,2,3}，B={2,3,4}..."
+      },
+      {
+        "no": 2,
+        "type": "选择题",
+        "score": 5,
+        "difficulty": "简单",
+        "content_preview": "复数 z=1+i 的共轭复数..."
+      },
+      {
+        "no": 3,
+        "type": "选择题",
+        "score": 5,
+        "difficulty": "中等",
+        "content_preview": "函数 f(x)=sin(2x+π/6)..."
+      },
+      {
+        "no": 4,
+        "type": "选择题",
+        "score": 5,
+        "difficulty": "中等",
+        "content_preview": "数列 {aₙ} 的前 n 项和..."
+      },
+      {
+        "no": 5,
+        "type": "填空题",
+        "score": 5,
+        "difficulty": "困难",
+        "content_preview": "设函数 f(x)=x³-3x²+2..."
+      },
+      {
+        "no": 6,
+        "type": "填空题",
+        "score": 5,
+        "difficulty": "困难",
+        "content_preview": "椭圆 x²/4+y²=1..."
+      }
+    ],
+    "time": "2026-09-15T07:41:36.120Z",
+    "id": "teacher_split_jobs_1789458096120_4qgg9n",
+    "created_at": "2026-09-15T07:41:36.120Z",
+    "updated_at": "2026-09-15T07:41:36.120Z"
+  },
+  {
+    "file_path": "/tmp/p.pdf",
+    "teacher_id": "t1",
+    "total_questions": 6,
+    "questions": [
+      {
+        "no": 1,
+        "type": "选择题",
+        "score": 5,
+        "difficulty": "简单",
+        "content_preview": "已知集合 A={1,2,3}，B={2,3,4}..."
+      },
+      {
+        "no": 2,
+        "type": "选择题",
+        "score": 5,
+        "difficulty": "简单",
+        "content_preview": "复数 z=1+i 的共轭复数..."
+      },
+      {
+        "no": 3,
+        "type": "选择题",
+        "score": 5,
+        "difficulty": "中等",
+        "content_preview": "函数 f(x)=sin(2x+π/6)..."
+      },
+      {
+        "no": 4,
+        "type": "选择题",
+        "score": 5,
+        "difficulty": "中等",
+        "content_preview": "数列 {aₙ} 的前 n 项和..."
+      },
+      {
+        "no": 5,
+        "type": "填空题",
+        "score": 5,
+        "difficulty": "困难",
+        "content_preview": "设函数 f(x)=x³-3x²+2..."
+      },
+      {
+        "no": 6,
+        "type": "填空题",
+        "score": 5,
+        "difficulty": "困难",
+        "content_preview": "椭圆 x²/4+y²=1..."
+      }
+    ],
+    "time": "2026-09-15T07:48:05.103Z",
+    "id": "teacher_split_jobs_1789458485104_1h0plg",
+    "created_at": "2026-09-15T07:48:05.104Z",
+    "updated_at": "2026-09-15T07:48:05.104Z"
+  }
+]

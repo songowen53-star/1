@@ -1,0 +1,28 @@
+{
+  "predicted_rank": "8,231",
+  "province": "浙江省",
+  "category": "物理类",
+  "predicted_score": 598,
+  "conversion_table": [
+    { "year": "2025", "rank": "8,100名", "score": "601分" },
+    { "year": "2024", "rank": "8,500名", "score": "595分" },
+    { "year": "2023", "rank": "8,200名", "score": "598分" }
+  ],
+  "one_point_chart_label": "590-610分一分一段表（图表）",
+  "history_admission": [
+    { "year": "2025", "college": "湖南大学", "level": "985" },
+    { "year": "2024", "college": "重庆大学", "level": "985" },
+    { "year": "2023", "college": "大连理工", "level": "985" }
+  ],
+  "tier_pie_chart_label": "位次对应院校层次分布饼图",
+  "advice": {
+    "title": "志愿填报建议",
+    "intro": "推荐「冲2稳2保2」策略：",
+    "strategy": [
+      { "type": "冲刺", "colleges": "浙江大学、中山大学" },
+      { "type": "稳妥", "colleges": "武汉大学、华中科技" },
+      { "type": "保底", "colleges": "四川大学、电子科大" }
+    ],
+    "tip": "专业选择建议服从调剂以提高录取率。"
+  }
+}

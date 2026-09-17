@@ -1,0 +1,35 @@
+{
+  "current_rank": 45,
+  "total_students": 580,
+  "beat_percent": 92.2,
+  "rank_change": 8,
+  "trend_chart_label": "最近5次考试排名变化趋势图",
+  "rank_subjects": [
+    { "name": "数学", "rank": 28, "color": "#3B82F6" },
+    { "name": "物理", "rank": 35, "color": "#06B6D4" },
+    { "name": "语文", "rank": 52, "color": "#EC4899" },
+    { "name": "英语", "rank": 65, "color": "#8B5CF6" },
+    { "name": "化学", "rank": 70, "color": "#10B981" }
+  ],
+  "target_college": {
+    "name": "浙江大学",
+    "score_line": 638,
+    "score_year": 2025,
+    "gap": -40,
+    "progress": 89
+  },
+  "competition": {
+    "range": "560-570",
+    "total": 23,
+    "tags": [
+      { "text": "565分：4人", "color": "blue" },
+      { "text": "566分：3人", "color": "purple" },
+      { "text": "567分：5人", "color": "orange" },
+      { "text": "568分：2人", "color": "green" }
+    ]
+  },
+  "advice": {
+    "title": "提升排名建议",
+    "content": "数学提升10分可前进约15名，是当前性价比最高的提分方向。"
+  }
+}

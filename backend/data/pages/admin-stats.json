@@ -1,0 +1,14 @@
+{
+  "ranges": ["最近7天", "最近30天", "最近90天"],
+  "stats": [
+    { "label": "累计做题量", "value": "1,256万", "change": 18, "color": "blue" },
+    { "label": "平均提分", "value": "+23分", "change": 0, "color": "green" },
+    { "label": "AI调用次数", "value": "5,820万", "change": 32, "color": "purple" },
+    { "label": "用户满意度", "value": "94%", "change": 2, "color": "orange" }
+  ],
+  "charts": [
+    { "title": "做题量趋势", "label": "近30天全平台做题量趋势", "height": 180 },
+    { "title": "提分分布", "label": "用户提分区间分布柱状图", "height": 180 },
+    { "title": "学科分布", "label": "各学科做题量占比饼图", "height": 180 }
+  ]
+}

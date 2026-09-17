@@ -1,0 +1,79 @@
+[
+  {
+    "id": "q_db_2025_english_nation1_41",
+    "source": "real_exam",
+    "year": 2025,
+    "province": "全国甲卷",
+    "paper_name": "英语",
+    "question_number": "完形填空41-55(节选)",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_01",
+    "type": "完形填空",
+    "difficulty": 3,
+    "score": 2,
+    "content": "A teacher's encouragement can ___41___ a student's life forever. When I was in high school, my math teacher noticed I was ___42___ with algebra. Instead of scolding me, she ___43___ after class and spent an hour each week ___44___ me through difficult problems. Her patience and belief in me made me realize I could ___45___ at math.\n\n41. A. damage B. change C. destroy D. disturb\n42. A. struggling B. dealing C. playing D. working\n43. A. took up B. stayed up C. came up D. turned up\n44. A. forcing B. walking C. rushing D. breaking\n45. A. fail B. glance C. succeed D. escape",
+    "options": [
+      {"label": "41", "text": "A. damage / B. change / C. destroy / D. disturb"},
+      {"label": "42", "text": "A. struggling / B. dealing / C. playing / D. working"},
+      {"label": "43", "text": "A. took up / B. stayed up / C. came up / D. turned up"},
+      {"label": "44", "text": "A. forcing / B. walking / C. rushing / D. breaking"},
+      {"label": "45", "text": "A. fail / B. glance / C. succeed / D. escape"}
+    ],
+    "answer": "41.B  42.A  43.B  44.B  45.C",
+    "analysis": "41. 根据全文语境“老师的鼓励改变学生人生”，选change（改变）。damage/destroy/disturb均为负面词，与后文积极态度矛盾。\n42. struggle with 表示“在某事上挣扎、吃力”，符合后文老师课后辅导的语境。deal with 为处理（中性），play/work与with搭配无此意。\n43. stay up after class 指课后留（下）来，take up 占用，come up 出现，turn up 出现/调大，选B语境最佳。\n44. walk sb. through sth. 固定表达“一步一步带某人走（过程）”，force 强迫，rush 催促，break 打破，都不符合耐心辅导的语境。\n45. succeed at sth. 在某事上成功，结尾呼应开头“改变人生”，为正向结果。其他词均与逻辑相反。"
+  },
+  {
+    "id": "q_db_2025_english_nation1_65",
+    "source": "real_exam",
+    "year": 2025,
+    "province": "全国甲卷",
+    "paper_name": "英语",
+    "question_number": "语法填空61-70(节选)",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_02",
+    "type": "语法填空",
+    "difficulty": 4,
+    "score": 10,
+    "content": "The Great Wall of China, one of the world's most famous ___61___ (landmark), stretches over 21,000 km. Originally ___62___ (build) to protect against invasions, it now ___63___ (serve) as a symbol of China's long history. Every year, millions of tourists visit ___64___, many of ___65___ come to experience the breathtaking views. The section near Beijing ___66___ (be) the most popular, and it ___67___ (list) as a UNESCO World Heritage Site in 1987. ___68___ (Walk) the wall is challenging, but the sense of achievement upon reaching a watchtower makes the effort ___69___ (true) worthwhile. If you plan ___70___ (visit), be sure to wear comfortable shoes!",
+    "options": [],
+    "answer": "61. landmarks  62. built  63. serves  64. it  65. whom  66. is  67. was listed  68. Walking  69. truly  70. to visit",
+    "analysis": "61. one of 后面接复数名词 → landmarks。\n62. 非谓语作状语，逻辑主语 it 与 build 为被动关系 → built。\n63. 主语为 it，时间 now，用一般现在时三单 → serves。\n64. visit 及物，缺少宾语，指代the Great Wall → it。\n65. 介词of后接宾格关系代词，指人 → whom（注意不能用who）。\n66. 主语section单数，一般现在时 → is。\n67. 1987年被动 → was listed。\n68. 作主语用动名词 → Walking（句首大写）。\n69. 修饰形容词worthwhile → 副词 truly。\n70. plan后接不定式 → to visit。"
+  },
+  {
+    "id": "q_db_2025_english_nation1_75",
+    "source": "real_exam",
+    "year": 2025,
+    "province": "全国甲卷",
+    "paper_name": "英语",
+    "question_number": "短文改错",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_03",
+    "type": "短文改错",
+    "difficulty": 4,
+    "score": 10,
+    "content": "Last Sunday, our class organized a hike in the nearby mountain. Early in the morning, we gather at the school gate and set off by bike. The scenery along the way was beautifully. After two hours ride, we arrived at the foot of the mountain. We started climbing with joy, laugh and songs shared by everyone. On the top, we had a picnic, taking lots of photos. What made the day specially was that we helped a lost little boy find his mother. We felt proud for ourselves. This activity not only brought us close to nature but also taught the importance of teamwork. We hope more such activities will be hold in the future.",
+    "options": [],
+    "answer": "1. gather→gathered  2. beautifully→beautiful  3. hours→hours'  4. laugh→laughter  5. taking→taken  6. specially→special  7. for→of  8. close→closer  9. taught后面加us  10. hold→held",
+    "analysis": "1. Last Sunday → 过去时gathered。\n2. be动词后用形容词作表语 → beautiful。\n3. 表示“两小时的(骑行)” → 名词所有格 hours'。\n4. 与joy、songs并列，需名词形式 → laughter。\n5. photos是“被(我们)拍”，非谓语被动 → taken。\n6. 作宾补修饰day → 形容词special。\n7. be proud of 固定搭配，不用for。\n8. 比较含义：“(使我们)更贴近自然” → closer。\n9. teach sb. sth. 双宾，缺少间接宾语 → us。\n10. 被动be+过去分词 → held。"
+  },
+  {
+    "id": "q_db_2025_english_nation1_80",
+    "source": "real_exam",
+    "year": 2025,
+    "province": "全国甲卷",
+    "paper_name": "英语",
+    "question_number": "阅读理解C篇",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_04",
+    "type": "阅读理解",
+    "difficulty": 5,
+    "score": 8,
+    "content": "（节选）Researchers at Stanford University have developed a new type of solar panel that can generate electricity even at night. Unlike traditional solar panels, which rely on sunlight, these panels use the temperature difference between the panel and the surrounding air to produce power. While the output is much lower than daytime panels — typically around 50 milliwatts per square meter — it could be enough to power small devices like LED lights or phone chargers during off-grid situations. The team says the technology is still in its early stages, but it could complement traditional solar farms, helping to smooth out energy supply during cloudy periods or at night.\n\n1. What is the main advantage of the new solar panel?\n  A. It is cheaper to produce.  B. It works without sunlight.\n  C. It generates more power.   D. It uses less material.\n2. How much power can the new panel produce per square meter?\n  A. About 50 watts.  B. Around 50 milliwatts.\n  C. About 500 watts. D. Around 5 kilowatts.",
+    "options": [
+      {"label": "1", "text": "A. Cheaper / B. Works without sunlight / C. More power / D. Less material"},
+      {"label": "2", "text": "A. 50 W / B. 50 mW / C. 500 W / D. 5 kW"}
+    ],
+    "answer": "1.B  2.B",
+    "analysis": "1. 主旨题。第1句“generate electricity even at night”，第2句“Unlike traditional panels...rely on sunlight” → 核心优势是夜间可用。A/C/D原文均未支持。\n2. 细节题。原文“typically around 50 milliwatts per square meter” → 选B，注意milli前缀（毫=10^-3）。"
+  }
+]

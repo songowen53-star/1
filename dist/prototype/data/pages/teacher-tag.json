@@ -1,0 +1,1391 @@
+{
+  "paperName": "本地后端验证试卷.pdf",
+  "question": {
+    "subject": "数学",
+    "topic": "集合运算",
+    "no": 1,
+    "difficulty": "★★☆☆☆",
+    "score": 5,
+    "content": "设集合 A={x|x²-3x+2=0}，B={x|0<x<3}，则 A∩B =（  ）",
+    "confirmed": [
+      "集合运算",
+      "一元二次方程",
+      "交集"
+    ],
+    "ignored": [],
+    "recommended": [
+      {
+        "name": "集合运算",
+        "confidence": 96
+      },
+      {
+        "name": "一元二次方程",
+        "confidence": 93
+      },
+      {
+        "name": "交集",
+        "confidence": 90
+      }
+    ]
+  },
+  "recommended": [
+    {
+      "name": "集合运算",
+      "confidence": 96
+    },
+    {
+      "name": "一元二次方程",
+      "confidence": 93
+    },
+    {
+      "name": "交集",
+      "confidence": 90
+    }
+  ],
+  "confirmed": [
+    "集合运算",
+    "一元二次方程",
+    "交集"
+  ],
+  "ignored": [],
+  "questions": [
+    {
+      "subject": "数学",
+      "topic": "集合运算",
+      "no": 1,
+      "difficulty": "★★☆☆☆",
+      "score": 5,
+      "content": "设集合 A={x|x²-3x+2=0}，B={x|0<x<3}，则 A∩B =（  ）",
+      "confirmed": [
+        "集合运算",
+        "一元二次方程",
+        "交集"
+      ],
+      "ignored": [],
+      "recommended": [
+        {
+          "name": "集合运算",
+          "confidence": 96
+        },
+        {
+          "name": "一元二次方程",
+          "confidence": 93
+        },
+        {
+          "name": "交集",
+          "confidence": 90
+        }
+      ]
+    },
+    {
+      "subject": "数学",
+      "topic": "复数运算",
+      "no": 2,
+      "difficulty": "★★☆☆☆",
+      "score": 5,
+      "content": "已知复数 z 满足 (1+i)z=2，则 |z| =（  ）",
+      "confirmed": [
+        "复数运算",
+        "复数的模",
+        "分母实数化"
+      ],
+      "ignored": [],
+      "recommended": [
+        {
+          "name": "复数运算",
+          "confidence": 96
+        },
+        {
+          "name": "复数的模",
+          "confidence": 93
+        },
+        {
+          "name": "分母实数化",
+          "confidence": 90
+        }
+      ]
+    },
+    {
+      "subject": "数学",
+      "topic": "导数应用",
+      "no": 3,
+      "difficulty": "★★★☆☆",
+      "score": 5,
+      "content": "函数 f(x)=x³-3x+1 在区间 [-2,2] 上的最大值为（  ）",
+      "confirmed": [
+        "导数应用",
+        "函数最值",
+        "闭区间连续函数"
+      ],
+      "ignored": [],
+      "recommended": [
+        {
+          "name": "导数应用",
+          "confidence": 96
+        },
+        {
+          "name": "函数最值",
+          "confidence": 93
+        },
+        {
+          "name": "闭区间连续函数",
+          "confidence": 90
+        }
+      ]
+    },
+    {
+      "subject": "数学",
+      "topic": "同角三角函数关系",
+      "no": 4,
+      "difficulty": "★★★☆☆",
+      "score": 5,
+      "content": "已知 sinα=3/5，α∈(π/2,π)，则 cos(α+π/4)=（  ）",
+      "confirmed": [
+        "同角三角函数关系",
+        "两角和公式",
+        "象限符号判断"
+      ],
+      "ignored": [],
+      "recommended": [
+        {
+          "name": "同角三角函数关系",
+          "confidence": 96
+        },
+        {
+          "name": "两角和公式",
+          "confidence": 93
+        },
+        {
+          "name": "象限符号判断",
+          "confidence": 90
+        }
+      ]
+    },
+    {
+      "subject": "数学",
+      "topic": "等差数列",
+      "no": 5,
+      "difficulty": "★★★☆☆",
+      "score": 5,
+      "content": "已知等差数列 {aₙ} 中，a₁=2，a₃=6，则 a₅ = ______。",
+      "confirmed": [
+        "等差数列",
+        "通项公式",
+        "基本量运算"
+      ],
+      "ignored": [],
+      "recommended": [
+        {
+          "name": "等差数列",
+          "confidence": 96
+        },
+        {
+          "name": "通项公式",
+          "confidence": 93
+        },
+        {
+          "name": "基本量运算",
+          "confidence": 90
+        }
+      ]
+    },
+    {
+      "subject": "数学",
+      "topic": "向量垂直",
+      "no": 6,
+      "difficulty": "★★★☆☆",
+      "score": 5,
+      "content": "若向量 a=(1,2)，b=(x,-1)，且 a⊥b，则 x = ______。",
+      "confirmed": [
+        "向量垂直",
+        "数量积",
+        "向量坐标运算"
+      ],
+      "ignored": [],
+      "recommended": [
+        {
+          "name": "向量垂直",
+          "confidence": 96
+        },
+        {
+          "name": "数量积",
+          "confidence": 93
+        },
+        {
+          "name": "向量坐标运算",
+          "confidence": 90
+        }
+      ]
+    },
+    {
+      "subject": "数学",
+      "topic": "导数与单调性",
+      "no": 7,
+      "difficulty": "★★★★★",
+      "score": 14,
+      "content": "设函数 f(x)=ln x - ax + 1，其中 a∈R。\n(1) 讨论 f(x) 的单调性；\n(2) 若 f(x)≤0 恒成立，求 a 的取值范围。",
+      "confirmed": [
+        "导数与单调性",
+        "恒成立问题",
+        "分类讨论",
+        "对数函数"
+      ],
+      "ignored": [],
+      "recommended": [
+        {
+          "name": "导数与单调性",
+          "confidence": 96
+        },
+        {
+          "name": "恒成立问题",
+          "confidence": 93
+        },
+        {
+          "name": "分类讨论",
+          "confidence": 90
+        },
+        {
+          "name": "对数函数",
+          "confidence": 87
+        }
+      ]
+    },
+    {
+      "subject": "数学",
+      "topic": "椭圆标准方程",
+      "no": 8,
+      "difficulty": "★★★★★",
+      "score": 16,
+      "content": "已知椭圆 C: x²/a² + y²/b² = 1 (a>b>0) 的离心率 e=√2/2，且过点 (1, √2/2)。\n(1) 求椭圆 C 的方程；\n(2) 设直线 l: y=kx+1 与椭圆 C 交于 A、B 两点，若线段 AB 中点的横坐标为 1/2，求 k 的值。",
+      "confirmed": [
+        "椭圆标准方程",
+        "离心率",
+        "直线与椭圆位置关系",
+        "韦达定理",
+        "中点弦问题"
+      ],
+      "ignored": [],
+      "recommended": [
+        {
+          "name": "椭圆标准方程",
+          "confidence": 96
+        },
+        {
+          "name": "离心率",
+          "confidence": 93
+        },
+        {
+          "name": "直线与椭圆位置关系",
+          "confidence": 90
+        },
+        {
+          "name": "韦达定理",
+          "confidence": 87
+        },
+        {
+          "name": "中点弦问题",
+          "confidence": 84
+        }
+      ]
+    }
+  ],
+  "papers": [
+    {
+      "fileName": "本地后端验证试卷.pdf",
+      "questions": [
+        {
+          "subject": "数学",
+          "topic": "集合运算",
+          "no": 1,
+          "difficulty": "★★☆☆☆",
+          "score": 5,
+          "content": "设集合 A={x|x²-3x+2=0}，B={x|0<x<3}，则 A∩B =（  ）",
+          "confirmed": [
+            "集合运算",
+            "一元二次方程",
+            "交集"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "集合运算",
+              "confidence": 96
+            },
+            {
+              "name": "一元二次方程",
+              "confidence": 93
+            },
+            {
+              "name": "交集",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "复数运算",
+          "no": 2,
+          "difficulty": "★★☆☆☆",
+          "score": 5,
+          "content": "已知复数 z 满足 (1+i)z=2，则 |z| =（  ）",
+          "confirmed": [
+            "复数运算",
+            "复数的模",
+            "分母实数化"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "复数运算",
+              "confidence": 96
+            },
+            {
+              "name": "复数的模",
+              "confidence": 93
+            },
+            {
+              "name": "分母实数化",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "导数应用",
+          "no": 3,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "函数 f(x)=x³-3x+1 在区间 [-2,2] 上的最大值为（  ）",
+          "confirmed": [
+            "导数应用",
+            "函数最值",
+            "闭区间连续函数"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "导数应用",
+              "confidence": 96
+            },
+            {
+              "name": "函数最值",
+              "confidence": 93
+            },
+            {
+              "name": "闭区间连续函数",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "同角三角函数关系",
+          "no": 4,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "已知 sinα=3/5，α∈(π/2,π)，则 cos(α+π/4)=（  ）",
+          "confirmed": [
+            "同角三角函数关系",
+            "两角和公式",
+            "象限符号判断"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "同角三角函数关系",
+              "confidence": 96
+            },
+            {
+              "name": "两角和公式",
+              "confidence": 93
+            },
+            {
+              "name": "象限符号判断",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "等差数列",
+          "no": 5,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "已知等差数列 {aₙ} 中，a₁=2，a₃=6，则 a₅ = ______。",
+          "confirmed": [
+            "等差数列",
+            "通项公式",
+            "基本量运算"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "等差数列",
+              "confidence": 96
+            },
+            {
+              "name": "通项公式",
+              "confidence": 93
+            },
+            {
+              "name": "基本量运算",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "向量垂直",
+          "no": 6,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "若向量 a=(1,2)，b=(x,-1)，且 a⊥b，则 x = ______。",
+          "confirmed": [
+            "向量垂直",
+            "数量积",
+            "向量坐标运算"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "向量垂直",
+              "confidence": 96
+            },
+            {
+              "name": "数量积",
+              "confidence": 93
+            },
+            {
+              "name": "向量坐标运算",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "导数与单调性",
+          "no": 7,
+          "difficulty": "★★★★★",
+          "score": 14,
+          "content": "设函数 f(x)=ln x - ax + 1，其中 a∈R。\n(1) 讨论 f(x) 的单调性；\n(2) 若 f(x)≤0 恒成立，求 a 的取值范围。",
+          "confirmed": [
+            "导数与单调性",
+            "恒成立问题",
+            "分类讨论",
+            "对数函数"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "导数与单调性",
+              "confidence": 96
+            },
+            {
+              "name": "恒成立问题",
+              "confidence": 93
+            },
+            {
+              "name": "分类讨论",
+              "confidence": 90
+            },
+            {
+              "name": "对数函数",
+              "confidence": 87
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "椭圆标准方程",
+          "no": 8,
+          "difficulty": "★★★★★",
+          "score": 16,
+          "content": "已知椭圆 C: x²/a² + y²/b² = 1 (a>b>0) 的离心率 e=√2/2，且过点 (1, √2/2)。\n(1) 求椭圆 C 的方程；\n(2) 设直线 l: y=kx+1 与椭圆 C 交于 A、B 两点，若线段 AB 中点的横坐标为 1/2，求 k 的值。",
+          "confirmed": [
+            "椭圆标准方程",
+            "离心率",
+            "直线与椭圆位置关系",
+            "韦达定理",
+            "中点弦问题"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "椭圆标准方程",
+              "confidence": 96
+            },
+            {
+              "name": "离心率",
+              "confidence": 93
+            },
+            {
+              "name": "直线与椭圆位置关系",
+              "confidence": 90
+            },
+            {
+              "name": "韦达定理",
+              "confidence": 87
+            },
+            {
+              "name": "中点弦问题",
+              "confidence": 84
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "fileName": "测试试卷.pdf",
+      "questions": [
+        {
+          "subject": "数学",
+          "topic": "四种命题",
+          "no": 1,
+          "difficulty": "★★☆☆☆",
+          "score": 5,
+          "content": "命题\"若 x>1，则 x²>1\"的逆否命题是（  ）",
+          "confirmed": [
+            "四种命题",
+            "逆否命题",
+            "逻辑推理"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "四种命题",
+              "confidence": 96
+            },
+            {
+              "name": "逆否命题",
+              "confidence": 93
+            },
+            {
+              "name": "逻辑推理",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "函数定义域",
+          "no": 2,
+          "difficulty": "★★☆☆☆",
+          "score": 5,
+          "content": "函数 f(x)=√(x-1) + 1/(x-2) 的定义域为（  ）",
+          "confirmed": [
+            "函数定义域",
+            "根式有意义条件",
+            "分母不为零"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "函数定义域",
+              "confidence": 96
+            },
+            {
+              "name": "根式有意义条件",
+              "confidence": 93
+            },
+            {
+              "name": "分母不为零",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "等比数列",
+          "no": 3,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "在等比数列 {aₙ} 中，a₁=1，a₄=8，则公比 q =（  ）",
+          "confirmed": [
+            "等比数列",
+            "通项公式",
+            "公比"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "等比数列",
+              "confidence": 96
+            },
+            {
+              "name": "通项公式",
+              "confidence": 93
+            },
+            {
+              "name": "公比",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "对数运算",
+          "no": 4,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "若 log₂x + log₂(x-2) = 3，则 x = ______。",
+          "confirmed": [
+            "对数运算",
+            "对数方程",
+            "定义域限制"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "对数运算",
+              "confidence": 96
+            },
+            {
+              "name": "对数方程",
+              "confidence": 93
+            },
+            {
+              "name": "定义域限制",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "直线平行",
+          "no": 5,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "已知直线 l 过点 (1,2) 且与直线 2x-y+1=0 平行，则 l 的方程为 ______。",
+          "confirmed": [
+            "直线平行",
+            "斜率",
+            "点斜式方程"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "直线平行",
+              "confidence": 96
+            },
+            {
+              "name": "斜率",
+              "confidence": 93
+            },
+            {
+              "name": "点斜式方程",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "正弦定理",
+          "no": 6,
+          "difficulty": "★★★★★",
+          "score": 12,
+          "content": "在△ABC 中，内角 A、B、C 的对边分别为 a、b、c，已知 a sinB = √3 b cosA。\n(1) 求角 A；\n(2) 若 a=2√3，b=2，求△ABC 的面积。",
+          "confirmed": [
+            "正弦定理",
+            "余弦定理",
+            "三角形面积公式",
+            "同角三角函数关系"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "正弦定理",
+              "confidence": 96
+            },
+            {
+              "name": "余弦定理",
+              "confidence": 93
+            },
+            {
+              "name": "三角形面积公式",
+              "confidence": 90
+            },
+            {
+              "name": "同角三角函数关系",
+              "confidence": 87
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "fileName": "2025年浙江高考数学卷.pdf",
+      "questions": [
+        {
+          "subject": "数学",
+          "topic": "集合运算",
+          "no": 1,
+          "difficulty": "★★☆☆☆",
+          "score": 4,
+          "content": "已知集合 M={x|x²-2x≤0}，N={-1,0,1,2}，则 M∩N =（  ）",
+          "confirmed": [
+            "集合运算",
+            "一元二次不等式",
+            "交集"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "集合运算",
+              "confidence": 96
+            },
+            {
+              "name": "一元二次不等式",
+              "confidence": 93
+            },
+            {
+              "name": "交集",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "复数运算",
+          "no": 2,
+          "difficulty": "★★☆☆☆",
+          "score": 4,
+          "content": "复数 z=i/(1+i) 的虚部为（  ）",
+          "confirmed": [
+            "复数运算",
+            "虚部概念",
+            "分母实数化"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "复数运算",
+              "confidence": 96
+            },
+            {
+              "name": "虚部概念",
+              "confidence": 93
+            },
+            {
+              "name": "分母实数化",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "三视图",
+          "no": 3,
+          "difficulty": "★★★☆☆",
+          "score": 4,
+          "content": "某几何体的三视图如图所示（正视图、侧视图为全等的等腰直角三角形，俯视图为正方形），则该几何体的体积为（  ）",
+          "confirmed": [
+            "三视图",
+            "空间几何体体积",
+            "四棱锥"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "三视图",
+              "confidence": 96
+            },
+            {
+              "name": "空间几何体体积",
+              "confidence": 93
+            },
+            {
+              "name": "四棱锥",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "线性规划",
+          "no": 4,
+          "difficulty": "★★★☆☆",
+          "score": 4,
+          "content": "若 x,y 满足约束条件 { x+y≤2, x≥0, y≥0 }，则 z=x+2y 的最大值为（  ）",
+          "confirmed": [
+            "线性规划",
+            "可行域",
+            "目标函数最值"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "线性规划",
+              "confidence": 96
+            },
+            {
+              "name": "可行域",
+              "confidence": 93
+            },
+            {
+              "name": "目标函数最值",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "导数与单调性",
+          "no": 5,
+          "difficulty": "★★★☆☆",
+          "score": 4,
+          "content": "函数 f(x)=e^x - x - 1 的单调递增区间为（  ）",
+          "confirmed": [
+            "导数与单调性",
+            "指数函数",
+            "解不等式"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "导数与单调性",
+              "confidence": 96
+            },
+            {
+              "name": "指数函数",
+              "confidence": 93
+            },
+            {
+              "name": "解不等式",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "向量数量积",
+          "no": 6,
+          "difficulty": "★★★☆☆",
+          "score": 4,
+          "content": "已知向量 a=(2,1)，b=(1,-2)，则 a 与 b 的夹角为 ______。",
+          "confirmed": [
+            "向量数量积",
+            "向量夹角",
+            "垂直判定"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "向量数量积",
+              "confidence": 96
+            },
+            {
+              "name": "向量夹角",
+              "confidence": 93
+            },
+            {
+              "name": "垂直判定",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "二项式定理",
+          "no": 7,
+          "difficulty": "★★★☆☆",
+          "score": 4,
+          "content": "在 (x - 1/x)⁶ 的展开式中，常数项为 ______。",
+          "confirmed": [
+            "二项式定理",
+            "通项公式",
+            "常数项"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "二项式定理",
+              "confidence": 96
+            },
+            {
+              "name": "通项公式",
+              "confidence": 93
+            },
+            {
+              "name": "常数项",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "数列通项",
+          "no": 8,
+          "difficulty": "★★★★★",
+          "score": 14,
+          "content": "已知数列 {aₙ} 的前 n 项和为 Sₙ，且 Sₙ=2aₙ-1。\n(1) 求数列 {aₙ} 的通项公式；\n(2) 设 bₙ=aₙ·log₂aₙ，求数列 {bₙ} 的前 n 项和 Tₙ。",
+          "confirmed": [
+            "数列通项",
+            "前n项和与通项关系",
+            "等比数列",
+            "错位相减法"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "数列通项",
+              "confidence": 96
+            },
+            {
+              "name": "前n项和与通项关系",
+              "confidence": 93
+            },
+            {
+              "name": "等比数列",
+              "confidence": 90
+            },
+            {
+              "name": "错位相减法",
+              "confidence": 87
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "fileName": "2024年全国卷理科数学.pdf",
+      "questions": [
+        {
+          "subject": "数学",
+          "topic": "集合补集",
+          "no": 1,
+          "difficulty": "★★☆☆☆",
+          "score": 5,
+          "content": "设全集 U={1,2,3,4,5}，集合 A={1,3,5}，则 ∁ᵤA =（  ）",
+          "confirmed": [
+            "集合补集",
+            "全集",
+            "集合运算"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "集合补集",
+              "confidence": 96
+            },
+            {
+              "name": "全集",
+              "confidence": 93
+            },
+            {
+              "name": "集合运算",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "复数运算",
+          "no": 2,
+          "difficulty": "★★☆☆☆",
+          "score": 5,
+          "content": "若复数 z 满足 z(1+i)=2i，则 |z| =（  ）",
+          "confirmed": [
+            "复数运算",
+            "复数的模",
+            "分母实数化"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "复数运算",
+              "confidence": 96
+            },
+            {
+              "name": "复数的模",
+              "confidence": 93
+            },
+            {
+              "name": "分母实数化",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "对数函数定义域",
+          "no": 3,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "函数 f(x)=ln(x²-1) 的定义域为（  ）",
+          "confirmed": [
+            "对数函数定义域",
+            "一元二次不等式",
+            "定义域"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "对数函数定义域",
+              "confidence": 96
+            },
+            {
+              "name": "一元二次不等式",
+              "confidence": 93
+            },
+            {
+              "name": "定义域",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "等比数列",
+          "no": 4,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "在等比数列 {aₙ} 中，a₃=4，a₇=16，则 a₅ =（  ）",
+          "confirmed": [
+            "等比数列",
+            "等比中项",
+            "符号判断"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "等比数列",
+              "confidence": 96
+            },
+            {
+              "name": "等比中项",
+              "confidence": 93
+            },
+            {
+              "name": "符号判断",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "诱导公式",
+          "no": 5,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "若 sin(π/6 - α)=1/3，则 cos(2π/3 + 2α) =（  ）",
+          "confirmed": [
+            "诱导公式",
+            "二倍角公式",
+            "角的变换"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "诱导公式",
+              "confidence": 96
+            },
+            {
+              "name": "二倍角公式",
+              "confidence": 93
+            },
+            {
+              "name": "角的变换",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "双曲线",
+          "no": 6,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "已知双曲线 x²/a² - y²/b² = 1 (a>0,b>0) 的离心率为 √3，则其渐近线方程为 ______。",
+          "confirmed": [
+            "双曲线",
+            "离心率",
+            "渐近线方程"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "双曲线",
+              "confidence": 96
+            },
+            {
+              "name": "离心率",
+              "confidence": 93
+            },
+            {
+              "name": "渐近线方程",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "直线与圆相切",
+          "no": 7,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "若直线 y=kx+2 与圆 x²+y²=2 相切，则 k = ______。",
+          "confirmed": [
+            "直线与圆相切",
+            "点到直线距离",
+            "切线条件"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "直线与圆相切",
+              "confidence": 96
+            },
+            {
+              "name": "点到直线距离",
+              "confidence": 93
+            },
+            {
+              "name": "切线条件",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "导数与极值",
+          "no": 8,
+          "difficulty": "★★★★★",
+          "score": 12,
+          "content": "已知函数 f(x)=x³-3ax²+2bx 在 x=1 处取得极值，且 f(x) 在区间 [0,2] 上的最大值为 2。\n(1) 求 a、b 的关系；\n(2) 求 a 的取值范围。",
+          "confirmed": [
+            "导数与极值",
+            "闭区间最值",
+            "分类讨论",
+            "三次函数"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "导数与极值",
+              "confidence": 96
+            },
+            {
+              "name": "闭区间最值",
+              "confidence": 93
+            },
+            {
+              "name": "分类讨论",
+              "confidence": 90
+            },
+            {
+              "name": "三次函数",
+              "confidence": 87
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "fileName": "高三三模数学试卷.docx",
+      "questions": [
+        {
+          "subject": "数学",
+          "topic": "集合运算",
+          "no": 1,
+          "difficulty": "★★☆☆☆",
+          "score": 5,
+          "content": "已知集合 A={x|x<2}，B={x|x≥-1}，则 A∪B =（  ）",
+          "confirmed": [
+            "集合运算",
+            "并集",
+            "区间表示"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "集合运算",
+              "confidence": 96
+            },
+            {
+              "name": "并集",
+              "confidence": 93
+            },
+            {
+              "name": "区间表示",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "复数运算",
+          "no": 2,
+          "difficulty": "★★☆☆☆",
+          "score": 5,
+          "content": "复数 z=(1+2i)i 的实部为（  ）",
+          "confirmed": [
+            "复数运算",
+            "实部概念",
+            "虚数单位"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "复数运算",
+              "confidence": 96
+            },
+            {
+              "name": "实部概念",
+              "confidence": 93
+            },
+            {
+              "name": "虚数单位",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "导数与单调性",
+          "no": 3,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "函数 f(x)=x²-2lnx 的单调递减区间为（  ）",
+          "confirmed": [
+            "导数与单调性",
+            "对数函数",
+            "解不等式"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "导数与单调性",
+              "confidence": 96
+            },
+            {
+              "name": "对数函数",
+              "confidence": 93
+            },
+            {
+              "name": "解不等式",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "余弦定理",
+          "no": 4,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "在△ABC 中，a=2，b=3，C=60°，则 c =（  ）",
+          "confirmed": [
+            "余弦定理",
+            "三角形边角关系",
+            "特殊角三角函数"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "余弦定理",
+              "confidence": 96
+            },
+            {
+              "name": "三角形边角关系",
+              "confidence": 93
+            },
+            {
+              "name": "特殊角三角函数",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "抛物线定义",
+          "no": 5,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "已知抛物线 y²=4x 的焦点为 F，点 A 在抛物线上且 |AF|=3，则 A 的横坐标为 ______。",
+          "confirmed": [
+            "抛物线定义",
+            "焦点",
+            "准线"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "抛物线定义",
+              "confidence": 96
+            },
+            {
+              "name": "焦点",
+              "confidence": 93
+            },
+            {
+              "name": "准线",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "古典概型",
+          "no": 6,
+          "difficulty": "★★★☆☆",
+          "score": 5,
+          "content": "从 1,2,3,4,5 中任取 2 个不同的数，取出的两数之和为偶数的概率为 ______。",
+          "confirmed": [
+            "古典概型",
+            "组合计数",
+            "奇偶性分析"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "古典概型",
+              "confidence": 96
+            },
+            {
+              "name": "组合计数",
+              "confidence": 93
+            },
+            {
+              "name": "奇偶性分析",
+              "confidence": 90
+            }
+          ]
+        },
+        {
+          "subject": "数学",
+          "topic": "导数与单调性",
+          "no": 7,
+          "difficulty": "★★★★★",
+          "score": 14,
+          "content": "设函数 f(x)=e^x - ax (a>0)。\n(1) 求 f(x) 的单调区间；\n(2) 若 f(x)≥0 对 x∈R 恒成立，求 a 的取值范围。",
+          "confirmed": [
+            "导数与单调性",
+            "恒成立问题",
+            "指数函数",
+            "对数不等式"
+          ],
+          "ignored": [],
+          "recommended": [
+            {
+              "name": "导数与单调性",
+              "confidence": 96
+            },
+            {
+              "name": "恒成立问题",
+              "confidence": 93
+            },
+            {
+              "name": "指数函数",
+              "confidence": 90
+            },
+            {
+              "name": "对数不等式",
+              "confidence": 87
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "currentPaper": 0
+}

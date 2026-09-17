@@ -1,0 +1,11 @@
+{
+  "conditions": ["预估 598分", "浙江省", "物化生", "全省8,231名"],
+  "colleges": [
+    { "name": "浙江大学", "type": "冲刺", "tag": "red", "prob": 35, "score": "638", "majors": "计算机/控制科学/光学工程", "icon": "fa-university" },
+    { "name": "中山大学", "type": "冲刺", "tag": "red", "prob": 42, "score": "625", "majors": "工商管理/生物学/化学", "icon": "fa-university" },
+    { "name": "武汉大学", "type": "稳妥", "tag": "orange", "prob": 68, "score": "612", "majors": "测绘/法学/马克思主义理论", "icon": "fa-university" },
+    { "name": "华中科技大学", "type": "稳妥", "tag": "orange", "prob": 72, "score": "608", "majors": "机械/光学/公共卫生", "icon": "fa-university" },
+    { "name": "四川大学", "type": "保底", "tag": "green", "prob": 88, "score": "595", "majors": "口腔/数学/化学", "icon": "fa-university" },
+    { "name": "电子科技大学", "type": "保底", "tag": "green", "prob": 91, "score": "592", "majors": "电子科学/信息通信/计算机", "icon": "fa-university" }
+  ]
+}

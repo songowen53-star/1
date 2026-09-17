@@ -1,0 +1,13 @@
+{
+  "stats": [
+    { "label": "待处理", "value": "12", "change": 0, "color": "orange" },
+    { "label": "今日处理", "value": "34", "change": 0, "color": "green" },
+    { "label": "累计举报", "value": "1,256", "change": 0, "color": "blue" }
+  ],
+  "reports": [
+    { "type": "违规广告", "content": "加微信xxx免费领取高考真题密卷...", "user": "用户A", "time": "10分钟前", "status": "待处理", "icon": "fa-bullhorn", "iconBg": "#FEE2E2", "iconColor": "#EF4444" },
+    { "type": "不当言论", "content": "讨论区出现不文明用语及人身攻击...", "user": "用户B", "time": "1小时前", "status": "待处理", "icon": "fa-comment-slash", "iconBg": "#FED7AA", "iconColor": "#EA580C" },
+    { "type": "抄袭内容", "content": "该解析与原创作者内容高度雷同...", "user": "用户C", "time": "3小时前", "status": "处理中", "icon": "fa-copy", "iconBg": "#E0E7FF", "iconColor": "#6366F1" },
+    { "type": "垃圾信息", "content": "评论区连续发布无意义重复内容...", "user": "用户D", "time": "昨天", "status": "已处理", "icon": "fa-trash", "iconBg": "#FEF3C7", "iconColor": "#F59E0B" }
+  ]
+}

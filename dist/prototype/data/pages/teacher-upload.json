@@ -1,0 +1,41 @@
+{
+  "uploaded": [
+    {
+      "name": "本地后端验证试卷.pdf",
+      "size": "43 B",
+      "time": "今天 03:16",
+      "status": "已解析",
+      "progress": 100
+    },
+    {
+      "name": "测试试卷.pdf",
+      "size": "20 B",
+      "time": "今天 05:02",
+      "status": "已解析",
+      "progress": 100,
+      "_filePath": "/workspace/backend/data/uploads/æµè¯è¯å·_1787029372304.pdf",
+      "_originalName": "æµè¯è¯å·.pdf"
+    },
+    {
+      "name": "2025年浙江高考数学卷.pdf",
+      "size": "2.4 MB",
+      "time": "今天 10:32",
+      "status": "已解析",
+      "progress": 100
+    },
+    {
+      "name": "2024年全国卷理科数学.pdf",
+      "size": "3.1 MB",
+      "time": "今天 09:15",
+      "status": "已解析",
+      "progress": 100
+    },
+    {
+      "name": "高三三模数学试卷.docx",
+      "size": "1.8 MB",
+      "time": "昨天 16:40",
+      "status": "已解析",
+      "progress": 100
+    }
+  ]
+}

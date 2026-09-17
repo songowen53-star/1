@@ -1,0 +1,47 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "开发在线教育平台 - 本地预览",
+            "type": "shell",
+            "command": "npx live-server --port=5500 --no-browser",
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "构建静态资源 (build-static)",
+            "type": "shell",
+            "command": "node scripts/sync.js build-static",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "推送数据到云端KV (push-data)",
+            "type": "shell",
+            "command": "node scripts/sync.js push-data",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "部署到Cloudflare Pages (deploy)",
+            "type": "shell",
+            "command": "node scripts/sync.js deploy",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "完整同步: 构建+推送+部署 (all)",
+            "type": "shell",
+            "command": "node scripts/sync.js all",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "语法检查全部JS",
+            "type": "shell",
+            "command": "for f in js/*.js prototype/js/*.js; do node -c \"$f\" 2>&1 | head -3; done",
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}

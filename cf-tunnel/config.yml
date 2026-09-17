@@ -1,0 +1,5 @@
+tunnel: 29fc54e1-bb3e-4a58-9653-1b83365f3741
+credentials-file: /workspace/cf-tunnel/credentials.json
+protocol: http2
+ingress:
+  - service: http://localhost:3000

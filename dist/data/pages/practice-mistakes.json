@@ -1,0 +1,111 @@
+{
+  "stats": [
+    {
+      "label": "总错题",
+      "value": 127,
+      "color": "#3B82F6"
+    },
+    {
+      "label": "待复习",
+      "value": 38,
+      "color": "#EF4444"
+    },
+    {
+      "label": "已掌握",
+      "value": 89,
+      "color": "#10B981"
+    }
+  ],
+  "tabs": [
+    "待复习",
+    "已掌握",
+    "全部"
+  ],
+  "mistakes": [
+    {
+      "subject": "数学",
+      "subjectColor": "blue",
+      "q": "设f(x)=x³-3x，求f(x)在[-2,2]上的最值",
+      "count": 3,
+      "last": "2天前",
+      "type": "解答题",
+      "knowledge_point": "导数与最值",
+      "error_type": "极值点判断错误",
+      "question": "设 f(x) = x³ - 3x，求 f(x) 在 [-2, 2] 上的最大值和最小值。",
+      "options": [],
+      "answer": "最大值 f(-1) = 2；最小值 f(1) = -2。",
+      "analysis": "f'(x) = 3x² - 3 = 3(x+1)(x-1)。令 f'(x)=0 得 x=±1，均在 [-2,2] 内。\n极值点：x=-1（极大值点），x=1（极小值点）。\n计算各关键点函数值：\nf(-2) = -8 + 6 = -2\nf(-1) = -1 + 3 = 2  ← 最大值\nf(1) = 1 - 3 = -2   ← 最小值\nf(2) = 8 - 6 = 2\n比较得：最大值 f(-1)=f(2)=2，最小值 f(-2)=f(1)=-2。\n\n❌ 常见错误：只比较极值点的函数值，忽略端点值。本题端点 f(-2)=-2 与极小值 f(1)=-2 相等，都是最小值；端点 f(2)=2 与极大值 f(-1)=2 相等，都是最大值。必须同时比较极值点和端点！",
+      "error_reason": "学生常犯错误：① 只算极值点不算端点；② 极值点符号判断错；③ 计算时漏项（如 f(-2)=-8-3·(-2)=-8+6=-2 中漏算 +6）。"
+    },
+    {
+      "subject": "物理",
+      "subjectColor": "orange",
+      "q": "一物体从高h处自由下落，落地速度v...",
+      "count": 2,
+      "last": "5天前",
+      "type": "单选题",
+      "knowledge_point": "自由落体运动",
+      "error_type": "公式选用错误",
+      "question": "一物体从高 h 处自由下落，落地时的速度为 v。已知重力加速度为 g，则下落时间 t 为：",
+      "options": [
+        "A. t = √(2h/g)",
+        "B. t = v/g",
+        "C. t = h/v",
+        "D. t = 2h/v"
+      ],
+      "answer": "A 和 B 都正确（因为 v²=2gh，故 v=√(2gh)，v/g=√(2h/g)=t）",
+      "analysis": "自由落体运动（初速度 v₀=0，加速度 a=g）：\n• 位移公式：h = 1/2·g·t²，解得 t = √(2h/g) ✓ (选项A)\n• 速度公式：v = gt，解得 t = v/g ✓ (选项B)\n两者等价：由 v² = 2gh，得 v = √(2gh)，故 v/g = √(2gh)/g = √(2h/g) = t\n选项C：h/v 量纲错误（h是长度，v是速度，h/v≠时间）\n选项D：2h/v 量纲正确但数值是正确答案的2倍\n\n❌ 常见错误：① 混淆 v=gt 和 v²=2gh；② 忘记自由落体初速度为0；③ 位移公式记成 h=gt²（漏1/2）。",
+      "error_reason": "本题设计为多选题但学生常按单选作答，选A或B其一。提示：自由落体中 t=√(2h/g) 和 t=v/g 是等价的，都正确。"
+    },
+    {
+      "subject": "英语",
+      "subjectColor": "green",
+      "q": "The teacher, together with his students, ___ going...",
+      "count": 4,
+      "last": "1天前",
+      "type": "单选题",
+      "knowledge_point": "主谓一致",
+      "error_type": "主谓一致错误",
+      "question": "The teacher, together with his students, ______ going to visit the museum tomorrow.",
+      "options": [
+        "A. is",
+        "B. are",
+        "C. was",
+        "D. were"
+      ],
+      "answer": "A",
+      "analysis": "本题考查主谓一致中的'就远原则'。\n当主语后跟有 'together with, with, along with, as well as, besides, except, including, like, no less than, rather than' 等词时，谓语动词的单复数由这些词前面的主语决定。\n本题中：The teacher (主语) + together with his students (附加成分)，谓语动词应与 The teacher 保持一致，用单数。\n时态判断：tomorrow 表示将来，用一般将来时或一般现在时表将来，故选 is。\n\n❌ 常见错误：\n① 看到 students 是复数就选 are —— 错！together with 后的内容不影响主语。\n② 选 was —— 时态错！tomorrow 是将来时。\n③ 把 together with 误认为并列连词，按'复数+复数=复数'处理。\n口诀：'就远原则'看前面，together with/with/along with/as well as 都适用。",
+      "error_reason": "主谓一致是中国学生英语学习的高频错误点。'就远原则'涉及的关键词需牢记：together with, with, along with, as well as, besides, except, but, including, like, no less than, rather than, more than 等。"
+    },
+    {
+      "subject": "化学",
+      "subjectColor": "purple",
+      "q": "反应N₂+3H₂⇌2NH₃达平衡后...",
+      "count": 2,
+      "last": "3天前",
+      "type": "填空题",
+      "knowledge_point": "化学平衡移动",
+      "error_type": "勒夏特列原理应用错误",
+      "question": "反应 N₂ + 3H₂ ⇌ 2NH₃ (正反应放热) 达到平衡后：\n(1) 升高温度，平衡向______方向移动；\n(2) 增大压强，平衡向______方向移动；\n(3) 加入催化剂，平衡______移动。",
+      "options": [],
+      "answer": "(1) 逆反应（吸热）方向\n(2) 正反应（生成NH₃）方向\n(3) 不",
+      "analysis": "根据勒夏特列原理：平衡受外界条件影响时，总是向减弱这种影响的方向移动。\n(1) 升高温度：平衡向吸热方向移动以减弱升温。正反应放热，故逆反应吸热，平衡向逆反应方向移动。\n(2) 增大压强：平衡向气体分子数减少的方向移动以减弱加压。反应物共4mol气体，生成物2mol气体，故平衡向正反应方向（分子数减少方向）移动。\n(3) 加入催化剂：同等程度改变正逆反应速率，平衡不移动，只是缩短到达平衡的时间。\n\n❌ 常见错误：\n① 把'放热反应'和'加热促进反应'混淆——升温促进吸热方向，不是促进放热方向。\n② 忘记催化剂不影响平衡，误以为加催化剂能提高转化率。\n③ 加压时只看气体分子数，不区分固体液体（固体液体不受压强影响）。",
+      "error_reason": "勒夏特列原理的核心是'减弱而非消除'影响。学生常把'减弱'理解为'完全抵消'，导致判断错误。"
+    },
+    {
+      "subject": "数学",
+      "subjectColor": "blue",
+      "q": "已知椭圆x²/4+y²=1，求离心率e",
+      "count": 3,
+      "last": "昨天",
+      "type": "填空题",
+      "knowledge_point": "椭圆离心率",
+      "error_type": "a²/b²混淆",
+      "question": "已知椭圆 C：x²/4 + y² = 1，求椭圆的离心率 e。",
+      "options": [],
+      "answer": "e = √3/2",
+      "analysis": "椭圆标准方程 x²/a² + y²/b² = 1 (a>b>0)。\n本题：x²/4 + y²/1 = 1，故 a²=4, b²=1，a=2, b=1。\nc² = a² - b² = 4 - 1 = 3，c = √3\n离心率 e = c/a = √3/2\n\n❌ 常见错误：\n① 把 a² 和 b² 搞反：误以为 y² 的分母1是 a²，x² 的分母4是 b²。这是错的！\n   判断方法：a² 总是较大的那个数（椭圆中 a>b），所以 a²=4。\n② 公式记错：把 e=c/b 或 e=a/c，正确是 e=c/a。\n③ 把 c² = a² - b² 记成 c² = a² + b²（这是双曲线公式）。\n④ 算出 e=√3/2 后又化简成 e=√6/4 等错误形式。\n\n判断 a² 的口诀：椭圆方程 x²/m + y²/n = 1 (m>n>0) 中，较大的分母是 a²。若焦点在 y 轴上，则 y² 的分母是 a²。",
+      "error_reason": "椭圆与双曲线的 a²、b² 关系易混淆：椭圆 c²=a²-b²（a最大）；双曲线 c²=a²+b²（c最大）。务必先判断曲线类型再套公式。"
+    }
+  ]
+}

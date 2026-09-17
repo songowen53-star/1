@@ -1,0 +1,208 @@
+{
+  "intro_card": {
+    "icon": "fa-project-diagram",
+    "title": "个人知识图谱",
+    "description": "AI构建你的个人知识图谱，精准定位薄弱环节"
+  },
+  "subjects": [
+    "数学",
+    "英语",
+    "物理",
+    "化学",
+    "语文"
+  ],
+  "active_subject_index": 0,
+  "graph_visualization": {
+    "title": "知识图谱可视化",
+    "title_icon": "fa-sitemap",
+    "chart_label": "🕸️ 树状结构图：显示知识点节点关系与掌握状态（红=不会/黄=部分/绿=已掌握）",
+    "chart_height": 180,
+    "legend": [
+      {
+        "color": "var(--success)",
+        "label": "已掌握",
+        "count": 42
+      },
+      {
+        "color": "var(--warning)",
+        "label": "部分掌握",
+        "count": 18
+      },
+      {
+        "color": "var(--danger)",
+        "label": "未掌握",
+        "count": 7
+      }
+    ]
+  },
+  "mastery_list": {
+    "title": "知识点掌握情况",
+    "title_icon": "fa-tasks",
+    "items": [
+      {
+        "path": "数学 → 导数 → 分类讨论",
+        "status": "❌ 不会",
+        "action": "安排训练",
+        "color": "red",
+        "bg": "#FEE2E2"
+      },
+      {
+        "path": "数学 → 导数 → 极值求解",
+        "status": "✅ 已掌握",
+        "action": "",
+        "color": "green",
+        "bg": "#D1FAE5"
+      },
+      {
+        "path": "数学 → 圆锥曲线 → 直线与椭圆位置",
+        "status": "⚠️ 部分掌握",
+        "action": "继续练习",
+        "color": "orange",
+        "bg": "#FEF3C7"
+      },
+      {
+        "path": "数学 → 圆锥曲线 → 弦长公式",
+        "status": "⚠️ 部分掌握",
+        "action": "继续练习",
+        "color": "orange",
+        "bg": "#FEF3C7"
+      },
+      {
+        "path": "数学 → 数列 → 等差数列",
+        "status": "✅ 已掌握",
+        "action": "",
+        "color": "green",
+        "bg": "#D1FAE5"
+      },
+      {
+        "path": "数学 → 数列 → 等比数列求和",
+        "status": "❌ 不会",
+        "action": "安排训练",
+        "color": "red",
+        "bg": "#FEE2E2"
+      }
+    ]
+  },
+  "ai_suggestion": {
+    "title": "AI建议",
+    "title_icon": "fa-lightbulb",
+    "content": "建议从\"<b>导数-分类讨论</b>\"开始训练，这是导数模块的基础，掌握后可连带提升\"<b>圆锥曲线综合</b>\"的正确率约 15%。"
+  },
+  "train_button_text": "开始针对性训练",
+  "train_button_icon": "fa-bolt",
+  "ai_model_info": {
+    "title": "图谱引擎",
+    "icon": "fa-project-diagram",
+    "items": [
+      {
+        "name": "DeepKE",
+        "role": "知识抽取",
+        "desc": "从教材/题目中抽取实体与关系",
+        "license": "Apache-2.0",
+        "stars": "4.5k+"
+      },
+      {
+        "name": "Neo4j",
+        "role": "图数据库",
+        "desc": "存储与查询知识图谱",
+        "license": "GPL-3.0",
+        "stars": "13k+"
+      },
+      {
+        "name": "GraphSAGE",
+        "role": "图嵌入",
+        "desc": "知识点向量化与关联推理",
+        "license": "MIT",
+        "stars": "7k+"
+      }
+    ]
+  },
+  "graph_nodes": [
+    {
+      "id": "函数",
+      "label": "函数",
+      "type": "核心概念",
+      "mastery": 85,
+      "x": 200,
+      "y": 150
+    },
+    {
+      "id": "导数",
+      "label": "导数",
+      "type": "核心概念",
+      "mastery": 72,
+      "x": 120,
+      "y": 80
+    },
+    {
+      "id": "单调性",
+      "label": "单调性",
+      "type": "性质",
+      "mastery": 78,
+      "x": 80,
+      "y": 180
+    },
+    {
+      "id": "极值",
+      "label": "极值",
+      "type": "性质",
+      "mastery": 65,
+      "x": 180,
+      "y": 250
+    },
+    {
+      "id": "积分",
+      "label": "积分",
+      "type": "核心概念",
+      "mastery": 58,
+      "x": 320,
+      "y": 100
+    },
+    {
+      "id": "极限",
+      "label": "极限",
+      "type": "基础概念",
+      "mastery": 88,
+      "x": 280,
+      "y": 220
+    }
+  ],
+  "graph_edges": [
+    {
+      "source": "函数",
+      "target": "导数",
+      "relation": "包含"
+    },
+    {
+      "source": "导数",
+      "target": "单调性",
+      "relation": "决定"
+    },
+    {
+      "source": "导数",
+      "target": "极值",
+      "relation": "决定"
+    },
+    {
+      "source": "函数",
+      "target": "积分",
+      "relation": "对应"
+    },
+    {
+      "source": "极限",
+      "target": "导数",
+      "relation": "基础"
+    },
+    {
+      "source": "极限",
+      "target": "积分",
+      "relation": "基础"
+    }
+  ],
+  "graph_stats": {
+    "nodes": 1247,
+    "edges": 3892,
+    "subjects": 9,
+    "last_update": "2026-09-07"
+  }
+}

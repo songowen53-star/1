@@ -1,0 +1,87 @@
+{
+  "top_tip": {
+    "icon": "fa-comments",
+    "color": "#3B82F6",
+    "text": "向AI老师提问，秒回详细解析 · 支持拍照提问"
+  },
+  "user_question": "老师，椭圆和双曲线有什么区别？",
+  "ai_answer": {
+    "sections": [
+      {
+        "title": "椭圆",
+        "title_color": "#10B981",
+        "content": "到两定点（焦点）距离之和为常数的点的轨迹。",
+        "formula": "|PF₁| + |PF₂| = 2a (2a > 2c)"
+      },
+      {
+        "title": "双曲线",
+        "title_color": "#EF4444",
+        "content": "到两定点（焦点）距离之差为常数的点的轨迹。",
+        "formula": "||PF₁| - |PF₂|| = 2a (2a < 2c)"
+      }
+    ],
+    "drawing_icon": "fa-draw-polygon",
+    "drawing_text": "AI手绘图示：椭圆与双曲线几何对比",
+    "model": "Qwen3-72B (RAG增强)",
+    "tokens": 342,
+    "latency_ms": 1850
+  },
+  "follow_up_questions": [
+    "💬 能不能举个例子？",
+    "🎯 这个知识点常考什么？",
+    "📝 出道题练练"
+  ],
+  "history_title": "历史问答",
+  "history_more": "全部",
+  "history": [
+    {
+      "icon": "fa-question-circle",
+      "color": "#3B82F6",
+      "title": "导数单调性怎么判断？",
+      "desc": "2小时前 · 已解答",
+      "answer": "判断f'(x)在区间内的符号：f'(x)>0单调递增，f'(x)<0单调递减。步骤：①求f'(x)；②令f'(x)=0解出临界点；③用临界点划分区间；④在各区间内取测试点判断f'(x)符号。"
+    },
+    {
+      "icon": "fa-question-circle",
+      "color": "#10B981",
+      "title": "三角函数诱导公式记忆技巧",
+      "desc": "昨天 · 已解答",
+      "answer": "口诀「奇变偶不变，符号看象限」。①判断n×π/2中n的奇偶；②奇数→函数名变（sin↔cos），偶数→不变；③把α当锐角，判断原角在第几象限，由原函数名确定符号。"
+    },
+    {
+      "icon": "fa-question-circle",
+      "color": "#F59E0B",
+      "title": "化学平衡常数K的表达式",
+      "desc": "3天前 · 已解答",
+      "answer": "对于反应 aA+bB⇌cC+dD，K = [C]^c·[D]^d / ([A]^a·[B]^b)。注意：①固体和纯液体不写入K的表达式；②K只与温度有关；③K越大，正向反应越完全。"
+    }
+  ],
+  "input_placeholder": "输入你的问题...",
+  "camera_icon": "fa-camera",
+  "rag_info": {
+    "title": "RAG检索增强",
+    "icon": "fa-search",
+    "retriever": "BGE-M3 向量检索",
+    "reranker": "bge-reranker-v2-m3",
+    "vector_db": "Milvus",
+    "retrieved_docs": [
+      {
+        "title": "数学·圆锥曲线统一定义",
+        "score": 0.92,
+        "source": "教材第三章"
+      },
+      {
+        "title": "数学·椭圆标准方程推导",
+        "score": 0.88,
+        "source": "知识点库"
+      },
+      {
+        "title": "近5年高考圆锥曲线真题",
+        "score": 0.81,
+        "source": "真题题库"
+      }
+    ],
+    "model": "Qwen3-72B",
+    "context_window": "128K"
+  }
+}

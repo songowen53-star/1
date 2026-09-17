@@ -1,0 +1,14 @@
+{
+  "stats": [
+    { "label": "总会员数", "value": "2.3万", "change": 0, "color": "blue" },
+    { "label": "本月新增", "value": "856", "change": 12, "color": "green" },
+    { "label": "续费率", "value": "72%", "change": 4, "color": "orange" }
+  ],
+  "members": [
+    { "name": "张同学", "plan": "年卡", "amount": "￥198", "start": "2026-01-15", "end": "2027-01-15", "status": "有效" },
+    { "name": "王芳", "plan": "季卡", "amount": "￥68", "start": "2026-06-01", "end": "2026-09-01", "status": "有效" },
+    { "name": "刘洋", "plan": "月卡", "amount": "￥28", "start": "2026-07-01", "end": "2026-08-01", "status": "有效" },
+    { "name": "孙琪", "plan": "年卡", "amount": "￥198", "start": "2025-08-10", "end": "2026-08-10", "status": "即将到期" },
+    { "name": "周婷", "plan": "季卡", "amount": "￥68", "start": "2026-04-20", "end": "2026-07-20", "status": "已过期" }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "stats": [
+    { "label": "总用户数", "value": "12.5万", "change": 8, "color": "blue" },
+    { "label": "日活跃", "value": "3.2万", "change": 5, "color": "green" },
+    { "label": "付费率", "value": "18%", "change": 3, "color": "orange" },
+    { "label": "今日收入", "value": "￥8.6万", "change": 12, "color": "purple" }
+  ],
+  "charts": [
+    { "title": "用户增长趋势", "label": "近30天新增用户趋势折线图", "height": 180 },
+    { "title": "收入趋势", "label": "近30天收入趋势柱状图", "height": 180 }
+  ],
+  "realtime": [
+    { "label": "在线用户", "value": "1,856", "bg": "#EFF6FF", "color": "#3B82F6" },
+    { "label": "今日新增", "value": "432", "bg": "#F0FDF4", "color": "#10B981" },
+    { "label": "今日订单", "value": "128", "bg": "#FFF7ED", "color": "#F59E0B" },
+    { "label": "AI调用", "value": "5.2万", "bg": "#FDF2F8", "color": "#EC4899" }
+  ]
+}

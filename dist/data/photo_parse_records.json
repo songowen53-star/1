@@ -1,0 +1,24 @@
+[
+  {
+    "ocr_id": "ocr_1789458162477",
+    "user_id": "guest",
+    "analysis": "对数函数 ln x 定义域 x>0，对 f(x) 求导得 f'(x) = 1/x - a。讨论 f'(x) 符号判断单调性。",
+    "answer": "a≥0 时，f(x) 在 (0,1/a] 单调递增，在 [1/a,+∞) 单调递减；a<0 时，f(x) 在 (0,+∞) 单调递增。",
+    "model": "deepseek-r1",
+    "time": "2026-09-15T07:42:43.305Z",
+    "id": "photo_parse_records_1789458163306_dmcpml",
+    "created_at": "2026-09-15T07:42:43.306Z",
+    "updated_at": "2026-09-15T07:42:43.306Z"
+  },
+  {
+    "ocr_id": "ocr_1789458483878",
+    "user_id": "guest",
+    "analysis": "对数函数 ln x 定义域 x>0，对 f(x) 求导得 f'(x) = 1/x - a。讨论 f'(x) 符号判断单调性。",
+    "answer": "a≥0 时，f(x) 在 (0,1/a] 单调递增，在 [1/a,+∞) 单调递减；a<0 时，f(x) 在 (0,+∞) 单调递增。",
+    "model": "deepseek-r1",
+    "time": "2026-09-15T07:48:04.704Z",
+    "id": "photo_parse_records_1789458484705_uqphyc",
+    "created_at": "2026-09-15T07:48:04.705Z",
+    "updated_at": "2026-09-15T07:48:04.705Z"
+  }
+]

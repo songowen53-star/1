@@ -1,0 +1,312 @@
+[
+  {
+    "session_id": "exp_1789458084467_guest",
+    "question_id": "q_001",
+    "user_id": "guest",
+    "subject": "数学",
+    "total_steps": 5,
+    "current_step": 1,
+    "progress_percent": 0,
+    "status": "active",
+    "model": "deepseek-r1",
+    "steps": [
+      {
+        "num": 1,
+        "status": "active",
+        "title": "审题分析",
+        "desc": "识别题目关键条件、已知量与求解目标，明确考点所属知识模块。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 2,
+        "status": "locked",
+        "title": "建立方程",
+        "desc": "将文字条件转化为数学表达式，建立等量关系或函数关系。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 3,
+        "status": "locked",
+        "title": "方法应用",
+        "desc": "选择合适的方法（如韦达定理、求导、向量分解等）简化计算。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 4,
+        "status": "locked",
+        "title": "求解过程",
+        "desc": "代入数据，逐步求解，注意运算顺序与符号处理。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 5,
+        "status": "locked",
+        "title": "结论验证",
+        "desc": "检验答案是否符合题意与定义域，写出最终结论。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      }
+    ],
+    "estimated_min": 10,
+    "id": "explain_sessions_1789458084467_vjao64",
+    "created_at": "2026-09-15T07:41:24.467Z",
+    "updated_at": "2026-09-15T07:41:24.468Z"
+  },
+  {
+    "session_id": "exp_1789458095955_guest",
+    "question_id": "q_001",
+    "user_id": "guest",
+    "subject": "数学",
+    "total_steps": 5,
+    "current_step": 1,
+    "progress_percent": 0,
+    "status": "active",
+    "model": "deepseek-r1",
+    "steps": [
+      {
+        "num": 1,
+        "status": "active",
+        "title": "审题分析",
+        "desc": "识别题目关键条件、已知量与求解目标，明确考点所属知识模块。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 2,
+        "status": "locked",
+        "title": "建立方程",
+        "desc": "将文字条件转化为数学表达式，建立等量关系或函数关系。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 3,
+        "status": "locked",
+        "title": "方法应用",
+        "desc": "选择合适的方法（如韦达定理、求导、向量分解等）简化计算。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 4,
+        "status": "locked",
+        "title": "求解过程",
+        "desc": "代入数据，逐步求解，注意运算顺序与符号处理。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 5,
+        "status": "locked",
+        "title": "结论验证",
+        "desc": "检验答案是否符合题意与定义域，写出最终结论。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      }
+    ],
+    "estimated_min": 10,
+    "id": "explain_sessions_1789458095955_gd0u7h",
+    "created_at": "2026-09-15T07:41:35.955Z",
+    "updated_at": "2026-09-15T07:41:35.955Z"
+  },
+  {
+    "session_id": "exp_1789458114526_guest",
+    "question_id": "q_001",
+    "user_id": "guest",
+    "subject": "数学",
+    "total_steps": 5,
+    "current_step": 1,
+    "progress_percent": 0,
+    "status": "active",
+    "model": "deepseek-r1",
+    "steps": [
+      {
+        "num": 1,
+        "status": "active",
+        "title": "审题分析",
+        "desc": "识别题目关键条件、已知量与求解目标，明确考点所属知识模块。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 2,
+        "status": "locked",
+        "title": "建立方程",
+        "desc": "将文字条件转化为数学表达式，建立等量关系或函数关系。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 3,
+        "status": "locked",
+        "title": "方法应用",
+        "desc": "选择合适的方法（如韦达定理、求导、向量分解等）简化计算。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 4,
+        "status": "locked",
+        "title": "求解过程",
+        "desc": "代入数据，逐步求解，注意运算顺序与符号处理。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 5,
+        "status": "locked",
+        "title": "结论验证",
+        "desc": "检验答案是否符合题意与定义域，写出最终结论。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      }
+    ],
+    "estimated_min": 10,
+    "id": "explain_sessions_1789458114526_445e06",
+    "created_at": "2026-09-15T07:41:54.526Z",
+    "updated_at": "2026-09-15T07:41:54.526Z"
+  },
+  {
+    "session_id": "exp_1789458129531_guest",
+    "question_id": "q_001",
+    "user_id": "guest",
+    "subject": "数学",
+    "total_steps": 5,
+    "current_step": 2,
+    "progress_percent": 20,
+    "status": "active",
+    "model": "deepseek-r1",
+    "steps": [
+      {
+        "num": 1,
+        "status": "done",
+        "title": "审题分析",
+        "desc": "识别题目关键条件、已知量与求解目标，明确考点所属知识模块。",
+        "time": "用时 2min",
+        "understood": true,
+        "feedback_count": 1
+      },
+      {
+        "num": 2,
+        "status": "active",
+        "title": "建立方程",
+        "desc": "将文字条件转化为数学表达式，建立等量关系或函数关系。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 3,
+        "status": "locked",
+        "title": "方法应用",
+        "desc": "选择合适的方法（如韦达定理、求导、向量分解等）简化计算。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 4,
+        "status": "locked",
+        "title": "求解过程",
+        "desc": "代入数据，逐步求解，注意运算顺序与符号处理。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 5,
+        "status": "locked",
+        "title": "结论验证",
+        "desc": "检验答案是否符合题意与定义域，写出最终结论。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      }
+    ],
+    "estimated_min": 10,
+    "id": "explain_sessions_1789458129531_6pfb3k",
+    "created_at": "2026-09-15T07:42:09.531Z",
+    "updated_at": "2026-09-15T07:42:09.554Z"
+  },
+  {
+    "session_id": "exp_1789458477338_guest",
+    "question_id": "q_001",
+    "user_id": "guest",
+    "subject": "数学",
+    "total_steps": 5,
+    "current_step": 2,
+    "progress_percent": 20,
+    "status": "active",
+    "model": "deepseek-r1",
+    "steps": [
+      {
+        "num": 1,
+        "status": "done",
+        "title": "审题分析",
+        "desc": "识别题目关键条件、已知量与求解目标，明确考点所属知识模块。",
+        "time": "用时 2min",
+        "understood": true,
+        "feedback_count": 1
+      },
+      {
+        "num": 2,
+        "status": "active",
+        "title": "建立方程",
+        "desc": "将文字条件转化为数学表达式，建立等量关系或函数关系。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 3,
+        "status": "locked",
+        "title": "方法应用",
+        "desc": "选择合适的方法（如韦达定理、求导、向量分解等）简化计算。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 4,
+        "status": "locked",
+        "title": "求解过程",
+        "desc": "代入数据，逐步求解，注意运算顺序与符号处理。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      },
+      {
+        "num": 5,
+        "status": "locked",
+        "title": "结论验证",
+        "desc": "检验答案是否符合题意与定义域，写出最终结论。",
+        "time": "待开始",
+        "understood": null,
+        "feedback_count": 0
+      }
+    ],
+    "estimated_min": 10,
+    "id": "explain_sessions_1789458477339_ohjn8f",
+    "created_at": "2026-09-15T07:47:57.339Z",
+    "updated_at": "2026-09-15T07:47:57.998Z"
+  }
+]

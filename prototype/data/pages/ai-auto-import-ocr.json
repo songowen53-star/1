@@ -1,0 +1,185 @@
+{
+  "header": {
+    "icon": "fa-file-image",
+    "title": "OCR识别详情",
+    "subtitle": "第 2 步 / 共 9 步 · 已完成",
+    "accuracy": "96.8%",
+    "accuracy_label": "识别准确率",
+    "accuracy_color": "var(--success)"
+  },
+  "pdf_preview": {
+    "title": "原始PDF预览",
+    "title_icon": "fa-file-pdf",
+    "page_title": "2024高考数学模拟卷 · 第3页",
+    "content_lines": [
+      {
+        "text": "7. 已知椭圆C: x²/4 + y² = 1，过右焦点F的直线l与",
+        "is_box": true
+      },
+      {
+        "text": "椭圆C交于A、B两点，且|AB| = 2√2，求直线l的方程。",
+        "is_box": true
+      },
+      {
+        "text": "[函数图像区域]",
+        "is_box": true,
+        "muted": true
+      },
+      {
+        "text": "8. 设数列{aₙ}的前n项和为Sₙ...",
+        "is_box": false,
+        "muted": true
+      }
+    ]
+  },
+  "ocr_result": {
+    "title": "OCR识别结果",
+    "title_icon": "fa-font",
+    "subtitle": "识别出的文字内容：",
+    "lines": [
+      {
+        "text": "7. 已知椭圆 C: ",
+        "highlight": false
+      },
+      {
+        "text": "x²/4 + y² = 1",
+        "highlight": true
+      },
+      {
+        "text": "，过右焦点 F 的直线 l 与椭圆 C 交于 A、B 两点，且 |AB| = 2√2，求直线 l 的方程。",
+        "highlight": false
+      },
+      {
+        "text": "8. 设数列 {aₙ} 的前 n 项和为 Sₙ，若 a₁ = 1，aₙ₊₁ = 2aₙ + 1...",
+        "highlight": false
+      }
+    ]
+  },
+  "accuracy_section": {
+    "title": "识别准确率",
+    "title_icon": "fa-bullseye",
+    "ring_percent": 97,
+    "ring_color": "#10B981",
+    "ring_size": 72,
+    "title_main": "综合准确率 96.8%",
+    "details": [
+      {
+        "label": "文字识别",
+        "value": "98.5%"
+      },
+      {
+        "label": "公式识别",
+        "value": "94.2%"
+      },
+      {
+        "label": "图表识别",
+        "value": "95.0%"
+      }
+    ],
+    "model": "Pix2Text + PaddleOCR 融合"
+  },
+  "abnormal_section": {
+    "title": "识别异常标记",
+    "title_icon": "fa-exclamation-triangle",
+    "warning_text": "3 处公式需要人工确认",
+    "items": [
+      {
+        "label": "第7题 · 公式1",
+        "formula": "x^2/4 + y^2 = 1"
+      },
+      {
+        "label": "第7题 · 公式2",
+        "formula": "|AB| = 2\\sqrt{2}"
+      },
+      {
+        "label": "第8题 · 公式1",
+        "formula": "a_{n+1} = 2a_n + 1"
+      }
+    ]
+  },
+  "latex_section": {
+    "title": "公式识别结果（LaTeX）",
+    "title_icon": "fa-square-root-alt",
+    "subtitle": "已将图片公式转为 LaTeX 格式：",
+    "blocks": [
+      {
+        "comment": "% 第7题公式",
+        "formulas": [
+          "\\frac{x^2}{4} + y^2 = 1",
+          "|AB| = 2\\sqrt{2}"
+        ]
+      },
+      {
+        "comment": "% 第8题公式",
+        "formulas": [
+          "a_{n+1} = 2a_n + 1",
+          "S_n = \\sum_{i=1}^{n} a_i"
+        ]
+      }
+    ],
+    "model": "Pix2Text (LaTeX输出)"
+  },
+  "image_section": {
+    "title": "图片区域标注",
+    "title_icon": "fa-image",
+    "items": [
+      {
+        "icon": "fa-chart-line",
+        "color": "var(--primary)",
+        "label": "图表",
+        "count": "2处"
+      },
+      {
+        "icon": "fa-wave-square",
+        "color": "var(--purple)",
+        "label": "函数图像",
+        "count": "3处"
+      },
+      {
+        "icon": "fa-shapes",
+        "color": "var(--success)",
+        "label": "几何图形",
+        "count": "1处"
+      }
+    ]
+  },
+  "next_button": {
+    "text": "确认无误，进入下一步",
+    "icon": "fa-check",
+    "page": "ai-auto-import-cut"
+  },
+  "ocr_models": [
+    {
+      "name": "Pix2Text",
+      "role": "图文公式混识别",
+      "desc": "中文/英文/数学公式混合识别",
+      "license": "MIT",
+      "stars": "10k+",
+      "accuracy": 98.7
+    },
+    {
+      "name": "Nougat",
+      "role": "学术文档OCR",
+      "desc": "PDF学术论文公式识别",
+      "license": "MIT",
+      "stars": "4k+",
+      "accuracy": 97.2
+    },
+    {
+      "name": "PaddleOCR",
+      "role": "通用OCR",
+      "desc": "中英文通用文字识别",
+      "license": "Apache-2.0",
+      "stars": "44k+",
+      "accuracy": 99.1
+    },
+    {
+      "name": "Qwen2-VL",
+      "role": "多模态理解",
+      "desc": "复杂版面与图表理解",
+      "license": "Apache-2.0",
+      "stars": "40k+",
+      "accuracy": 96.5
+    }
+  ]
+}

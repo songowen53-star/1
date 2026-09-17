@@ -1,0 +1,13 @@
+{
+  "stats": [
+    { "label": "待审核", "value": "48", "change": 0, "color": "orange" },
+    { "label": "今日已审", "value": "126", "change": 0, "color": "green" },
+    { "label": "平均置信度", "value": "91%", "change": 0, "color": "blue" }
+  ],
+  "reviews": [
+    { "subject": "数学", "text": "已知函数 f(x)=x³-3x+1，求极值...", "confidence": 96, "time": "5分钟前" },
+    { "subject": "物理", "text": "一物体从高h处自由下落，落地速度为v...", "confidence": 88, "time": "5分钟前" },
+    { "subject": "化学", "text": "反应 N₂+3H₂⇌2NH₃ 达到平衡时...", "confidence": 92, "time": "5分钟前" },
+    { "subject": "英语", "text": "The teacher, together with his students...", "confidence": 75, "time": "5分钟前" }
+  ]
+}

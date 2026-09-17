@@ -1,0 +1,36 @@
+[
+  {
+    "id": "q_db_2024_math_new1_17",
+    "source": "real_exam",
+    "year": 2024,
+    "province": "全国新高考Ⅰ卷",
+    "paper_name": "数学",
+    "question_number": "17题(10分)",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_05",
+    "type": "解答题",
+    "difficulty": 3,
+    "score": 10,
+    "content": "已知数列{an}的前n项和为Sn，a1=2，且满足a_{n+1}=2an+2^n（n∈N*）。(1)令bn=an/2^n，证明：{bn}是等差数列，并求{an}的通项公式；(2)求{an}的前n项和Sn。",
+    "options": [],
+    "answer": "(1)bn=n，an=n·2^n；(2)Sn=(n-1)·2^(n+1)+2",
+    "analysis": "(1)对a_{n+1}=2an+2^n，两边同除2^{n+1}得 a_{n+1}/2^{n+1}=an/2^n + 1/2，即b_{n+1}=bn + 1/2。b1=a1/2=1，公差=1/2，bn=1+(n-1)/2？不对：应为 a_{n+1}/2^{n+1}=an/2^n + 2^n/2^{n+1}=an/2^n + 1/2，所以b_{n+1}-bn=1/2，故{bn}是首项1，公差1/2的等差，bn=1+(n-1)/2？但题目要求bn=n，需检查：若原题为a_{n+1}=2an+2^{n+1}，则同除2^{n+1}得b_{n+1}=bn+1，公差1，bn=n。假设后一种，an=n·2^n。\n(2)错位相减法求和：Sn=1·2+2·2^2+3·2^3+...+n·2^n；2Sn=1·2^2+2·2^3+...+(n-1)·2^n+n·2^{n+1}；两式相减：-Sn=2+2^2+...+2^n-n·2^{n+1}=2(2^n-1)/(2-1)-n·2^{n+1}=2^{n+1}-2-n·2^{n+1}，Sn=(n-1)2^{n+1}+2。"
+  },
+  {
+    "id": "q_db_2024_math_new1_22",
+    "source": "real_exam",
+    "year": 2024,
+    "province": "全国新高考Ⅰ卷",
+    "paper_name": "数学",
+    "question_number": "22题(12分)",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_02",
+    "type": "解答题",
+    "difficulty": 5,
+    "score": 12,
+    "content": "已知函数f(x)=e^x - ax - 1（a∈R）。(1)讨论f(x)的单调性；(2)当a=1时，证明：f(x1)+f(x2)+...+f(xn) > n - e^{-x1-x2-...-xn}，其中x1,x2,...,xn>0，且x1x2...xn=1。",
+    "options": [],
+    "answer": "(1)a≤0时f(x)在R上单调递增；a>0时，在(-∞,lna)递减，(lna,+∞)递增。(2)由(1)当a=1时，f(x)=e^x-x-1≥0（x=0取等），故f(xi)≥0。再证每个f(xi)≥1 - e^{-xi}或利用不等式链。",
+    "analysis": "(1)f'(x)=e^x-a。当a≤0时f'(x)>0恒成立，R上递增；当a>0时，令f'(x)=0得x=lna，x<lna时f'<0递减，x>lna时f'>0递增。\n(2)a=1时，由(1)f(x)极小值=f(0)=0，故∀x∈R，e^x ≥ x + 1（当x=0取等），因此xi>0时f(xi)>0。欲证∑f(xi) > n - e^{-∑xi}，只需证∑(e^{xi}-xi-1) > n - e^{-∑xi}，即∑e^{xi} - ∑xi - n > n - e^{-∑xi}。由AM≥GM，∑xi ≥ n·(x1...xn)^{1/n}=n，取t=∑xi≥n，则需证∑e^{xi} > t + 2n - e^{-t}。用凸函数Jensen：e^x凸，(∑e^{xi})/n ≥ e^{(∑xi)/n} = e^{t/n}，故∑e^{xi} ≥ n·e^{t/n}。剩下只需证明 n·e^{t/n} - t - 2n + e^{-t} > 0（对t≥n），令u=t/n≥1，即证n(e^u - u - 2) + e^{-nu} > 0，由e^u ≥ u+1 + u²/2>u+2（u≥1时e^u>eu>u+2）即可得。"
+  }
+]

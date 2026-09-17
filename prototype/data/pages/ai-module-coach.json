@@ -1,0 +1,204 @@
+{
+  "header_card": {
+    "icon": "fa-user-graduate",
+    "title": "AI学习教练",
+    "subtitle": "每天自动分析你的学情",
+    "analysis_text": "今日已为你分析 3 轮学情数据",
+    "stats": [
+      {
+        "value": "52%",
+        "label": "当前掌握率"
+      },
+      {
+        "value": "+8分",
+        "label": "预计提升"
+      },
+      {
+        "value": "5科",
+        "label": "已诊断"
+      }
+    ]
+  },
+  "today_analysis": {
+    "title": "今日AI分析结果",
+    "title_icon": "fa-lightbulb",
+    "topic_label": "今天学什么",
+    "topic": "数学 · 导数分类讨论",
+    "duration": "30分钟",
+    "reason_label": "为什么学",
+    "reasons": [
+      {
+        "color": "var(--danger)",
+        "text": "高考必考考点，近5年真题出现率 100%"
+      },
+      {
+        "color": "var(--warning)",
+        "text": "你的当前掌握率仅 <b style=\"color:var(--danger);\">52%</b>"
+      },
+      {
+        "color": "var(--success)",
+        "text": "预计可提升 <b style=\"color:var(--success);\">8分</b>"
+      }
+    ],
+    "improve_label": "预计提高",
+    "improve_value": "+8分",
+    "improve_desc": "基于同类学生<br>提分数据建模预测"
+  },
+  "diagnosis": {
+    "title": "AI学情诊断",
+    "title_icon": "fa-stethoscope",
+    "chart_title": "5科掌握率雷达图",
+    "tag_text": "实时更新",
+    "tag_color": "green",
+    "chart_label": "📊 五维雷达图：数学52% / 英语78% / 物理65% / 化学72% / 语文80%",
+    "chart_height": 150,
+    "subjects": [
+      {
+        "name": "数学",
+        "value": "52%",
+        "color": "var(--danger)"
+      },
+      {
+        "name": "英语",
+        "value": "78%",
+        "color": "var(--success)"
+      },
+      {
+        "name": "物理",
+        "value": "65%",
+        "color": "var(--warning)"
+      },
+      {
+        "name": "化学",
+        "value": "72%",
+        "color": "var(--warning)"
+      },
+      {
+        "name": "语文",
+        "value": "80%",
+        "color": "var(--success)"
+      }
+    ],
+    "model": {
+      "name": "Qwen3-72B + 知识图谱",
+      "confidence": 94,
+      "data_points": "近30天学习轨迹 + 12次考试成绩 + 错题本"
+    }
+  },
+  "learning_path": {
+    "title": "AI学习路径推荐",
+    "title_icon": "fa-route",
+    "description": "基于知识点依赖关系，AI为你规划最优学习顺序",
+    "chart_label": "🔗 知识点依赖关系图：函数基础 → 导数概念 → 导数运算 → 分类讨论 → 综合应用",
+    "chart_height": 130,
+    "nodes": [
+      {
+        "text": "✓ 函数基础",
+        "bg": "var(--success)",
+        "color": "white"
+      },
+      {
+        "text": "✓ 导数概念",
+        "bg": "var(--success)",
+        "color": "white"
+      },
+      {
+        "text": "⏳ 分类讨论",
+        "bg": "var(--warning)",
+        "color": "white"
+      },
+      {
+        "text": "综合应用",
+        "bg": "#D1D5DB",
+        "color": "#6B7280"
+      }
+    ],
+    "algorithm": "协同过滤 + 知识图谱路径规划",
+    "model": "DeepKE知识图谱 + 强化学习推荐"
+  },
+  "daily_report": {
+    "title": "AI每日报告",
+    "title_icon": "fa-file-alt",
+    "more": "查看全部",
+    "reports": [
+      {
+        "day": "今天",
+        "title": "导数分类讨论 · 掌握率52%",
+        "tag": "进行中",
+        "color": "orange",
+        "desc": "AI已生成个性化学习建议"
+      },
+      {
+        "day": "昨天",
+        "title": "圆锥曲线综合 · 掌握率48%",
+        "tag": "薄弱",
+        "color": "red",
+        "desc": "AI已生成个性化学习建议"
+      },
+      {
+        "day": "前天",
+        "title": "立体几何 · 掌握率75%",
+        "tag": "稳定",
+        "color": "green",
+        "desc": "AI已生成个性化学习建议"
+      },
+      {
+        "day": "7/26",
+        "title": "概率统计 · 掌握率82%",
+        "tag": "良好",
+        "color": "green",
+        "desc": "AI已生成个性化学习建议"
+      },
+      {
+        "day": "7/25",
+        "title": "数列综合 · 掌握率68%",
+        "tag": "提升中",
+        "color": "blue",
+        "desc": "AI已生成个性化学习建议"
+      },
+      {
+        "day": "7/24",
+        "title": "三角函数 · 掌握率71%",
+        "tag": "稳定",
+        "color": "green",
+        "desc": "AI已生成个性化学习建议"
+      },
+      {
+        "day": "7/23",
+        "title": "不等式 · 掌握率60%",
+        "tag": "待加强",
+        "color": "orange",
+        "desc": "AI已生成个性化学习建议"
+      }
+    ]
+  },
+  "chat_button_text": "与AI教练对话",
+  "chat_button_icon": "fa-comments",
+  "ai_model_info": {
+    "title": "AI引擎",
+    "icon": "fa-microchip",
+    "items": [
+      {
+        "name": "DeepSeek-R1",
+        "role": "推理教练",
+        "desc": "思维链推理，生成个性化学习路径",
+        "license": "MIT",
+        "stars": "80k+"
+      },
+      {
+        "name": "vLLM",
+        "role": "推理引擎",
+        "desc": "高吞吐LLM推理，PagedAttention加速",
+        "license": "Apache-2.0",
+        "stars": "91k+"
+      },
+      {
+        "name": "Qwen3-72B",
+        "role": "学情分析",
+        "desc": "多维度学情诊断与知识点掌握评估",
+        "license": "Apache-2.0",
+        "stars": "40k+"
+      }
+    ]
+  }
+}

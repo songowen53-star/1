@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI高考 - 完整产品原型</title>
+    <link rel="stylesheet" href="css/prototype.css?v=20260901E">
+    <link rel="stylesheet" href="css/fontawesome/all.min.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="proto-header">
+        <div class="proto-header-left">
+            <div class="proto-logo"><i class="fas fa-graduation-cap"></i> AI高考产品原型</div>
+            <span class="proto-page-count" id="page-count">0 页</span>
+        </div>
+        <div class="proto-header-center">
+            <input type="text" id="page-search" placeholder="搜索页面..." class="proto-search">
+        </div>
+        <div class="proto-header-right">
+            <button class="proto-device-btn active" data-device="mobile" onclick="switchDevice('mobile')"><i class="fas fa-mobile-alt"></i> 手机</button>
+            <button class="proto-device-btn" data-device="tablet" onclick="switchDevice('tablet')"><i class="fas fa-tablet-alt"></i> 平板</button>
+            <button class="proto-device-btn" data-device="desktop" onclick="switchDevice('desktop')"><i class="fas fa-desktop"></i> 桌面</button>
+        </div>
+    </header>
+
+    <!-- 主体布局 -->
+    <div class="proto-body">
+        <!-- 左侧导航 -->
+        <aside class="proto-sidebar" id="proto-sidebar">
+            <!-- 导航树由JS动态生成 -->
+        </aside>
+
+        <!-- 右侧预览区 -->
+        <main class="proto-preview" id="proto-preview">
+            <div class="proto-preview-inner" id="proto-preview-inner">
+                <!-- 设备外框 -->
+                <div class="device-frame mobile" id="device-frame">
+                    <div class="device-screen" id="device-screen">
+                        <!-- 页面内容由JS动态渲染 -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js?v=20260901H"></script>
+    <script src="js/lib/qrcode-gen.js?v=20260901H"></script>
+    <script src="js/design-system.js?v=20260901H"></script>
+    <script src="js/prototype.js?v=20260901H"></script>
+    <script src="js/pages-login.js?v=20260901H"></script>
+    <script src="js/pages-home.js?v=20260901H"></script>
+    <script src="js/pages-ai-center.js?v=20260908H"></script>
+    <script src="js/pages-practice.js?v=20260908B"></script>
+    <script src="js/pages-photo.js?v=20260901H"></script>
+    <script src="js/pages-score.js?v=20260901H"></script>
+    <script src="js/pages-college.js?v=20260901H"></script>
+    <script src="js/pages-profile.js?v=20260901H"></script>
+    <script src="js/pages-admin.js?v=20260901H"></script>
+    <script src="js/pages-teacher.js?v=20260901H"></script>
+    <script src="js/pages-teacher-parse.js?v=20260901H"></script>
+    <script src="js/pages-teacher-tag.js?v=20260901H"></script>
+    <script src="js/pages-teacher-exercise.js?v=20260901H"></script>
+    <script src="js/pages-teacher-paper.js?v=20260901H"></script>
+    <script src="js/pages-ai-module.js?v=20260901H"></script>
+</body>
+</html>

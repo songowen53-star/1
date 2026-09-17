@@ -1,0 +1,19 @@
+{
+  "interests": [
+    { "name": "理工", "selected": true },
+    { "name": "医学", "selected": false },
+    { "name": "经管", "selected": true },
+    { "name": "文法", "selected": false }
+  ],
+  "match_count": 8,
+  "majors": [
+    { "name": "计算机科学与技术", "match": 95, "salary": "15-30K", "prospect": "极佳", "icon": "fa-laptop-code", "bg": "#3B82F6", "recommend_colleges": 12 },
+    { "name": "人工智能", "match": 92, "salary": "18-35K", "prospect": "极佳", "icon": "fa-robot", "bg": "#8B5CF6", "recommend_colleges": 10 },
+    { "name": "电子信息工程", "match": 88, "salary": "12-25K", "prospect": "优秀", "icon": "fa-microchip", "bg": "#06B6D4", "recommend_colleges": 11 },
+    { "name": "数据科学与大数据技术", "match": 86, "salary": "14-28K", "prospect": "优秀", "icon": "fa-database", "bg": "#10B981", "recommend_colleges": 9 },
+    { "name": "软件工程", "match": 84, "salary": "13-26K", "prospect": "优秀", "icon": "fa-code", "bg": "#F59E0B", "recommend_colleges": 13 },
+    { "name": "自动化", "match": 80, "salary": "11-22K", "prospect": "良好", "icon": "fa-cogs", "bg": "#EC4899", "recommend_colleges": 10 },
+    { "name": "金融学", "match": 78, "salary": "10-30K", "prospect": "良好", "icon": "fa-chart-line", "bg": "#1D4ED8", "recommend_colleges": 14 },
+    { "name": "通信工程", "match": 75, "salary": "10-20K", "prospect": "良好", "icon": "fa-satellite-dish", "bg": "#7C3AED", "recommend_colleges": 11 }
+  ]
+}
