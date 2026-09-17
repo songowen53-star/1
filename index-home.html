@@ -2050,6 +2050,26 @@
     display: flex; align-items: center; justify-content: center; gap: 6px;
     cursor: pointer; color: #4F46E5; font-size: 13px;
 }
+
+/* ZH 徽章 + 顶部用户区 */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 4px 10px 4px 4px;
+    border-radius: 20px;
+    transition: background 0.2s ease;
+}
+.user-profile:hover { background: rgba(59, 130, 246, 0.08); }
+.user-profile .user-avatar-zh {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+    color: #fff; font-size: 13px; font-weight: 700; letter-spacing: 0.5px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+}
+.user-profile img { width: 32px; height: 32px; border-radius: 50%; }
 </style><style id="trae-panel-enter-style">
         @keyframes trae-panel-enter {
           from { opacity: 0; transform: scale(0.95); }
@@ -2135,8 +2155,8 @@
                     <div class="ai-coach-toggle" onclick="toggleAIChat()">
                         <i class="fas fa-robot"></i> AI教练
                     </div>
-                    <div class="user-profile">
-                        <img src="https://ui-avatars.com/api/?name=Zhang&amp;background=3B82F6&amp;color=fff" alt="头像">
+                    <div class="user-profile" onclick="openAuthModal()" title="点击登录 / 注册">
+                        <div class="user-avatar-zh">ZH</div>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                 </div>

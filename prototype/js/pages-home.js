@@ -971,10 +971,10 @@ registerPage('home', 'AI今日提分', '首页', 'fa-home', () => {
                 <div style="position:absolute;top:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,0.08);"></div>
                 <div style="position:absolute;bottom:-40px;left:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.06);"></div>
                 <div style="display:flex;align-items:center;justify-content:space-between;position:relative;">
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <img src="${svgAvatar('李', '#3B82F6', 48)}" style="width:48px;height:48px;border-radius:50%;border:2px solid rgba(255,255,255,0.5);" onerror="this.style.display='none'">
+                    <div style="display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openProtoAuthModal()" title="点击登录 / 注册">
+                        <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.55);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;letter-spacing:1px;backdrop-filter:blur(6px);">ZH</div>
                         <div>
-                            <div style="font-size:16px;font-weight:700;">你好，李同学</div>
+                            <div style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px;">你好，访客 <i class="fas fa-chevron-down" style="font-size:11px;opacity:0.7;"></i></div>
                             <div style="font-size:12px;opacity:0.85;margin-top:2px;"><i class="fas fa-calendar-day"></i> 距离${gaokaoYear}高考还有 <b style="font-size:14px;">${countdownDays}</b> 天</div>
                         </div>
                     </div>

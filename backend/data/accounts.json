@@ -344,5 +344,23 @@
     "phone": "13800138555",
     "created_at": "2026-09-17T07:43:22.387Z",
     "updated_at": "2026-09-17T07:43:22.387Z"
+  },
+  {
+    "id": "acc_mu58v952",
+    "user_id": "u_mu58v952",
+    "username": "phone_8444",
+    "password": "4253aa2619ab2670fab1a28bc72720c8bbccb39396bdf5b7c34be41469b7b253",
+    "phone": "13800138444",
+    "created_at": "2026-09-17T08:05:06.182Z",
+    "updated_at": "2026-09-17T08:05:06.182Z"
+  },
+  {
+    "id": "acc_mu59zx4p",
+    "user_id": "u_mu59zx4p",
+    "username": "phone_8333",
+    "password": "4c9656f61cde333c9418e76f8a4e23feff7e8f3fae896ab456524838aa9413d6",
+    "phone": "13800138333",
+    "created_at": "2026-09-17T08:36:43.513Z",
+    "updated_at": "2026-09-17T08:36:43.513Z"
   }
 ]

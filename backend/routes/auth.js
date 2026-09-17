@@ -193,8 +193,26 @@ router.post('/wechat-login', (req, res) => {
 const smsCodeStore = {};
 const SMS_CODE_TTL = 300000; // 5分钟有效
 
+// 阿里云短信 SDK（仅在配置了环境变量时启用真实发送）
+const aliyunSms = require('../sms/aliyun-sms');
+
+// 读取阿里云短信配置（未配置 → 降级演示模式）
+function getSmsConfig() {
+    return {
+        accessKeyId: process.env.ALIYUN_SMS_ACCESS_KEY_ID,
+        accessKeySecret: process.env.ALIYUN_SMS_ACCESS_KEY_SECRET,
+        signName: process.env.ALIYUN_SMS_SIGN_NAME,
+        templateCode: process.env.ALIYUN_SMS_TEMPLATE_CODE
+    };
+}
+
+function isSmsConfigured() {
+    const c = getSmsConfig();
+    return !!(c.accessKeyId && c.accessKeySecret && c.signName && c.templateCode);
+}
+
 // POST /api/auth/sms-send  body: { phone }
-router.post('/sms-send', (req, res) => {
+router.post('/sms-send', async (req, res) => {
     const { phone } = req.body || {};
     if (!phone) {
         return res.status(400).json({ code: 1, msg: '手机号不能为空' });
@@ -210,16 +228,59 @@ router.post('/sms-send', (req, res) => {
     }
 
     // 生成6位验证码
-    const code = String(Math.floor(100000 + Math.random() * 900000));
-    smsCodeStore[phone] = { code, expireAt: Date.now() + SMS_CODE_TTL, sentAt: Date.now() };
+    const verifyCode = String(Math.floor(100000 + Math.random() * 900000));
+    const ttlSec = Math.floor(SMS_CODE_TTL / 1000);
 
-    // 演示模式：直接返回验证码（实际应通过短信网关发送）
-    console.log(`[SMS] 验证码已发送到 ${phone}: ${code}`);
+    // 已配置阿里云短信 → 调真实网关发送；否则降级演示模式
+    if (isSmsConfigured()) {
+        try {
+            const cfg = getSmsConfig();
+            const result = await aliyunSms.sendSmsCode({
+                accessKeyId: cfg.accessKeyId,
+                accessKeySecret: cfg.accessKeySecret,
+                signName: cfg.signName,
+                templateCode: cfg.templateCode,
+                phone,
+                code: verifyCode,
+                ttl: ttlSec
+            });
+            if (!result.success) {
+                console.error('[SMS] 阿里云发送失败:', result.code, result.msg);
+                return res.status(502).json({
+                    code: 1,
+                    msg: '短信发送失败：' + (result.msg || result.code || '未知错误'),
+                    data: { requestId: result.requestId }
+                });
+            }
+            // 发送成功：写入会话存储（不返回验证码给前端）
+            smsCodeStore[phone] = {
+                code: verifyCode,
+                expireAt: Date.now() + SMS_CODE_TTL,
+                sentAt: Date.now()
+            };
+            console.log(`[SMS] 验证码已通过阿里云发送到 ${phone}（requestId=${result.requestId}）`);
+            return res.json({
+                code: 0,
+                msg: '验证码已发送',
+                data: { phone, expires_in: ttlSec }
+            });
+        } catch (e) {
+            console.error('[SMS] 调用阿里云异常:', e.message);
+            return res.status(502).json({ code: 1, msg: '短信服务异常: ' + e.message });
+        }
+    }
 
+    // 演示模式：直接返回验证码（开发/未配置环境）
+    smsCodeStore[phone] = {
+        code: verifyCode,
+        expireAt: Date.now() + SMS_CODE_TTL,
+        sentAt: Date.now()
+    };
+    console.log(`[SMS] [演示模式] 验证码已发送到 ${phone}: ${verifyCode}`);
     res.json({
         code: 0,
-        msg: '验证码已发送',
-        data: { phone, code, expires_in: Math.floor(SMS_CODE_TTL / 1000) }
+        msg: '验证码已发送（演示模式）',
+        data: { phone, code: verifyCode, expires_in: ttlSec, demo: true }
     });
 });
 

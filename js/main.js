@@ -1957,14 +1957,13 @@ function initInteractions() {
         });
     }
 
-    // 顶部欢迎语：点击跳转到个人中心（登录/查看个人信息）
+    // 顶部欢迎语：点击弹出登录/账户弹窗（不跳转页面）
     const welcomeEl = document.getElementById('welcome-text');
     if (welcomeEl) {
         welcomeEl.style.cursor = 'pointer';
-        welcomeEl.title = '点击进入个人中心';
+        welcomeEl.title = '点击登录 / 查看账户';
         welcomeEl.addEventListener('click', function() {
-            showToast('正在打开个人中心...', 'info');
-            switchPage('profile');
+            openAuthModal();
         });
     }
 
@@ -5449,6 +5448,117 @@ async function handleLogout() {
     const welcomeEl = document.getElementById('welcome-text');
     if (welcomeEl) welcomeEl.textContent = 'Hi, 访客 👋';
     setTimeout(() => renderProfilePage(document.querySelector('.content-scroll')), 500);
+}
+
+// ====== ZH 徽章弹窗：登录 / 注册 / 已登录态 ======
+// 点击顶部 ZH 头像徽章时弹出登录注册弹窗（不跳转页面）
+async function openAuthModal() {
+    if (Auth.isLoggedIn()) {
+        // 已登录：显示账户信息 + 退出登录
+        const user = await api.getUser();
+        if (!user) { Auth.clear(); return openAuthModal(); }
+        openModal('账户信息', `
+            <div style="text-align:center;padding:10px 6px 6px;">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name||'user')}" style="width:72px;height:72px;border-radius:50%;margin-bottom:10px;">
+                <div style="font-size:18px;font-weight:700;">${user.name||'--'}</div>
+                <div style="color:#6B7280;font-size:13px;margin-top:2px;">${user.grade||'--'} · ${user.province||'--'}</div>
+                <div style="margin-top:8px;display:inline-flex;align-items:center;gap:6px;background:#ECFDF5;color:#047857;padding:4px 10px;border-radius:12px;font-size:12px;"><i class="fas fa-check-circle"></i> 已登录</div>
+            </div>
+            <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid #F3F4F6;font-size:13px;"><span style="color:#6B7280;">目标分数</span><strong>${user.target_score||'--'} 分</strong></div>
+                <div style="display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid #F3F4F6;font-size:13px;"><span style="color:#6B7280;">当前估分</span><strong>${user.current_score||'--'} 分</strong></div>
+                <div style="display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid #F3F4F6;font-size:13px;"><span style="color:#6B7280;">高考日期</span><strong>${user.exam_date||'--'}</strong></div>
+            </div>
+            <div style="margin-top:18px;display:flex;gap:10px;">
+                <button class="btn-primary" style="flex:1;height:40px;border-radius:20px;" onclick="closeModal();editGoalScore()"><i class="fas fa-edit"></i> 编辑目标分</button>
+                <button class="btn-danger" style="flex:1;height:40px;border-radius:20px;" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> 退出登录</button>
+            </div>
+        `);
+        return;
+    }
+    // 未登录：弹出登录/注册表单
+    openModal('登录 / 注册', `
+        <div class="auth-tabs">
+            <div class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">登录</div>
+            <div class="auth-tab" data-tab="register" onclick="switchAuthTab('register')">注册</div>
+            <div class="auth-tab" data-tab="sms" onclick="switchAuthTab('sms')"><i class="fas fa-mobile-alt"></i> 手机号</div>
+            <div class="auth-tab" data-tab="qrcode" onclick="switchAuthTab('qrcode')"><i class="fas fa-qrcode"></i> 扫码</div>
+        </div>
+
+        <form id="login-form" class="auth-form" data-context="modal" onsubmit="handleLogin(event)">
+            <div class="auth-field">
+                <label>用户名</label>
+                <input type="text" id="login-username" placeholder="输入用户名或演示账户 u_001" required>
+            </div>
+            <div class="auth-field">
+                <label>密码</label>
+                <input type="password" id="login-password" placeholder="输入密码" required>
+            </div>
+            <button type="submit" class="btn-primary auth-submit"><i class="fas fa-sign-in-alt"></i> 登录</button>
+            <div class="auth-hint">
+                <i class="fas fa-info-circle"></i>
+                演示账户：<strong>u_001</strong> / 密码：<strong>u_001</strong>
+            </div>
+        </form>
+
+        <form id="register-form" class="auth-form" style="display:none;" data-context="modal" onsubmit="handleRegister(event)">
+            <div class="auth-field">
+                <label>用户名 <span style="color:#9CA3AF;font-weight:400;">（3-20位）</span></label>
+                <input type="text" id="reg-username" placeholder="设置登录用户名" minlength="3" maxlength="20" required>
+            </div>
+            <div class="auth-field">
+                <label>密码 <span style="color:#9CA3AF;font-weight:400;">（至少6位）</span></label>
+                <input type="password" id="reg-password" placeholder="设置登录密码" minlength="6" required>
+            </div>
+            <div class="auth-field">
+                <label>昵称 <span style="color:#9CA3AF;font-weight:400;">（选填）</span></label>
+                <input type="text" id="reg-name" placeholder="如何称呼你？">
+            </div>
+            <button type="submit" class="btn-primary auth-submit"><i class="fas fa-user-plus"></i> 注册并登录</button>
+        </form>
+
+        <form id="sms-login-form" class="auth-form" style="display:none;" data-context="modal" onsubmit="handleSmsLogin(event)">
+            <div class="auth-field">
+                <label>手机号</label>
+                <input type="tel" id="sms-phone" maxlength="11" placeholder="请输入11位手机号" required>
+            </div>
+            <div class="auth-field">
+                <label>验证码</label>
+                <div style="display:flex;gap:10px;">
+                    <input type="text" id="sms-code" maxlength="6" placeholder="请输入6位验证码" style="flex:1;" required>
+                    <button type="button" id="sms-send-btn" onclick="handleSmsSend()" style="flex-shrink:0;width:130px;background:white;border:1.5px solid #3B82F6;color:#3B82F6;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">获取验证码</button>
+                </div>
+            </div>
+            <button type="submit" class="btn-primary auth-submit"><i class="fas fa-shield-alt"></i> 验证码登录</button>
+            <div class="auth-hint"><i class="fas fa-info-circle"></i> 演示模式：验证码将显示在弹窗与后端控制台</div>
+        </form>
+
+        <div id="qrcode-panel" class="auth-form" style="display:none;">
+            <div id="wx-qrcode-box" style="text-align:center;">
+                <div id="wx-qrcode-wrap" style="position:relative;display:inline-block;margin:4px auto 14px;padding:16px;background:white;border:1px solid #E5E7EB;border-radius:16px;">
+                    <img id="wx-qrcode-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="扫码登录二维码" style="width:220px;height:220px;display:block;" onerror="handleQrImgError(this)">
+                    <div id="wx-qrcode-mask" style="display:none;position:absolute;inset:16px;background:rgba(255,255,255,0.92);border-radius:12px;align-items:center;justify-content:center;flex-direction:column;padding:12px;">
+                        <div id="wx-qrcode-mask-icon" style="font-size:42px;"><i class="fas fa-mobile-alt" style="color:#07C160;"></i></div>
+                        <div id="wx-qrcode-mask-text" style="font-size:14px;font-weight:700;color:#111827;text-align:center;">正在生成二维码...</div>
+                    </div>
+                </div>
+                <div id="wx-qrcode-tip" style="font-size:14px;font-weight:700;color:#111827;">正在生成登录二维码...</div>
+                <div id="wx-qrcode-subtip" style="font-size:12px;color:#6B7280;margin-top:6px;min-height:16px;">
+                    二维码 <span id="wx-qrcode-countdown">300</span>s 后过期，<a href="javascript:void(0)" onclick="refreshWechatQrcode()" style="color:#07C160;text-decoration:none;">刷新</a>
+                </div>
+            </div>
+            <div style="margin-top:14px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:12px;padding:12px 10px;">
+                <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:8px;"><i class="fas fa-vial"></i> 演示模式 · 模拟手机微信操作</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn-primary" style="flex:1 1 30%;height:36px;border-radius:10px;font-size:13px;" onclick="mockWechatAction('scan')"><i class="fas fa-mobile-alt"></i> 模拟扫码</button>
+                    <button class="btn-primary" style="flex:1 1 30%;height:36px;border-radius:10px;font-size:13px;background:#16A34A;" onclick="mockWechatAction('confirm')"><i class="fas fa-check-circle"></i> 模拟确认</button>
+                    <button class="btn-danger" style="flex:1 1 30%;height:36px;border-radius:10px;font-size:13px;" onclick="mockWechatAction('cancel')"><i class="fas fa-times-circle"></i> 模拟取消</button>
+                </div>
+            </div>
+        </div>
+    `);
+    // 默认展示登录 tab
+    switchAuthTab('login');
 }
 
 // ============================================================

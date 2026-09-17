@@ -31,21 +31,30 @@ function startSmsCountdown(btnId) {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.code === 0 && data.data && data.data.code) {
+        if (data.code === 0) {
             // 确定验证码输入框ID
-            const codeInputId = btnId === 'sms-code-btn' ? 'sms-code-input' : 
+            const codeInputId = btnId === 'sms-code-btn' ? 'sms-code-input' :
                                btnId === 'parent-code-btn' ? 'parent-code-input' : null;
-            
-            // 显示验证码弹窗
-            openModal('验证码已发送', `
-                <div style="text-align:center;padding:20px;">
-                    <div style="font-size:13px;color:#6B7280;margin-bottom:8px;">验证码已发送到 ${phone}</div>
-                    <div style="font-size:36px;font-weight:800;color:#3B82F6;letter-spacing:8px;margin:16px 0;">${data.data.code}</div>
-                    <div style="font-size:12px;color:#9CA3AF;">有效期5分钟，请在下方输入</div>
-                    <button class="proto-btn proto-btn-primary" style="margin-top:16px;height:40px;border-radius:20px;" onclick="closeModal();${codeInputId ? `setTimeout(function(){var inp=document.getElementById('${codeInputId}');if(inp){inp.focus();inp.scrollIntoView({block:'center'});}},50);` : ''}">知道了</button>
-                </div>
-            `);
-            
+
+            // 演示模式：后端返回 data.code，弹窗显示便于测试
+            // 生产模式（阿里云）：不返回 data.code，仅 toast 提示
+            if (data.data && data.data.code) {
+                openModal('验证码已发送（演示模式）', `
+                    <div style="text-align:center;padding:20px;">
+                        <div style="font-size:13px;color:#6B7280;margin-bottom:8px;">验证码已发送到 ${phone}</div>
+                        <div style="font-size:36px;font-weight:800;color:#3B82F6;letter-spacing:8px;margin:16px 0;">${data.data.code}</div>
+                        <div style="font-size:12px;color:#9CA3AF;">有效期5分钟，请在下方输入</div>
+                        <button class="proto-btn proto-btn-primary" style="margin-top:16px;height:40px;border-radius:20px;" onclick="closeModal();${codeInputId ? `setTimeout(function(){var inp=document.getElementById('${codeInputId}');if(inp){inp.focus();inp.scrollIntoView({block:'center'});}},50);` : ''}">知道了</button>
+                    </div>
+                `);
+            } else {
+                if (typeof showToast === 'function') {
+                    showToast('验证码已发送到 ' + phone, 'success');
+                } else {
+                    openModal('已发送', '<p style="text-align:center;padding:20px;">验证码已发送到 ' + phone + '</p>');
+                }
+            }
+
             // 开始倒计时
             let seconds = 60;
             btn.dataset.counting = '1';
@@ -72,6 +81,59 @@ function startSmsCountdown(btnId) {
     .catch(err => {
         openModal('发送失败', '<p style="text-align:center;padding:20px;color:#EF4444;">网络错误，请检查服务器是否启动</p>');
     });
+}
+
+// 手机验证码登录：调用后端 /api/auth/sms-login，写入 session 后跳转首页
+async function handleProtoSmsLogin() {
+    const phoneInput = document.getElementById('sms-phone-input');
+    const codeInput = document.getElementById('sms-code-input');
+    const btn = document.getElementById('proto-sms-login-btn');
+    if (!phoneInput || !codeInput) {
+        openModal('提示', '<p style="text-align:center;padding:20px;">表单元素缺失</p>');
+        return;
+    }
+    const phone = phoneInput.value.trim();
+    const code = codeInput.value.trim();
+    if (!phone || !/^1\d{10}$/.test(phone)) {
+        openModal('提示', '<p style="text-align:center;padding:20px;">请输入正确的11位手机号</p>');
+        return;
+    }
+    if (!code) {
+        openModal('提示', '<p style="text-align:center;padding:20px;">请输入验证码</p>');
+        return;
+    }
+
+    // 防重复提交
+    if (btn && btn.dataset.busy === '1') return;
+    if (btn) {
+        btn.dataset.busy = '1';
+        btn.textContent = '登录中...';
+        btn.style.pointerEvents = 'none';
+        btn.style.opacity = '0.7';
+    }
+
+    try {
+        const data = await api.smsLogin(phone, code);
+        // api.request 在 code!==0 时 throw 并返回 null；成功时返回 data.data 子对象
+        // 因此 data 存在即代表登录成功，且 data 已是 {token, user_id, user, ...} 结构
+        if (data && data.token) {
+            if (typeof Auth !== 'undefined' && Auth.setSession) {
+                Auth.setSession(data.token, data.user_id, data.user || null);
+            }
+            if (typeof showToast === 'function') {
+                showToast('登录成功，欢迎 ' + ((data.user && data.user.name) || phone), 'success');
+            }
+            // 恢复按钮状态
+            if (btn) { btn.dataset.busy = '0'; btn.textContent = '登 录'; btn.style.pointerEvents = ''; btn.style.opacity = ''; }
+            setTimeout(() => navigateTo('home'), 400);
+        } else {
+            if (btn) { btn.dataset.busy = '0'; btn.textContent = '登 录'; btn.style.pointerEvents = ''; btn.style.opacity = ''; }
+            openModal('登录失败', '<p style="text-align:center;padding:20px;color:#EF4444;">验证码错误或已过期</p>');
+        }
+    } catch (e) {
+        if (btn) { btn.dataset.busy = '0'; btn.textContent = '登 录'; btn.style.pointerEvents = ''; btn.style.opacity = ''; }
+        openModal('登录失败', '<p style="text-align:center;padding:20px;color:#EF4444;">网络错误：' + (e && e.message || '') + '</p>');
+    }
 }
 
 // 联系客服弹窗
@@ -754,11 +816,11 @@ registerPage('login-sms', '手机验证码', '登录注册', 'fa-sign-in-alt', (
             </div>
 
             <div style="font-size:11px;color:#9CA3AF;margin-bottom:24px;">
-                <i class="fas fa-info-circle"></i> 验证码已发送至您的手机，60秒内有效
+                <i class="fas fa-info-circle"></i> 验证码已发送至您的手机，5分钟内有效
             </div>
 
             <!-- 登录按钮 -->
-            <button class="proto-btn proto-btn-primary" style="height:48px;font-size:16px;border-radius:24px;" onclick="navigateTo('home')">登 录</button>
+            <button id="proto-sms-login-btn" class="proto-btn proto-btn-primary" style="height:48px;font-size:16px;border-radius:24px;" onclick="handleProtoSmsLogin()">登 录</button>
 
             <!-- 其他方式 -->
             <div style="display:flex;align-items:center;margin:28px 0 18px;color:#9CA3AF;font-size:12px;">
@@ -885,6 +947,8 @@ window._protoQrState = {
     sceneId: null,
     pollingTimer: null,
     countdownTimer: null,
+    sse: null,            // EventSource 实例（SSE 优先模式）
+    sseFailed: false,     // SSE 失败后降级到轮询，避免反复重试
     remain: 300,
     finished: false,
     mockScanned: false
@@ -906,6 +970,10 @@ function stopProtoQrPolling(keepSession) {
     if (window._protoQrState.countdownTimer) {
         clearInterval(window._protoQrState.countdownTimer);
         window._protoQrState.countdownTimer = null;
+    }
+    if (window._protoQrState.sse) {
+        try { window._protoQrState.sse.close(); } catch (e) {}
+        window._protoQrState.sse = null;
     }
     const sid = window._protoQrState.sceneId;
     if (!keepSession && sid) {
@@ -970,6 +1038,8 @@ async function refreshProtoQrLogin() {
     stopProtoQrPolling(false);
     window._protoQrState.finished = false;
     window._protoQrState.mockScanned = false;
+    // 重置 SSE 失败标志，新会话重新尝试长连接
+    window._protoQrState.sseFailed = false;
     const img = document.getElementById('proto-qr-img');
     const tip = document.getElementById('proto-qr-tip');
     const sub = document.getElementById('proto-qr-subtip');
@@ -1062,8 +1132,47 @@ async function refreshProtoQrLogin() {
 
 function startProtoPolling() {
     if (!window._protoQrState.sceneId) return;
-    // 演示模式：后端不可达，轮询无意义，状态由模拟按钮本地驱动
+    // 演示模式：后端不可达，轮询/SSE 无意义，状态由模拟按钮本地驱动
     if (window._protoQrState.isDemo) return;
+
+    // 优先尝试 SSE 长连接（实时推送扫码状态，节省带宽）
+    if (!window._protoQrState.sseFailed && window.EventSource) {
+        try {
+            const sid = window._protoQrState.sceneId;
+            const es = new EventSource(api.wechatQrcodeStreamUrl(sid));
+            es.onmessage = (ev) => {
+                if (window._protoQrState.finished) return;
+                try {
+                    const obj = JSON.parse(ev.data);
+                    // 兼容后端两种格式：直接是 payload，或 {code:0, data: payload}
+                    const payload = (obj && obj.code === 0 && obj.data) ? obj.data : obj;
+                    if (payload) handleProtoQrStatus(payload);
+                } catch (e) {
+                    console.warn('[proto-qr-sse] 解析失败', e);
+                }
+            };
+            es.onerror = () => {
+                try { es.close(); } catch (e) {}
+                window._protoQrState.sse = null;
+                // SSE 失败一次后降级到轮询，避免反复重试
+                if (!window._protoQrState.sseFailed) {
+                    window._protoQrState.sseFailed = true;
+                    startProtoPollingFallback();
+                }
+            };
+            window._protoQrState.sse = es;
+            return;
+        } catch (e) {
+            console.warn('[proto-qr-sse] 初始化失败，降级轮询', e);
+            window._protoQrState.sseFailed = true;
+        }
+    }
+    startProtoPollingFallback();
+}
+
+// 轮询降级（SSE 不可用时使用，2s 间隔）
+function startProtoPollingFallback() {
+    if (!window._protoQrState.sceneId || window._protoQrState.isDemo) return;
     const tick = async () => {
         if (window._protoQrState.finished) return;
         const sid = window._protoQrState.sceneId;
@@ -1170,4 +1279,202 @@ async function protoMockQrAction(action) {
         window._protoQrState.mockScanned = false;
         handleProtoQrStatus({ status: 'cancelled', msg: res.msg || '用户已取消登录' });
     }
+}
+
+// ============================================================
+// ZH 徽章弹窗：点击顶部 ZH 徽章弹出登录/注册模态框（不跳转页面）
+// 与主应用 index-home.html 行为保持一致
+// ============================================================
+function openProtoAuthModal() {
+    if (typeof Auth !== 'undefined' && Auth.isLoggedIn && Auth.isLoggedIn()) {
+        // 已登录：显示账户信息 + 退出登录
+        const user = (typeof Auth.getCachedUser === 'function') ? Auth.getCachedUser() : null;
+        const name = (user && user.name) ? user.name : '同学';
+        openModal('账户信息', `
+            <div style="text-align:center;padding:10px 6px 6px;">
+                <div style="width:72px;height:72px;border-radius:50%;margin:0 auto 10px;background:linear-gradient(135deg,#3B82F6,#1D4ED8);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700;letter-spacing:1px;">${name.slice(0,1).toUpperCase() || 'U'}</div>
+                <div style="font-size:18px;font-weight:700;">${name}</div>
+                <div style="margin-top:8px;display:inline-flex;align-items:center;gap:6px;background:#ECFDF5;color:#047857;padding:4px 10px;border-radius:12px;font-size:12px;"><i class="fas fa-check-circle"></i> 已登录</div>
+            </div>
+            <div style="margin-top:18px;display:flex;gap:10px;">
+                <button class="proto-btn proto-btn-primary" style="flex:1;height:40px;border-radius:20px;" onclick="closeModal();navigateTo('profile-main')"><i class="fas fa-user"></i> 个人中心</button>
+                <button class="proto-btn proto-btn-outline" style="flex:1;height:40px;border-radius:20px;color:#DC2626;border-color:#FECACA;" onclick="handleProtoLogout()"><i class="fas fa-sign-out-alt"></i> 退出登录</button>
+            </div>
+        `);
+        return;
+    }
+    // 未登录：弹出登录/注册模态框（4 个 tab，与主应用一致）
+    openModal('登录 / 注册', `
+        <div style="display:flex;border-bottom:1px solid #E5E7EB;margin-bottom:16px;">
+            <div class="proto-auth-tab" data-tab="login" onclick="switchProtoAuthTab('login')" style="flex:1;padding:10px 4px;text-align:center;font-size:14px;font-weight:600;cursor:pointer;color:#3B82F6;border-bottom:2px solid #3B82F6;">登录</div>
+            <div class="proto-auth-tab" data-tab="register" onclick="switchProtoAuthTab('register')" style="flex:1;padding:10px 4px;text-align:center;font-size:14px;font-weight:600;cursor:pointer;color:#6B7280;border-bottom:2px solid transparent;">注册</div>
+            <div class="proto-auth-tab" data-tab="sms" onclick="switchProtoAuthTab('sms')" style="flex:1;padding:10px 4px;text-align:center;font-size:14px;font-weight:600;cursor:pointer;color:#6B7280;border-bottom:2px solid transparent;"><i class="fas fa-mobile-alt"></i> 手机号</div>
+            <div class="proto-auth-tab" data-tab="qrcode" onclick="switchProtoAuthTab('qrcode')" style="flex:1;padding:10px 4px;text-align:center;font-size:14px;font-weight:600;cursor:pointer;color:#6B7280;border-bottom:2px solid transparent;"><i class="fas fa-qrcode"></i> 扫码</div>
+        </div>
+
+        <div id="proto-auth-login" class="proto-auth-pane">
+            <div style="margin-bottom:12px;">
+                <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px;">用户名</label>
+                <input id="proto-auth-login-username" class="proto-input" type="text" placeholder="演示账户 u_001" style="width:100%;height:42px;padding:0 12px;border:1px solid #D1D5DB;border-radius:10px;font-size:14px;outline:none;">
+            </div>
+            <div style="margin-bottom:16px;">
+                <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px;">密码</label>
+                <input id="proto-auth-login-password" class="proto-input" type="password" placeholder="输入密码" style="width:100%;height:42px;padding:0 12px;border:1px solid #D1D5DB;border-radius:10px;font-size:14px;outline:none;">
+            </div>
+            <button class="proto-btn proto-btn-primary" style="width:100%;height:44px;border-radius:22px;font-size:15px;" onclick="handleProtoModalLogin()"><i class="fas fa-sign-in-alt"></i> 登录</button>
+            <div style="margin-top:10px;font-size:12px;color:#9CA3AF;text-align:center;">
+                <i class="fas fa-info-circle"></i> 演示账户：<b>u_001</b> / 密码：<b>u_001</b>
+            </div>
+        </div>
+
+        <div id="proto-auth-register" class="proto-auth-pane" style="display:none;">
+            <div style="margin-bottom:12px;">
+                <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px;">用户名 <span style="color:#9CA3AF;font-weight:400;">（3-20位）</span></label>
+                <input id="proto-auth-reg-username" class="proto-input" type="text" minlength="3" maxlength="20" placeholder="设置登录用户名" style="width:100%;height:42px;padding:0 12px;border:1px solid #D1D5DB;border-radius:10px;font-size:14px;outline:none;">
+            </div>
+            <div style="margin-bottom:12px;">
+                <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px;">密码 <span style="color:#9CA3AF;font-weight:400;">（至少6位）</span></label>
+                <input id="proto-auth-reg-password" class="proto-input" type="password" minlength="6" placeholder="设置登录密码" style="width:100%;height:42px;padding:0 12px;border:1px solid #D1D5DB;border-radius:10px;font-size:14px;outline:none;">
+            </div>
+            <div style="margin-bottom:16px;">
+                <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px;">昵称 <span style="color:#9CA3AF;font-weight:400;">（选填）</span></label>
+                <input id="proto-auth-reg-name" class="proto-input" type="text" placeholder="如何称呼你？" style="width:100%;height:42px;padding:0 12px;border:1px solid #D1D5DB;border-radius:10px;font-size:14px;outline:none;">
+            </div>
+            <button class="proto-btn proto-btn-primary" style="width:100%;height:44px;border-radius:22px;font-size:15px;" onclick="handleProtoModalRegister()"><i class="fas fa-user-plus"></i> 注册并登录</button>
+        </div>
+
+        <div id="proto-auth-sms" class="proto-auth-pane" style="display:none;">
+            <div style="margin-bottom:12px;">
+                <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:6px;">手机号</label>
+                <input id="proto-auth-sms-phone" class="proto-input" type="tel" maxlength="11" placeholder="请输入11位手机号" style="width:100%;height:42px;padding:0 12px;border:1px solid #D1D5DB;border-radius:10px;font-size:14px;outline:none;">
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:16px;">
+                <input id="proto-auth-sms-code" class="proto-input" type="tel" maxlength="6" placeholder="6位验证码" style="flex:1;height:42px;padding:0 12px;border:1px solid #D1D5DB;border-radius:10px;font-size:14px;outline:none;">
+                <button id="proto-auth-sms-btn" onclick="handleProtoModalSmsSend()" style="flex-shrink:0;width:130px;height:42px;background:white;border:1.5px solid #3B82F6;color:#3B82F6;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;">获取验证码</button>
+            </div>
+            <button class="proto-btn proto-btn-primary" style="width:100%;height:44px;border-radius:22px;font-size:15px;" onclick="handleProtoModalSmsLogin()"><i class="fas fa-shield-alt"></i> 验证码登录</button>
+            <div style="margin-top:10px;font-size:12px;color:#9CA3AF;text-align:center;"><i class="fas fa-info-circle"></i> 演示模式：验证码显示在弹窗与后端控制台</div>
+        </div>
+
+        <div id="proto-auth-qrcode" class="proto-auth-pane" style="display:none;text-align:center;">
+            <div style="padding:8px 0 14px;color:#6B7280;font-size:13px;">微信扫码登录，无需输入账号密码</div>
+            <div style="display:inline-block;padding:14px;background:white;border:1px solid #E5E7EB;border-radius:14px;">
+                <div style="width:200px;height:200px;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:13px;">二维码占位</div>
+            </div>
+            <div style="margin-top:14px;">
+                <button class="proto-btn proto-btn-outline" style="height:40px;border-radius:20px;color:#07C160;border-color:#07C160;" onclick="closeModal();navigateTo('login-wechat-qrcode')"><i class="fas fa-qrcode"></i> 打开完整扫码页</button>
+            </div>
+        </div>
+    `);
+}
+
+// ZH 徽章弹窗：tab 切换
+function switchProtoAuthTab(tab) {
+    var panes = { login: 'proto-auth-login', register: 'proto-auth-register', sms: 'proto-auth-sms', qrcode: 'proto-auth-qrcode' };
+    Object.keys(panes).forEach(function(k) {
+        var pane = document.getElementById(panes[k]);
+        if (pane) pane.style.display = (k === tab) ? '' : 'none';
+    });
+    document.querySelectorAll('.proto-auth-tab').forEach(function(el) {
+        var active = el.getAttribute('data-tab') === tab;
+        el.style.color = active ? '#3B82F6' : '#6B7280';
+        el.style.borderBottom = active ? '2px solid #3B82F6' : '2px solid transparent';
+    });
+}
+
+// 弹窗内：账号密码登录
+async function handleProtoModalLogin() {
+    var u = document.getElementById('proto-auth-login-username').value.trim();
+    var p = document.getElementById('proto-auth-login-password').value;
+    if (!u || !p) { if (typeof showToast === 'function') showToast('请输入用户名和密码', 'warning'); return; }
+    try {
+        var data = await api.login(u, p);
+        if (data && data.token) {
+            Auth.setSession(data.token, data.user_id || '', data.user || null);
+            if (typeof showToast === 'function') showToast('登录成功', 'success');
+            closeModal();
+            if (typeof navigateTo === 'function') setTimeout(function(){ navigateTo('home'); }, 200);
+        } else {
+            if (typeof showToast === 'function') showToast('登录失败，请检查账号密码', 'error');
+        }
+    } catch (e) {
+        if (typeof showToast === 'function') showToast('登录失败：' + (e.message || '未知错误'), 'error');
+    }
+}
+
+// 弹窗内：注册
+async function handleProtoModalRegister() {
+    var u = document.getElementById('proto-auth-reg-username').value.trim();
+    var p = document.getElementById('proto-auth-reg-password').value;
+    var n = document.getElementById('proto-auth-reg-name').value.trim();
+    if (!u || !p) { if (typeof showToast === 'function') showToast('请输入用户名和密码', 'warning'); return; }
+    try {
+        var data = await api.register(u, p, n || u, '高三', '北京');
+        if (data && data.token) {
+            Auth.setSession(data.token, data.user_id || '', data.user || null);
+            if (typeof showToast === 'function') showToast('注册成功', 'success');
+            closeModal();
+            if (typeof navigateTo === 'function') setTimeout(function(){ navigateTo('home'); }, 200);
+        } else {
+            if (typeof showToast === 'function') showToast('注册失败', 'error');
+        }
+    } catch (e) {
+        if (typeof showToast === 'function') showToast('注册失败：' + (e.message || '未知错误'), 'error');
+    }
+}
+
+// 弹窗内：发送验证码
+async function handleProtoModalSmsSend() {
+    var phoneInput = document.getElementById('proto-auth-sms-phone');
+    var phone = phoneInput ? phoneInput.value.trim() : '';
+    if (!/^1\d{10}$/.test(phone)) { if (typeof showToast === 'function') showToast('请输入正确的11位手机号', 'warning'); return; }
+    var btn = document.getElementById('proto-auth-sms-btn');
+    btn.disabled = true;
+    var countdown = 60;
+    btn.textContent = countdown + 's 后重试';
+    var timer = setInterval(function(){
+        countdown--;
+        if (countdown <= 0) { clearInterval(timer); btn.disabled = false; btn.textContent = '获取验证码'; return; }
+        btn.textContent = countdown + 's 后重试';
+    }, 1000);
+    try {
+        var res = await fetch('/api/auth/sms-send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: phone }) });
+        var data = await res.json();
+        if (data && data.code === 0) {
+            if (typeof showToast === 'function') showToast('验证码已发送', 'success');
+        } else {
+            if (typeof showToast === 'function') showToast('发送失败：' + (data.msg || ''), 'error');
+        }
+    } catch (e) {
+        if (typeof showToast === 'function') showToast('发送失败：' + (e.message || ''), 'error');
+    }
+}
+
+// 弹窗内：手机验证码登录
+async function handleProtoModalSmsLogin() {
+    var phone = document.getElementById('proto-auth-sms-phone').value.trim();
+    var code = document.getElementById('proto-auth-sms-code').value.trim();
+    if (!phone || !code) { if (typeof showToast === 'function') showToast('请输入手机号和验证码', 'warning'); return; }
+    try {
+        var data = await api.smsLogin(phone, code);
+        if (data && data.token) {
+            Auth.setSession(data.token, data.user_id || '', data.user || null);
+            if (typeof showToast === 'function') showToast('登录成功', 'success');
+            closeModal();
+            if (typeof navigateTo === 'function') setTimeout(function(){ navigateTo('home'); }, 200);
+        } else {
+            if (typeof showToast === 'function') showToast('验证码错误或已失效', 'error');
+        }
+    } catch (e) {
+        if (typeof showToast === 'function') showToast('登录失败：' + (e.message || ''), 'error');
+    }
+}
+
+// 弹窗内：退出登录
+async function handleProtoLogout() {
+    try { await api.logout(); } catch (e) {}
+    if (typeof Auth !== 'undefined' && Auth.clear) Auth.clear();
+    closeModal();
+    if (typeof showToast === 'function') showToast('已退出登录', 'info');
+    if (typeof navigateTo === 'function') setTimeout(function(){ navigateTo('home'); }, 200);
 }

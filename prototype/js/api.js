@@ -99,6 +99,17 @@ const api = {
             body: JSON.stringify({ scene_id: sceneId })
         });
     },
+    // SSE 流端点 URL（用于 EventSource 实时接收扫码状态）
+    wechatQrcodeStreamUrl(sceneId) {
+        return `/api/auth/wechat-qrcode-stream?scene_id=${encodeURIComponent(sceneId)}`;
+    },
+    // 同 scene_id 刷新二维码
+    wechatQrcodeRefresh(sceneId) {
+        return this.request('/api/auth/wechat-qrcode-refresh', {
+            method: 'POST',
+            body: JSON.stringify({ scene_id: sceneId })
+        });
+    },
     smsSend(phone) {
         return this.request('/api/auth/sms-send', {
             method: 'POST',
