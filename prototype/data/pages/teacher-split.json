@@ -1,0 +1,65 @@
+{
+  "fileName": "2025年浙江高考数学卷.pdf",
+  "preview": {
+    "currentPage": 1,
+    "totalPages": 8
+  },
+  "questions": [
+    {
+      "no": 1,
+      "type": "选择题",
+      "score": 5,
+      "diff": "简单"
+    },
+    {
+      "no": 2,
+      "type": "选择题",
+      "score": 5,
+      "diff": "中等"
+    },
+    {
+      "no": 3,
+      "type": "填空题",
+      "score": 5,
+      "diff": "中等"
+    },
+    {
+      "no": 4,
+      "type": "解答题",
+      "score": 12,
+      "diff": "困难"
+    },
+    {
+      "no": 5,
+      "type": "解答题",
+      "score": 14,
+      "diff": "困难"
+    }
+  ],
+  "stats": [
+    {
+      "label": "识别题数",
+      "value": "5",
+      "change": 0,
+      "color": "blue"
+    },
+    {
+      "label": "总分值",
+      "value": "41分",
+      "change": 0,
+      "color": "green"
+    },
+    {
+      "label": "识别准确率",
+      "value": "96%",
+      "change": 0,
+      "color": "purple"
+    },
+    {
+      "label": "处理耗时",
+      "value": "3.2s",
+      "change": 0,
+      "color": "orange"
+    }
+  ]
+}

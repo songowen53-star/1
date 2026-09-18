@@ -1,0 +1,129 @@
+{
+  "header": {
+    "icon": "fa-cut",
+    "title": "LLM智能切题",
+    "subtitle": "第 5 步 / 共 9 步 · 已完成",
+    "count": 12,
+    "count_label": "识别题目"
+  },
+  "raw_text_section": {
+    "title": "原始文本区域",
+    "title_icon": "fa-align-left",
+    "lines": [
+      "一、选择题（本题共8小题，每小题5分）",
+      "1. 已知集合A={x|x²-3x+2≤0}，B={x|y=ln(1-x)}...",
+      "2. 复数z满足z·(1+i)=2i，则|z|=...",
+      "...",
+      "二、填空题（本题共4小题，每小题5分）",
+      "9. 函数f(x)=sin(2x+π/6)的最小正周期为...",
+      "...",
+      "三、解答题（本题共6小题，共70分）",
+      "13.（10分）在△ABC中，内角A,B,C的对边为a,b,c...",
+      "..."
+    ]
+  },
+  "result_section": {
+    "title": "AI切题结果",
+    "title_icon": "fa-list-ul",
+    "more": "识别出12道题",
+    "stats": [
+      {
+        "value": 8,
+        "color": "var(--primary)",
+        "label": "选择题"
+      },
+      {
+        "value": 4,
+        "color": "var(--purple)",
+        "label": "填空题"
+      },
+      {
+        "value": 6,
+        "color": "var(--success)",
+        "label": "解答题"
+      },
+      {
+        "value": "96%",
+        "color": "var(--warning)",
+        "label": "平均置信度"
+      }
+    ]
+  },
+  "questions": [
+    {
+      "n": 1,
+      "type": "选择题",
+      "score": "5分",
+      "stem": "已知集合A={x|x²-3x+2≤0}，B={x|y=ln(1-x)}，则A∩B=",
+      "kp": "集合运算",
+      "conf": 98
+    },
+    {
+      "n": 2,
+      "type": "选择题",
+      "score": "5分",
+      "stem": "复数z满足z·(1+i)=2i，则|z|=",
+      "kp": "复数模长",
+      "conf": 98
+    },
+    {
+      "n": 7,
+      "type": "选择题",
+      "score": "5分",
+      "stem": "已知椭圆C: x²/4+y²=1，过右焦点F的直线l...",
+      "kp": "圆锥曲线",
+      "conf": 95
+    },
+    {
+      "n": 9,
+      "type": "填空题",
+      "score": "5分",
+      "stem": "函数f(x)=sin(2x+π/6)的最小正周期为___",
+      "kp": "三角函数周期",
+      "conf": 97
+    },
+    {
+      "n": 10,
+      "type": "填空题",
+      "score": "5分",
+      "stem": "曲线y=x³在点(1,1)处的切线方程为___",
+      "kp": "导数几何意义",
+      "conf": 95
+    },
+    {
+      "n": 13,
+      "type": "解答题",
+      "score": "10分",
+      "stem": "在△ABC中，内角A,B,C的对边为a,b,c，已知...",
+      "kp": "正弦定理/余弦定理",
+      "conf": 92
+    }
+  ],
+  "more_tip": "— 还有 6 道题已识别，下滑查看更多 —",
+  "adjust_section": {
+    "title": "切题调整",
+    "title_icon": "fa-wrench",
+    "subtitle": "如AI切题有误，可手动调整：",
+    "options": [
+      {
+        "icon": "fa-compress-arrows-alt",
+        "color": "var(--purple)",
+        "label": "合并题7和题8"
+      },
+      {
+        "icon": "fa-expand-arrows-alt",
+        "color": "var(--warning)",
+        "label": "拆分题10为两小题"
+      },
+      {
+        "icon": "fa-plus-circle",
+        "color": "var(--success)",
+        "label": "手动添加新题目"
+      }
+    ]
+  },
+  "confirm_button": {
+    "text": "确认切题结果，进入AI审核",
+    "icon": "fa-check-double"
+  }
+}

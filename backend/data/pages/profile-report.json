@@ -1,0 +1,75 @@
+{
+  "periods": [
+    "本周",
+    "本月",
+    "本学期"
+  ],
+  "active_period": 1,
+  "overview_stats": [
+    {
+      "label": "学习时长",
+      "value": "42h",
+      "change": 15,
+      "color": "blue"
+    },
+    {
+      "label": "做题量",
+      "value": "568道",
+      "change": 8,
+      "color": "green"
+    },
+    {
+      "label": "正确率",
+      "value": "82%",
+      "change": 6,
+      "color": "orange"
+    },
+    {
+      "label": "预估进步",
+      "value": "+15分",
+      "change": 0,
+      "color": "purple"
+    }
+  ],
+  "radar_chart_label": "各科学习掌握率雷达图",
+  "subjects": [
+    {
+      "name": "数学",
+      "score": 118,
+      "percent": 88,
+      "color": "#3B82F6"
+    },
+    {
+      "name": "英语",
+      "score": 125,
+      "percent": 82,
+      "color": "#10B981"
+    },
+    {
+      "name": "物理",
+      "score": 88,
+      "percent": 80,
+      "color": "#8B5CF6"
+    },
+    {
+      "name": "化学",
+      "score": 84,
+      "percent": 84,
+      "color": "#F59E0B"
+    },
+    {
+      "name": "语文",
+      "score": 110,
+      "percent": 73,
+      "color": "#EC4899"
+    },
+    {
+      "name": "生物",
+      "score": 75,
+      "percent": 83,
+      "color": "#06B6D4"
+    }
+  ],
+  "heatmap_label": "知识点掌握热力图（按学科·模块）",
+  "ai_comment": "本月进步显著，数学尤为突出（掌握率提升 12%）。导数与圆锥曲线模块掌握扎实，但英语阅读理解仍有提升空间。建议下月保持数学训练强度的同时，每日增加 20 分钟英语精读训练，预计可再提升 8-10 分。"
+}

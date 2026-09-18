@@ -1,0 +1,80 @@
+{
+  "student": {
+    "name": "张同学",
+    "avatar": "https://i.pravatar.cc/100?img=33",
+    "grade": "高三",
+    "province": "浙江",
+    "school": "杭州第二中学",
+    "relation": "父亲",
+    "current_score": 580
+  },
+  "overview_stats": [
+    {
+      "label": "今日时长",
+      "value": "3.5h",
+      "change": 0,
+      "color": "blue"
+    },
+    {
+      "label": "本周时长",
+      "value": "28h",
+      "change": 15,
+      "color": "green"
+    },
+    {
+      "label": "平均正确率",
+      "value": "78%",
+      "change": 5,
+      "color": "orange"
+    }
+  ],
+  "daily_reports": [
+    {
+      "day": "7/28",
+      "time": "3.5h",
+      "count": 28,
+      "rate": 82
+    },
+    {
+      "day": "7/27",
+      "time": "4.2h",
+      "count": 35,
+      "rate": 80
+    },
+    {
+      "day": "7/26",
+      "time": "2.8h",
+      "count": 22,
+      "rate": 76
+    },
+    {
+      "day": "7/25",
+      "time": "3.9h",
+      "count": 30,
+      "rate": 85
+    },
+    {
+      "day": "7/24",
+      "time": "3.1h",
+      "count": 25,
+      "rate": 79
+    },
+    {
+      "day": "7/23",
+      "time": "4.5h",
+      "count": 38,
+      "rate": 83
+    },
+    {
+      "day": "7/22",
+      "time": "3.6h",
+      "count": 27,
+      "rate": 78
+    }
+  ],
+  "trend_chart_label": "最近5次考试总分变化趋势",
+  "weekly_report": {
+    "week": "第30周",
+    "content": "本周孩子学习状态良好，总时长 28h 同比增长 15%，正确率稳定在 78%。数学进步明显，建议关注英语阅读理解的强化训练。学习时段集中在 19:00-22:00，作息规律。"
+  }
+}

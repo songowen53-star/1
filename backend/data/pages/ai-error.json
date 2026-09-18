@@ -1,0 +1,90 @@
+{
+  "stats_card": {
+    "title": "本月错题统计",
+    "icon": "fa-bug",
+    "total": 127,
+    "mastered": 89,
+    "pending": 38
+  },
+  "subject_distribution_title": "按科目分布",
+  "subject_chart_label": "错题分类饼图：数学45道 / 英语28道 / 物理22道 / 化学18道 / 语文14道",
+  "subject_chart_height": 140,
+  "error_type_title": "错误类型分析",
+  "error_types": [
+    {
+      "name": "计算错误",
+      "percent": 35,
+      "color": "#EF4444"
+    },
+    {
+      "name": "概念混淆",
+      "percent": 28,
+      "color": "#F59E0B"
+    },
+    {
+      "name": "审题不清",
+      "percent": 20,
+      "color": "#8B5CF6"
+    },
+    {
+      "name": "方法不当",
+      "percent": 17,
+      "color": "#06B6D4"
+    }
+  ],
+  "ai_recommend": {
+    "title": "AI智能推荐",
+    "content": "建议优先复习数学导数类错题（反复出错3次以上），这是提分性价比最高的方向"
+  },
+  "error_list_title": "错题列表",
+  "error_list_more": "查看全部",
+  "errors": [
+    {
+      "subject": "数学",
+      "subjectColor": "blue",
+      "q": "设f(x)=x³-3x，求f(x)在[-2,2]上的最值",
+      "reason": "分类讨论遗漏边界点",
+      "ai": "需同时比较驻点与端点函数值",
+      "error_count": 3,
+      "days_ago": 2
+    },
+    {
+      "subject": "物理",
+      "subjectColor": "orange",
+      "q": "一物体从高h处自由下落，落地速度v...",
+      "reason": "运动学公式记混",
+      "ai": "v²=2gh 与 v=gt 适用场景不同",
+      "error_count": 4,
+      "days_ago": 3
+    },
+    {
+      "subject": "英语",
+      "subjectColor": "green",
+      "q": "The teacher, together with his students, ___ going...",
+      "reason": "主谓一致概念混淆",
+      "ai": "together with 不影响主语单复数",
+      "error_count": 5,
+      "days_ago": 4
+    },
+    {
+      "subject": "化学",
+      "subjectColor": "purple",
+      "q": "反应N₂+3H₂⇌2NH₃达平衡后...",
+      "reason": "平衡移动方向判断错误",
+      "ai": "先用勒夏特列原理判断",
+      "error_count": 6,
+      "days_ago": 5
+    },
+    {
+      "subject": "数学",
+      "subjectColor": "blue",
+      "q": "已知椭圆x²/4+y²=1，求离心率e",
+      "reason": "a²与b²位置搞反",
+      "ai": "a²是较大分母，e=√(1-b²/a²)",
+      "error_count": 7,
+      "days_ago": 6
+    }
+  ],
+  "train_button_text": "开始错题训练",
+  "train_button_icon": "fa-play"
+}

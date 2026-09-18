@@ -1,0 +1,98 @@
+{
+  "account_section": {
+    "title": "账号设置",
+    "items": [
+      {
+        "icon": "fa-lock",
+        "bg": "linear-gradient(135deg,#3B82F6,#1D4ED8)",
+        "title": "修改密码",
+        "desc": "定期更新更安全"
+      },
+      {
+        "icon": "fa-mobile-alt",
+        "bg": "linear-gradient(135deg,#10B981,#059669)",
+        "title": "绑定手机",
+        "desc": "138****8888"
+      },
+      {
+        "icon": "fab fa-weixin",
+        "bg": "linear-gradient(135deg,#07C160,#059669)",
+        "title": "绑定微信",
+        "desc": "已绑定"
+      }
+    ]
+  },
+  "study_section": {
+    "title": "学习设置",
+    "items": [
+      {
+        "icon": "fa-bullseye",
+        "bg": "linear-gradient(135deg,#F59E0B,#D97706)",
+        "title": "每日目标",
+        "desc": "6 小时"
+      },
+      {
+        "icon": "fa-bell",
+        "bg": "linear-gradient(135deg,#8B5CF6,#6D28D9)",
+        "title": "提醒时间",
+        "desc": "19:00"
+      },
+      {
+        "icon": "fa-sliders-h",
+        "bg": "linear-gradient(135deg,#06B6D4,#0891B2)",
+        "title": "学习偏好",
+        "desc": "理科优先"
+      }
+    ]
+  },
+  "notification_section": {
+    "title": "通知设置",
+    "items": [
+      {
+        "icon": "fa-book-open",
+        "bg": "linear-gradient(135deg,#3B82F6,#1D4ED8)",
+        "title": "学习提醒",
+        "desc": "每日学习计划推送",
+        "enabled": true
+      },
+      {
+        "icon": "fa-chart-line",
+        "bg": "linear-gradient(135deg,#10B981,#059669)",
+        "title": "成绩通知",
+        "desc": "考试与估分提醒",
+        "enabled": true
+      },
+      {
+        "icon": "fa-info-circle",
+        "bg": "linear-gradient(135deg,#6B7280,#4B5563)",
+        "title": "系统消息",
+        "desc": "活动与公告通知",
+        "enabled": false
+      }
+    ]
+  },
+  "other_section": {
+    "title": "其他",
+    "items": [
+      {
+        "icon": "fa-broom",
+        "bg": "linear-gradient(135deg,#06B6D4,#0891B2)",
+        "title": "清除缓存",
+        "desc": "当前 23.5 MB"
+      },
+      {
+        "icon": "fa-shield-alt",
+        "bg": "linear-gradient(135deg,#8B5CF6,#6D28D9)",
+        "title": "隐私协议",
+        "desc": ""
+      },
+      {
+        "icon": "fa-file-contract",
+        "bg": "linear-gradient(135deg,#6B7280,#4B5563)",
+        "title": "用户协议",
+        "desc": ""
+      }
+    ]
+  },
+  "version": "AI高考 v1.2.0"
+}
