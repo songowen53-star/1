@@ -1,0 +1,22 @@
+{
+  "exam_name": "1月月考",
+  "total_score": 580,
+  "total_max": 750,
+  "change": "+15",
+  "subjects": [
+    { "name": "语文", "score": 105, "total": 150, "change": "+5", "color": "#3B82F6", "icon": "fa-book" },
+    { "name": "数学", "score": 95, "total": 150, "change": "-8", "color": "#EF4444", "icon": "fa-calculator" },
+    { "name": "英语", "score": 118, "total": 150, "change": "+10", "color": "#10B981", "icon": "fa-language" },
+    { "name": "物理", "score": 85, "total": 100, "change": "+3", "color": "#F59E0B", "icon": "fa-atom" },
+    { "name": "化学", "score": 82, "total": 100, "change": "+2", "color": "#8B5CF6", "icon": "fa-flask" },
+    { "name": "生物", "score": 95, "total": 100, "change": "+3", "color": "#EC4899", "icon": "fa-dna" }
+  ],
+  "trend_data": {
+    "labels": ["9月", "10月", "11月", "12月", "1月"],
+    "values": [560, 568, 572, 565, 580]
+  },
+  "ai_analysis": {
+    "title": "月考成绩深度分析",
+    "content": "本月考总分580分，较上次提升15分。优势科目为英语（79%得分率）和生物（95%得分率）；数学得分率仅63%，是主要短板，建议每天加做15道数学综合题。按当前趋势预测，高考有望冲击610-630分区间，可重点关注省内985院校。"
+  }
+}

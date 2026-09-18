@@ -1,0 +1,16 @@
+# 敏感数据
+secrets/
+*.env
+.env
+
+# 依赖
+node_modules/
+
+# 缓存/构建产物
+.wrangler/
+.trae-html-share-packages/
+acceptance-results.json
+
+# 系统
+.DS_Store
+Thumbs.db
