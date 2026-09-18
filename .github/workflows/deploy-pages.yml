@@ -15,7 +15,7 @@ jobs:
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: 5ab4e9dfbd435d24068829fda0077963
+          accountId: fb1176b63978555cec647e7f061c09fa
           projectName: ai-gaokao-static
           directory: dist
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
