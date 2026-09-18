@@ -1,1 +1,21 @@
-bmFtZTogRGVwbG95IHRvIENsb3VkZmxhcmUgUGFnZXMKCm9uOgogIHB1c2g6CiAgICBicmFuY2hlczogW21haW5dCiAgd29ya2Zsb3dfZGlzcGF0Y2g6Cgpqb2JzOgogIGRlcGxveToKICAgIHJ1bnMtb246IHVidW50dS1sYXRlc3QKICAgIHN0ZXBzOgogICAgICAtIHVzZXM6IGFjdGlvbnMvY2hlY2tvdXRAdjQKCiAgICAgIC0gbmFtZTogRGVwbG95IHRvIENsb3VkZmxhcmUgUGFnZXMKICAgICAgICB1c2VzOiBjbG91ZGZsYXJlL3BhZ2VzLWFjdGlvbkB2MQogICAgICAgIHdpdGg6CiAgICAgICAgICBhcGlUb2tlbjogY2ZhdF82YUZkR2J4eWJUaG92TVBVU3RIY01XS3pYRTdVRDg0N3ZjSWlJa0FsM2FhMzk2MTQKICAgICAgICAgIGFjY291bnRJZDogZmIxMTc2YjYzOTc4NTU1Y2VjNjQ3ZTdmMDYxYzA5ZmEKICAgICAgICAgIHByb2plY3ROYW1lOiBhaS1nYW9rYW8tc3RhdGljCiAgICAgICAgICAgZGlyZWN0b3J5OiBkaXN0CiAgICAgICAgICAgZ2l0SHViVG9rZW46ICR7e3NlY3JldHMuR0lUSFVCX1RPS0VOfX0=
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: fb1176b63978555cec647e7f061c09fa
+          projectName: ai-gaokao-static
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
