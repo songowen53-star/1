@@ -914,10 +914,16 @@ registerPage('home', 'AI今日提分', '首页', 'fa-home', () => {
     setTimeout(function() {
         const container = document.getElementById('home-today-plan-preview');
         if (!container) return;
-        if (typeof api === 'undefined' || !api.getTodayTasks) return;
+
+        // API 不可用时的回退提示
+        function showPreviewFallback() {
+            container.innerHTML = '<div style="text-align:center;padding:16px;color:#9CA3AF;font-size:13px;"><i class="fas fa-clipboard-list" style="color:#3B82F6;margin-right:6px;"></i>暂无今日任务数据，点击"查看全部"进入今日任务页</div>';
+        }
+
+        if (typeof api === 'undefined' || !api.getTodayTasks) { showPreviewFallback(); return; }
 
         api.getTodayTasks().then(function(data) {
-            if (!data || !data.tasks) return;
+            if (!data || !data.tasks) { showPreviewFallback(); return; }
             const tasks = data.tasks.slice(0, 3); // 只显示前3个任务
             const doneCount = data.done_count || 0;
             const totalCount = data.total_count || 0;
@@ -957,7 +963,7 @@ registerPage('home', 'AI今日提分', '首页', 'fa-home', () => {
             }
             html += '</div>';
             container.innerHTML = html;
-        }).catch(function() { /* 静默失败 */ });
+        }).catch(function() { showPreviewFallback(); });
     }, 100);
 
     return Page({
@@ -1292,6 +1298,11 @@ registerPage('home-plan', 'AI学习计划', '首页', 'fa-home', () => {
 // 4. 今日任务详情
 // ============================================================
 registerPage('home-task', '今日任务', '首页', 'fa-home', () => {
+    // 实时日期：格式 "9月18日 周五"
+    const _now = new Date();
+    const _weekNames = ['日','一','二','三','四','五','六'];
+    const _todayStr = (_now.getMonth() + 1) + '月' + _now.getDate() + '日 周' + _weekNames[_now.getDay()];
+
     // 渲染单个任务卡片（供异步更新复用）
     function renderTaskCard(t) {
         const statusText = t.status === 'done' ? '已完成' : '待完成';
@@ -1337,18 +1348,46 @@ registerPage('home-task', '今日任务', '首页', 'fa-home', () => {
         const statsContainer = document.getElementById('today-task-stats');
         if (!listContainer) return;
 
-        if (typeof api === 'undefined' || !api.getTodayTasks) return;
-
-        api.getTodayTasks().then(function(data) {
-            if (!data || !data.tasks) return;
-            const tasks = data.tasks;
-
-            // 更新头部：日期 + 进度
+        // API 不可用时的回退：保留实时日期，显示提示
+        function showFallback() {
             if (headerContainer) {
                 headerContainer.innerHTML =
                     '<div>' +
                     '<div style="font-size:12px;opacity:0.85;"><i class="fas fa-calendar-check"></i> 今日任务</div>' +
-                    '<div style="font-size:20px;font-weight:800;margin-top:4px;">' + data.date + '</div>' +
+                    '<div style="font-size:20px;font-weight:800;margin-top:4px;">' + _todayStr + '</div>' +
+                    '<div style="font-size:12px;opacity:0.85;margin-top:2px;">点击下方按钮开始今日学习</div>' +
+                    '</div>' +
+                    '<div style="text-align:center;">' +
+                    RingChart(0, '#FCD34D', 72) +
+                    '<div style="font-size:11px;opacity:0.85;margin-top:4px;">完成率</div></div>';
+            }
+            listContainer.innerHTML = '<div class="proto-card" style="margin:0 0 12px;text-align:center;padding:30px;color:#9CA3AF;"><i class="fas fa-clipboard-list" style="font-size:28px;margin-bottom:8px;color:#3B82F6;"></i><div style="font-size:14px;font-weight:600;">暂无今日任务数据</div><div style="font-size:12px;margin-top:4px;">服务端任务接口暂不可用，可点击下方按钮开始练习</div></div>';
+            if (statsContainer) {
+                statsContainer.innerHTML =
+                    '<div style="font-size:14px;font-weight:700;margin-bottom:12px;"><i class="fas fa-chart-bar" style="color:#3B82F6;margin-right:6px;"></i>今日进度</div>' +
+                    '<div class="proto-grid-3" style="margin-bottom:12px;">' +
+                    StatCard('已完成', '0', 0, 'green') +
+                    StatCard('待完成', '0', 0, 'orange') +
+                    StatCard('总任务', '0', 0, 'blue') +
+                    '</div>' +
+                    Progress(0, '#3B82F6') +
+                    '<div style="font-size:11px;color:#9CA3AF;margin-top:6px;">等待加载今日任务…</div>';
+            }
+        }
+
+        if (typeof api === 'undefined' || !api.getTodayTasks) { showFallback(); return; }
+
+        api.getTodayTasks().then(function(data) {
+            if (!data || !data.tasks) { showFallback(); return; }
+            const tasks = data.tasks;
+
+            // 更新头部：日期 + 进度（始终使用实时日期，避免 mock 数据中的过期日期覆盖）
+            const displayDate = _todayStr;
+            if (headerContainer) {
+                headerContainer.innerHTML =
+                    '<div>' +
+                    '<div style="font-size:12px;opacity:0.85;"><i class="fas fa-calendar-check"></i> 今日任务</div>' +
+                    '<div style="font-size:20px;font-weight:800;margin-top:4px;">' + displayDate + '</div>' +
                     '<div style="font-size:12px;opacity:0.85;margin-top:2px;">已完成 ' + data.done_count + '/' + data.total_count + '，加油冲刺！</div>' +
                     '</div>' +
                     '<div style="text-align:center;">' +
@@ -1379,7 +1418,7 @@ registerPage('home-task', '今日任务', '首页', 'fa-home', () => {
                     Progress(data.completion_rate, '#3B82F6') +
                     '<div style="font-size:11px;color:#9CA3AF;margin-top:6px;">总时长 ' + totalMin + 'min · 已用 ' + usedMin + 'min · 预计还需 ' + Math.max(0, totalMin - usedMin) + 'min</div>';
             }
-        }).catch(function() { /* 静默失败 */ });
+        }).catch(function() { showFallback(); });
     }, 100);
 
     return Page({
@@ -1392,7 +1431,8 @@ registerPage('home-task', '今日任务', '首页', 'fa-home', () => {
                 <div id="today-task-header" style="display:flex;align-items:center;justify-content:space-between;">
                     <div>
                         <div style="font-size:12px;opacity:0.85;"><i class="fas fa-calendar-check"></i> 今日任务</div>
-                        <div style="font-size:20px;font-weight:800;margin-top:4px;">加载中…</div>
+                        <div style="font-size:20px;font-weight:800;margin-top:4px;">${_todayStr}</div>
+                        <div style="font-size:12px;opacity:0.85;margin-top:2px;">正在加载任务进度…</div>
                     </div>
                 </div>
             `)}
@@ -2735,13 +2775,21 @@ registerPage('discover', '发现', '首页', 'fa-compass', function () {
     });
     c += '</div>';
 
-    // 备考日历 - 重要时间节点提醒
+    // 备考日历 - 重要时间节点提醒（日期动态生成）
     c += '<div class="proto-card" style="margin:12px;"><div style="font-size:15px;font-weight:700;margin-bottom:12px;"><i class="fas fa-calendar-alt" style="color:#3B82F6;margin-right:6px;"></i>备考日历</div>';
+    // 实时日期：今日学习计划显示当前真实日期，其他事件按相对天数偏移生成
+    var _calNow = new Date();
+    var _pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+    var _fmtDate = function(d) { return _pad(d.getMonth() + 1) + '月' + _pad(d.getDate()) + '日'; };
+    var _todayEvt = new Date(_calNow);
+    var _monthlyEvt = new Date(_calNow); _monthlyEvt.setDate(_calNow.getDate() + 3);
+    var _mockEvt = new Date(_calNow); _mockEvt.setDate(_calNow.getDate() + 8);
+    var _volunteerEvt = new Date(_calNow); _volunteerEvt.setDate(_calNow.getDate() + 13);
     var calEvents = [
-        { date: '09月07日', icon: 'fa-bell',        bg: '#DBEAFE', color: '#3B82F6', title: '今日学习计划',    desc: '3个任务待完成，预计95分钟',  page: 'home-task' },
-        { date: '09月10日', icon: 'fa-file-alt',    bg: '#FEF3C7', color: '#F59E0B', title: '月考分析报告',    desc: '本月月考成绩分析将生成',     page: 'score-monthly' },
-        { date: '09月15日', icon: 'fa-trophy',       bg: '#D1FAE5', color: '#10B981', title: '一模考试',        desc: '全省统考，预计排名区间',     page: 'score-mock' },
-        { date: '09月20日', icon: 'fa-graduation-cap',bg: '#EDE9FE', color: '#8B5CF6', title: '志愿填报预演',    desc: '基于模考成绩推荐院校',      page: 'volunteer' }
+        { date: _fmtDate(_todayEvt),     icon: 'fa-bell',        bg: '#DBEAFE', color: '#3B82F6', title: '今日学习计划', desc: '3个任务待完成，预计95分钟',  page: 'home-task' },
+        { date: _fmtDate(_monthlyEvt),   icon: 'fa-file-alt',    bg: '#FEF3C7', color: '#F59E0B', title: '月考分析报告', desc: '本月月考成绩分析将生成',     page: 'score-monthly' },
+        { date: _fmtDate(_mockEvt),      icon: 'fa-trophy',       bg: '#D1FAE5', color: '#10B981', title: '一模考试',     desc: '全省统考，预计排名区间',     page: 'score-mock' },
+        { date: _fmtDate(_volunteerEvt), icon: 'fa-graduation-cap',bg: '#EDE9FE', color: '#8B5CF6', title: '志愿填报预演', desc: '基于模考成绩推荐院校',      page: 'volunteer' }
     ];
     calEvents.forEach(function (e) {
         c += '<div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #F3F4F6;cursor:pointer;" onclick="navigateTo(\'' + e.page + '\')">';

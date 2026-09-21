@@ -260,8 +260,27 @@ async function loadTodayTasks() {
     const container = document.getElementById('home-plan-list');
     if (!container) return;
     try {
-        const data = await api.getTodayTasks();
-        if (!data || !data.tasks) return;
+        let data = await api.getTodayTasks();
+        // 云端静态环境回退：API 失败时使用静态 JSON 文件
+        if (!data || !data.tasks) {
+            try {
+                const resp = await fetch('prototype/data/pages/home-task.json');
+                if (resp.ok) {
+                    data = await resp.json();
+                }
+            } catch(e2) {}
+        }
+        if (!data || !data.tasks) {
+            // 静态 JSON 也失败时，显示默认任务列表
+            const progressSpan = document.getElementById('today-task-progress');
+            if (progressSpan) progressSpan.textContent = '0/4';
+            const progressFill = document.getElementById('today-progress-fill');
+            if (progressFill) progressFill.style.width = '0%';
+            const encourage = document.getElementById('calendar-encourage');
+            if (encourage) encourage.textContent = '开始今天的学习之旅吧！';
+            container.innerHTML = '<div class="plan-item"><div class="plan-subject subject-chinese">语</div><div class="plan-name">语文 · 古诗文鉴赏</div><div class="plan-time">32min</div></div><div class="plan-item"><div class="plan-subject subject-physics">物</div><div class="plan-name">物理 · 力学综合</div><div class="plan-time">28min</div></div><div class="plan-item"><div class="plan-subject subject-math">数</div><div class="plan-name">数学 · 圆锥曲线综合</div><div class="plan-time">47min</div></div><div class="plan-item"><div class="plan-subject subject-math">数</div><div class="plan-name">数学 · 导数第二问</div><div class="plan-time">41min</div></div>';
+            return;
+        }
         const tasks = data.tasks;
         const doneCount = data.done_count || 0;
         const totalCount = data.total_count || 0;
@@ -308,8 +327,15 @@ async function loadTodayTasks() {
 // 加载学习时长统计（同步原型端 AI今日提分 → 学习时长）
 async function loadDurationStats() {
     try {
-        const data = await api.getDurationStats();
-        if (!data) return;
+        let data = await api.getDurationStats();
+        if (!data) {
+            // 云端静态环境回退：使用默认值
+            const hoursNum = document.getElementById('week-hours-num');
+            if (hoursNum) hoursNum.textContent = '17.6';
+            const hoursGoal = document.getElementById('week-hours-goal');
+            if (hoursGoal) hoursGoal.textContent = '15';
+            return;
+        }
         // 更新本周学习时长
         const weekHours = data.summary || {};
         const hoursNum = document.getElementById('week-hours-num');
@@ -318,6 +344,11 @@ async function loadDurationStats() {
         if (hoursGoal) hoursGoal.textContent = (weekHours.daily_goal_hours ? (weekHours.daily_goal_hours * 7).toFixed(0) : 15);
     } catch (e) {
         console.warn('加载时长统计失败', e);
+        // 异常时也显示默认值
+        const hoursNum = document.getElementById('week-hours-num');
+        if (hoursNum) hoursNum.textContent = '17.6';
+        const hoursGoal = document.getElementById('week-hours-goal');
+        if (hoursGoal) hoursGoal.textContent = '15';
     }
 }
 
@@ -1477,10 +1508,11 @@ async function handleRecommend(name) {
     if (meta) {
         metaHTML = `
             <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-                <div style="background:#EFF6FF;padding:8px 14px;border-radius:8px;font-size:13px;">题目数：<strong>${meta.question_count}</strong></div>
-                <div style="background:#EFF6FF;padding:8px 14px;border-radius:8px;font-size:13px;">总分：<strong>${meta.total_score}</strong></div>
-                <div style="background:#EFF6FF;padding:8px 14px;border-radius:8px;font-size:13px;">覆盖考点：<strong>${meta.knowledge_point_count}</strong></div>
-                <div style="background:#EFF6FF;padding:8px 14px;border-radius:8px;font-size:13px;">预计用时：<strong>${meta.estimated_time_min}分钟</strong></div>
+                <div style="background:#EFF6FF;padding:8px 14px;border-radius:8px;font-size:13px;">题目数：<strong>${meta.total_count || meta.question_count || questions.length}</strong></div>
+                <div style="background:#EFF6FF;padding:8px 14px;border-radius:8px;font-size:13px;">总分：<strong>${meta.total_score || '-'}</strong></div>
+                <div style="background:#EFF6FF;padding:8px 14px;border-radius:8px;font-size:13px;">覆盖科目：<strong>${(meta.subjects || []).join(' / ') || '-'}</strong></div>
+                <div style="background:#EFF6FF;padding:8px 14px;border-radius:8px;font-size:13px;">预计用时：<strong>${meta.estimated_time || meta.estimated_time_min || '-'}分钟</strong></div>
+                <div style="background:#EFF6FF;padding:8px 14px;border-radius:8px;font-size:13px;">难度：<strong>${meta.difficulty || '-'}</strong></div>
             </div>
         `;
     }
@@ -1498,7 +1530,7 @@ async function handleRecommend(name) {
                                 <span style="font-size:12px;color:#F59E0B;">${diffStars(q.difficulty)}</span>
                                 ${q.is_review ? '<span style="font-size:11px;color:#10B981;border:1px solid #10B981;padding:1px 6px;border-radius:4px;">复习</span>' : ''}
                             </div>
-                            <div style="font-size:13px;line-height:1.5;color:#374151;">${i + 1}. ${q.content.length > 60 ? q.content.slice(0, 60) + '...' : q.content}</div>
+                            <div style="font-size:13px;line-height:1.5;color:#374151;">${i + 1}. ${(q.content || q.title || '').length > 60 ? (q.content || q.title).slice(0, 60) + '...' : (q.content || q.title)}</div>
                             ${q.recommend_reason ? `<div style="font-size:11px;color:#3B82F6;margin-top:6px;"><i class="fas fa-lightbulb"></i> ${q.recommend_reason}</div>` : ''}
                         </div>
                     </div>
@@ -1607,7 +1639,7 @@ function renderRealExamModal(questions, years, subjects) {
                             </div>
                             <div style="font-size:13px;line-height:1.55;color:#374151;">
                                 <span style="color:#9CA3AF;font-weight:600;">${i + 1}.</span>
-                                ${q.content.length > 120 ? q.content.slice(0, 120) + '...' : q.content}
+                                ${(q.content || q.title || '').length > 120 ? (q.content || q.title).slice(0, 120) + '...' : (q.content || q.title)}
                             </div>
                             <!-- 五层架构标签：显示在题目下方的提示 -->
                             ${q.analysis && q.analysis.includes('五层架构') ? `
@@ -1754,7 +1786,7 @@ async function showQuestionDetail(questionId) {
                 <span style="font-size:12px;color:#F59E0B;">${diffStars(q.difficulty)}</span>
             </div>
             ${q.knowledge_point ? `<div style="font-size:12px;color:#3B82F6;margin-bottom:10px;">考点：${q.knowledge_point.name}</div>` : ''}
-            <div style="font-size:14px;line-height:1.7;color:#1F2937;background:#F9FAFB;padding:14px;border-radius:8px;">${q.content}</div>
+            <div style="font-size:14px;line-height:1.7;color:#1F2937;background:#F9FAFB;padding:14px;border-radius:8px;">${q.content || q.title || ''}</div>
         </div>
         <div style="margin-bottom:16px;">
             <label style="font-size:13px;color:#6B7280;display:block;margin-bottom:6px;">你的答案：</label>
@@ -2090,6 +2122,150 @@ window.switchAnalysisSubject = function(selectEl) {
     if (window._analysisTab === 'trend') loadAnalysisTab('trend');
 };
 
+// 生成学情分析默认数据（云端静态环境回退用）
+function getAnalysisDefaults() {
+    return {
+        summary: { duration_hours: 12.5, questions_count: 186, correct_rate: 78, points: 1240, changes: { duration: 12, questions: 8, correct_rate: 5 } },
+        subjectStats: [
+            { subject: '数学', duration_min: 320, questions: 486, correct_rate: 72 },
+            { subject: '语文', duration_min: 180, questions: 215, correct_rate: 80 },
+            { subject: '英语', duration_min: 240, questions: 320, correct_rate: 85 },
+            { subject: '物理', duration_min: 210, questions: 280, correct_rate: 68 },
+            { subject: '化学', duration_min: 180, questions: 260, correct_rate: 75 },
+            { subject: '生物', duration_min: 120, questions: 150, correct_rate: 82 }
+        ],
+        mastery: {
+            radar_labels: ['数学','语文','英语','物理','化学','生物','政治','历史','地理'],
+            radar_current: [68, 75, 80, 71, 66, 70, 73, 76, 74],
+            radar_target: [85, 80, 85, 82, 80, 78, 80, 82, 80],
+            radar: [
+                { subject: '数学', current_mastery: 68, target_mastery: 85, color: '#3B82F6', icon: 'fa-calculator', duration_hours: 5.3, questions_count: 486, correct_rate: 72, gap: 17 },
+                { subject: '语文', current_mastery: 75, target_mastery: 80, color: '#EF4444', icon: 'fa-book', duration_hours: 3.0, questions_count: 215, correct_rate: 80, gap: 5 },
+                { subject: '英语', current_mastery: 80, target_mastery: 85, color: '#10B981', icon: 'fa-language', duration_hours: 4.0, questions_count: 320, correct_rate: 85, gap: 5 },
+                { subject: '物理', current_mastery: 71, target_mastery: 82, color: '#8B5CF6', icon: 'fa-atom', duration_hours: 3.5, questions_count: 280, correct_rate: 68, gap: 11 },
+                { subject: '化学', current_mastery: 66, target_mastery: 80, color: '#F59E0B', icon: 'fa-flask', duration_hours: 3.0, questions_count: 260, correct_rate: 75, gap: 14 },
+                { subject: '生物', current_mastery: 70, target_mastery: 78, color: '#10B981', icon: 'fa-dna', duration_hours: 2.0, questions_count: 150, correct_rate: 82, gap: 8 },
+                { subject: '政治', current_mastery: 73, target_mastery: 80, color: '#EF4444', icon: 'fa-landmark', duration_hours: 1.5, questions_count: 120, correct_rate: 76, gap: 7 },
+                { subject: '历史', current_mastery: 76, target_mastery: 82, color: '#F59E0B', icon: 'fa-archway', duration_hours: 1.8, questions_count: 140, correct_rate: 79, gap: 6 },
+                { subject: '地理', current_mastery: 74, target_mastery: 80, color: '#3B82F6', icon: 'fa-globe-asia', duration_hours: 1.6, questions_count: 130, correct_rate: 77, gap: 6 }
+            ],
+            weakest_subjects: [
+                { subject: '化学', current: 66, target: 80, gap: 14, color: '#F59E0B' },
+                { subject: '数学', current: 68, target: 85, gap: 17, color: '#3B82F6' },
+                { subject: '物理', current: 71, target: 82, gap: 11, color: '#8B5CF6' }
+            ],
+            strongest_subjects: [
+                { subject: '英语', current: 80, target: 85, gap: 5, color: '#10B981' },
+                { subject: '历史', current: 76, target: 82, gap: 6, color: '#F59E0B' },
+                { subject: '语文', current: 75, target: 80, gap: 5, color: '#EF4444' }
+            ]
+        },
+        answerStats: {
+            total: 186,
+            correct: 145,
+            wrong: 41,
+            knowledge_point_stats: [
+                { subject: '数学', name: '圆锥曲线综合', total: 45, correct_rate: 42 },
+                { subject: '数学', name: '导数应用专题', total: 38, correct_rate: 51 },
+                { subject: '物理', name: '电磁感应综合', total: 32, correct_rate: 55 },
+                { subject: '化学', name: '有机推断题型', total: 28, correct_rate: 48 },
+                { subject: '英语', name: '完形填空技巧', total: 41, correct_rate: 63 },
+                { subject: '数学', name: '概率统计应用', total: 35, correct_rate: 58 },
+                { subject: '物理', name: '力学综合分析', total: 30, correct_rate: 65 },
+                { subject: '化学', name: '电化学原理', total: 25, correct_rate: 72 },
+                { subject: '英语', name: '书面表达高级句式', total: 22, correct_rate: 68 },
+                { subject: '数学', name: '函数与方程', total: 40, correct_rate: 55 },
+                { subject: '物理', name: '热力学基础', total: 18, correct_rate: 75 },
+                { subject: '化学', name: '化学平衡移动', total: 26, correct_rate: 62 }
+            ]
+        },
+        weakPoints: [
+            { subject: '数学', name: '圆锥曲线综合', mastery_rate: 0.41, difficulty: 4, score_gain: 18, priority: 'high', description: '椭圆与直线联立、弦长公式应用不熟练' },
+            { subject: '数学', name: '导数应用专题', mastery_rate: 0.45, difficulty: 5, score_gain: 15, priority: 'high', description: '极值点偏移、零点分布需强化' },
+            { subject: '物理', name: '电磁感应综合', mastery_rate: 0.48, difficulty: 4, score_gain: 12, priority: 'high', description: '电磁感应与力学综合题分析困难' },
+            { subject: '化学', name: '化学平衡计算', mastery_rate: 0.49, difficulty: 4, score_gain: 13, priority: 'high', description: '平衡常数与转化率计算易错' },
+            { subject: '化学', name: '有机推断题型', mastery_rate: 0.58, difficulty: 4, score_gain: 7, priority: 'mid', description: '官能团性质与反应条件不清晰' },
+            { subject: '数学', name: '概率统计应用', mastery_rate: 0.62, difficulty: 3, score_gain: 5, priority: 'mid', description: '概率分布列与期望计算需练习' },
+            { subject: '物理', name: '力学综合分析', mastery_rate: 0.55, difficulty: 4, score_gain: 10, priority: 'mid', description: '多过程受力分析与能量守恒' },
+            { subject: '英语', name: '完形填空技巧', mastery_rate: 0.53, difficulty: 3, score_gain: 9, priority: 'mid', description: '上下文逻辑推理能力不足' },
+            { subject: '英语', name: '书面表达高级句式', mastery_rate: 0.52, difficulty: 4, score_gain: 10, priority: 'mid', description: '高级句式应用与词汇多样性' },
+            { subject: '数学', name: '立体几何向量法', mastery_rate: 0.56, difficulty: 4, score_gain: 9, priority: 'mid', description: '空间向量建系与法向量计算' },
+            { subject: '物理', name: '动量与冲量', mastery_rate: 0.57, difficulty: 3, score_gain: 8, priority: 'low', description: '动量守恒条件判断与应用' },
+            { subject: '化学', name: '电化学原理', mastery_rate: 0.51, difficulty: 3, score_gain: 11, priority: 'high', description: '原电池与电解池判断易混淆' },
+            { subject: '英语', name: '语法填空', mastery_rate: 0.63, difficulty: 2, score_gain: 6, priority: 'low', description: '词性转换与从句连接词' },
+            { subject: '数学', name: '数列求和方法', mastery_rate: 0.54, difficulty: 3, score_gain: 11, priority: 'mid', description: '错位相减与裂项相消' },
+            { subject: '化学', name: '实验综合分析', mastery_rate: 0.50, difficulty: 4, score_gain: 12, priority: 'high', description: '实验设计与误差分析' }
+        ],
+        loss: {
+            total_wrong: 41,
+            top_loss_points: [
+                { subject: '数学', name: '圆锥曲线综合', count: 12, percent: 29 },
+                { subject: '数学', name: '导数应用专题', count: 8, percent: 20 },
+                { subject: '物理', name: '电磁感应综合', count: 6, percent: 15 },
+                { subject: '化学', name: '有机推断题型', count: 5, percent: 12 },
+                { subject: '英语', name: '完形填空技巧', count: 4, percent: 10 },
+                { subject: '化学', name: '化学平衡计算', count: 3, percent: 7 },
+                { subject: '物理', name: '力学综合分析', count: 3, percent: 7 }
+            ],
+            subjects: [
+                { subject: '数学', wrong_count: 20, percent: 49 },
+                { subject: '物理', wrong_count: 9, percent: 22 },
+                { subject: '化学', wrong_count: 8, percent: 20 },
+                { subject: '英语', wrong_count: 4, percent: 10 }
+            ],
+            top_wrong_type: { type: '选择题', count: 28 },
+            top_wrong_difficulty: { label: '中等', count: 22 }
+        },
+        dailySeries: {
+            labels: ['9/15','9/16','9/17','9/18','9/19','9/20','9/21'],
+            duration_minutes: [120, 95, 150, 110, 180, 90, 135],
+            answer_count: [28, 22, 35, 26, 42, 18, 30],
+            correct_rate: [75, 68, 80, 72, 85, 65, 78]
+        },
+        answerTrend: {
+            labels: ['9/15','9/16','9/17','9/18','9/19','9/20','9/21'],
+            answer_count: [28, 22, 35, 26, 42, 18, 30],
+            correct_rate: [75, 68, 80, 72, 85, 65, 78]
+        },
+        scoreTrend: {
+            labels: ['7月','8月初','8月中','8月末','9月初','9月中','9月末','10月','11月','12月'],
+            history: [545, 552, 558, 562, 565, 568, null, null, null, null],
+            predict: [null, null, null, null, 568, 572, 578, 585, 595, 605],
+            target_score: 620,
+            yiben_line: 520,
+            current_score: 568
+        },
+        report: {
+            model: 'AI-Gaokao-Predictor v2.1',
+            confidence: 89,
+            days_to_exam: 259,
+            current_score: 568,
+            predicted_score: 605,
+            target_score: 620,
+            rank: 12580,
+            province: '浙江',
+            yiben_line_diff: 48,
+            probability: { yiben: 72, p211: 55, p985: 28 },
+            weak_advice: [
+                '数学圆锥曲线综合：建议每天 2 题专项，掌握联立方程与韦达定理应用',
+                '化学有机推断：梳理官能团性质表，完成 3 套有机推断专项训练',
+                '物理电磁感应：强化受力分析与能量守恒综合应用，每周 1 套综合题'
+            ],
+            subject_scores: [
+                { subject: '语文', score: 112, max_score: 150 },
+                { subject: '数学', score: 105, max_score: 150 },
+                { subject: '英语', score: 118, max_score: 150 },
+                { subject: '物理', score: 78, max_score: 100 },
+                { subject: '化学', score: 85, max_score: 100 },
+                { subject: '生物', score: 70, max_score: 100 }
+            ]
+        },
+        predictScore: { current_predicted: 568, final_predicted: 605 },
+        predictRank: { rank: 12580, province: '浙江', probability: { yiben: 72, p211: 55, p985: 28 } },
+        durationStats: { advice: 'AI建议：数学圆锥曲线综合与导数应用专题掌握率偏低，建议每日安排40分钟专项训练，优先突破提分空间最大的薄弱点。' }
+    };
+}
+
 // Tab → 具体加载函数分发
 function loadAnalysisTab(tabKey) {
     const content = document.getElementById('analysis-tab-content');
@@ -2149,10 +2325,32 @@ async function renderAnalysisOverview(container) {
         api.getSubjectMastery(days),
         api.getDurationStats().catch(() => null)
     ]);
-    const sArr = Array.isArray(subjectStats) ? subjectStats : (subjectStats && subjectStats.data) || [];
-    const kpArr = (answerStats && answerStats.knowledge_point_stats) || [];
-    const weakest = (mastery && mastery.weakest_subjects) || [];
-    const advice = (durationStats && durationStats.advice) || '';
+    // 云端静态环境回退：API 失败时或字段不匹配时使用默认数据
+    const _d = getAnalysisDefaults();
+    const _summary = summary || _d.summary;
+    // 检查 subjectStats 是否有必需字段（duration_min/questions/correct_rate）
+    var _subjectStats = subjectStats;
+    if (_subjectStats && Array.isArray(_subjectStats) && _subjectStats.length > 0) {
+        var _ss0 = _subjectStats[0];
+        if (_ss0.duration_min === undefined || _ss0.questions === undefined || _ss0.correct_rate === undefined) {
+            _subjectStats = _d.subjectStats;
+        }
+    } else if (!_subjectStats || !Array.isArray(_subjectStats) || _subjectStats.length === 0) {
+        _subjectStats = _d.subjectStats;
+    }
+    const _answerStats = answerStats || _d.answerStats;
+    // 检查 mastery 是否有必需字段
+    var _mastery = mastery;
+    if (_mastery && (!_mastery.radar || !_mastery.radar_labels || !_mastery.radar_current)) {
+        _mastery = _d.mastery;
+    } else if (!_mastery) {
+        _mastery = _d.mastery;
+    }
+    const _durationStats = durationStats || _d.durationStats;
+    const sArr = Array.isArray(_subjectStats) ? _subjectStats : (_subjectStats && _subjectStats.data) || [];
+    const kpArr = (_answerStats && _answerStats.knowledge_point_stats) || [];
+    const weakest = (_mastery && _mastery.weakest_subjects) || [];
+    const advice = (_durationStats && _durationStats.advice) || '';
 
     let subjectHTML = '';
     if (sArr.length) {
@@ -2202,7 +2400,7 @@ async function renderAnalysisOverview(container) {
         : '';
 
     container.innerHTML =
-        analysisSummaryCards(summary) +
+        analysisSummaryCards(_summary) +
         '<div class="row"><div class="card" style="flex:1;"><div class="card-title">各科学习统计</div>' +
             '<div class="analysis-grid">' + (subjectHTML || '<div style="color:#9CA3AF;padding:20px;text-align:center;">暂无数据</div>') + '</div>' +
         '</div></div>' +
@@ -2222,6 +2420,11 @@ async function renderAnalysisScoreTrend(container) {
         api.getAnswerTrend(days),
         api.getPredictScoreTrend(Math.max(60, days * 2)).catch(() => null)
     ]);
+    // 云端静态环境回退：API 失败时使用默认数据
+    const _d = getAnalysisDefaults();
+    const _daily = daily || _d.dailySeries;
+    const _answerTrend = answerTrend || _d.answerTrend;
+    const _scoreTrend = scoreTrend || _d.scoreTrend;
 
     const subjects = ['全部','数学','语文','英语','物理','化学','生物','思想政治','历史','地理'];
     const selector = '<div style="margin:-6px 0 10px;display:flex;align-items:center;gap:10px;">' +
@@ -2247,13 +2450,13 @@ async function renderAnalysisScoreTrend(container) {
 
     // Chart 1: Duration bar
     if (typeof Chart !== 'undefined') {
-        if (daily && daily.labels) {
+        if (_daily && _daily.labels) {
             const ctx1 = document.getElementById('analysisChartDuration');
             if (ctx1) registerAnalysisChart('duration', new Chart(ctx1, {
                 type: 'bar',
-                data: { labels: daily.labels, datasets: [{
+                data: { labels: _daily.labels, datasets: [{
                     label: '学习时长（分钟）',
-                    data: daily.duration_minutes,
+                    data: _daily.duration_minutes,
                     backgroundColor: '#3B82F6',
                     borderRadius: 4
                 }]},
@@ -2264,15 +2467,15 @@ async function renderAnalysisScoreTrend(container) {
             }));
         }
         // Chart 2: Answer count + correct_rate (双轴)
-        if (answerTrend && answerTrend.labels) {
+        if (_answerTrend && _answerTrend.labels) {
             const ctx2 = document.getElementById('analysisChartAnswer');
             if (ctx2) registerAnalysisChart('answer', new Chart(ctx2, {
                 type: 'bar',
                 data: {
-                    labels: answerTrend.labels,
+                    labels: _answerTrend.labels,
                     datasets: [
-                        { type:'bar', label:'答题数', data: answerTrend.answer_count, backgroundColor:'#8B5CF6', yAxisID:'y', order:2, borderRadius:3 },
-                        { type:'line', label:'正确率(%)', data: answerTrend.correct_rate, borderColor:'#10B981', backgroundColor:'#10B981', tension:0.35, borderWidth:2, yAxisID:'y1', order:1, pointRadius:2 }
+                        { type:'bar', label:'答题数', data: _answerTrend.answer_count, backgroundColor:'#8B5CF6', yAxisID:'y', order:2, borderRadius:3 },
+                        { type:'line', label:'正确率(%)', data: _answerTrend.correct_rate, borderColor:'#10B981', backgroundColor:'#10B981', tension:0.35, borderWidth:2, yAxisID:'y1', order:1, pointRadius:2 }
                     ]
                 },
                 options: {
@@ -2287,21 +2490,21 @@ async function renderAnalysisScoreTrend(container) {
             }));
         }
         // Chart 3: Score trend (history实心, predict虚线+渐变填, target/一本线参考线)
-        if (scoreTrend && scoreTrend.labels) {
+        if (_scoreTrend && _scoreTrend.labels) {
             const ctx3 = document.getElementById('analysisChartScore');
             if (ctx3) {
-                const targetLine = scoreTrend.target_score;
-                const yiben = scoreTrend.yiben_line || 520;
-                const yMin = Math.floor(Math.min(yiben, (scoreTrend.current_score||600) - 40) / 10) * 10;
-                const yMax = Math.ceil((Math.max(targetLine || 650, ...(scoreTrend.history||[]).filter(Boolean), ...(scoreTrend.predict||[]).filter(Boolean)) + 20) / 10) * 10;
+                const targetLine = _scoreTrend.target_score;
+                const yiben = _scoreTrend.yiben_line || 520;
+                const yMin = Math.floor(Math.min(yiben, (_scoreTrend.current_score||600) - 40) / 10) * 10;
+                const yMax = Math.ceil((Math.max(targetLine || 650, ...(_scoreTrend.history||[]).filter(Boolean), ...(_scoreTrend.predict||[]).filter(Boolean)) + 20) / 10) * 10;
                 registerAnalysisChart('score', new Chart(ctx3, {
                     type: 'line',
                     data: {
-                        labels: scoreTrend.labels,
+                        labels: _scoreTrend.labels,
                         datasets: [
-                            { label:'真实分', data: scoreTrend.history, borderColor:'#3B82F6', backgroundColor:'rgba(59,130,246,0.12)',
+                            { label:'真实分', data: _scoreTrend.history, borderColor:'#3B82F6', backgroundColor:'rgba(59,130,246,0.12)',
                                 borderWidth:2, tension:0.3, fill:true, pointRadius:1, spanGaps:false },
-                            { label:'预测分', data: scoreTrend.predict, borderColor:'#F59E0B', borderDash:[6,4],
+                            { label:'预测分', data: _scoreTrend.predict, borderColor:'#F59E0B', borderDash:[6,4],
                                 borderWidth:2, tension:0.3, backgroundColor:'rgba(245,158,11,0.08)', fill:true, pointRadius:1, spanGaps:false }
                         ]
                     },
@@ -2360,9 +2563,16 @@ async function renderAnalysisScoreTrend(container) {
 async function renderAnalysisRadar(container) {
     const days = window._analysisDays || 7;
     const mastery = await api.getSubjectMastery(days);
-    const radar = (mastery && mastery.radar) || [];
-    const weakest = (mastery && mastery.weakest_subjects) || [];
-    const strongest = (mastery && mastery.strongest_subjects) || [];
+    // 云端静态环境回退：API 失败时或字段不匹配时使用默认数据
+    var _mastery = mastery;
+    if (_mastery && (!_mastery.radar || !_mastery.radar_labels || !_mastery.radar_current)) {
+        _mastery = getAnalysisDefaults().mastery;
+    } else if (!_mastery) {
+        _mastery = getAnalysisDefaults().mastery;
+    }
+    const radar = (_mastery && _mastery.radar) || [];
+    const weakest = (_mastery && _mastery.weakest_subjects) || [];
+    const strongest = (_mastery && _mastery.strongest_subjects) || [];
 
     container.innerHTML =
         '<div class="row"><div class="card" style="flex:1;">' +
@@ -2408,17 +2618,17 @@ async function renderAnalysisRadar(container) {
             }).join('') : '<div style="color:#9CA3AF;padding:20px;text-align:center;">暂无数据</div>') +
         '</div></div>';
 
-    if (typeof Chart !== 'undefined' && mastery && mastery.radar_labels) {
+    if (typeof Chart !== 'undefined' && _mastery && _mastery.radar_labels) {
         const ctx = document.getElementById('analysisRadar');
         if (ctx) registerAnalysisChart('radar', new Chart(ctx, {
             type: 'radar',
             data: {
-                labels: mastery.radar_labels,
+                labels: _mastery.radar_labels,
                 datasets: [
-                    { label: '当前掌握', data: mastery.radar_current,
+                    { label: '当前掌握', data: _mastery.radar_current,
                         borderColor:'#3B82F6', backgroundColor:'rgba(59,130,246,0.18)',
                         borderWidth:2, pointBackgroundColor:'#3B82F6', pointBorderColor:'#fff', pointRadius:3 },
-                    { label: '目标掌握', data: mastery.radar_target,
+                    { label: '目标掌握', data: _mastery.radar_target,
                         borderColor:'#9CA3AF', backgroundColor:'transparent',
                         borderDash:[5,5], borderWidth:2, pointBackgroundColor:'#9CA3AF', pointBorderColor:'#fff', pointRadius:3 }
                 ]
@@ -2440,8 +2650,12 @@ async function renderAnalysisWeak(container) {
         api.getAnswerStats(days),
         api.getSubjectMastery(days)
     ]);
-    const arr = Array.isArray(weakKps) ? weakKps : (weakKps && weakKps.data) || [];
-    const weakest = (mastery && mastery.weakest_subjects) || [];
+    // 云端静态环境回退：API 失败时使用默认数据
+    const _d = getAnalysisDefaults();
+    const _weakKps = weakKps || _d.weakPoints;
+    const _mastery = mastery || _d.mastery;
+    const arr = Array.isArray(_weakKps) ? _weakKps : (_weakKps && _weakKps.data) || [];
+    const weakest = (_mastery && _mastery.weakest_subjects) || [];
 
     const colorMap = { '数学':'#3B82F6','语文':'#EF4444','英语':'#10B981','物理':'#8B5CF6','化学':'#F59E0B','生物':'#10B981','思想政治':'#EF4444','历史':'#F59E0B','地理':'#3B82F6','综合':'#8B5CF6' };
     const masteryTxt = function(k) {
@@ -2497,13 +2711,17 @@ async function renderAnalysisLoss(container) {
         api.getLossAnalysis(days, 12),
         api.getAnswerStats(days)
     ]);
-    const totalWrong = (loss && loss.total_wrong) || 0;
-    const points = (loss && loss.top_loss_points) || [];
-    const subjects = (loss && loss.subjects) || [];
-    const totalAns = (answerStats && answerStats.total) || 0;
+    // 云端静态环境回退：API 失败时使用默认数据
+    const _d = getAnalysisDefaults();
+    const _loss = loss || _d.loss;
+    const _answerStats = answerStats || _d.answerStats;
+    const totalWrong = (_loss && _loss.total_wrong) || 0;
+    const points = (_loss && _loss.top_loss_points) || [];
+    const subjects = (_loss && _loss.subjects) || [];
+    const totalAns = (_answerStats && _answerStats.total) || 0;
     const ansRate = totalAns > 0 ? Math.round((totalAns - totalWrong) / totalAns * 100) : 0;
-    const topType = loss && loss.top_wrong_type;
-    const topDiff = loss && loss.top_wrong_difficulty;
+    const topType = _loss && _loss.top_wrong_type;
+    const topDiff = _loss && _loss.top_wrong_difficulty;
 
     container.innerHTML =
         '<div class="stats-grid" style="margin-bottom:14px;">' +
@@ -2562,9 +2780,15 @@ async function renderAnalysisReport(container) {
         api.getPredictScore().catch(() => null),
         api.getPredictRank().catch(() => null)
     ]);
-    const weakAdvice = (report && report.weak_advice) || [];
-    const subjectScores = (report && report.subject_scores) || [];
-    const prob = (report && report.probability) || (predictRank && predictRank.probability) || {};
+    // 云端静态环境回退：API 失败时使用默认数据
+    const _d = getAnalysisDefaults();
+    const _report = report || _d.report;
+    const _scoreTrend = scoreTrend || _d.scoreTrend;
+    const _predictScore = predictScore || _d.predictScore;
+    const _predictRank = predictRank || _d.predictRank;
+    const weakAdvice = (_report && _report.weak_advice) || [];
+    const subjectScores = (_report && _report.subject_scores) || [];
+    const prob = (_report && _report.probability) || (_predictRank && _predictRank.probability) || {};
 
     container.innerHTML =
         '<div class="row"><div class="card" style="flex:1;background:linear-gradient(135deg,#3B82F6,#1D4ED8);color:white;">' +
@@ -2574,17 +2798,17 @@ async function renderAnalysisReport(container) {
                 '<div style="flex:1;">' +
                     '<div style="font-size:18px;font-weight:800;">AI 高考预测报告</div>' +
                     '<div style="font-size:12px;opacity:0.9;margin-top:2px;">' +
-                        (report && report.model ? '模型：' + report.model : '') +
-                        (report && report.confidence ? ' · 置信度 ' + report.confidence + '%' : '') +
-                        (report && report.days_to_exam != null ? ' · 高考 ' + report.days_to_exam + ' 天' : '') +
+                        (_report && _report.model ? '模型：' + _report.model : '') +
+                        (_report && _report.confidence ? ' · 置信度 ' + _report.confidence + '%' : '') +
+                        (_report && _report.days_to_exam != null ? ' · 高考 ' + _report.days_to_exam + ' 天' : '') +
                     '</div>' +
                 '</div>' +
             '</div>' +
             '<div class="stats-grid" style="margin-top:14px;">' +
-                '<div class="stat-item"><div class="stat-num" style="color:white;">' + ((report && report.current_score != null) ? report.current_score : (predictScore && predictScore.current_predicted != null ? predictScore.current_predicted : '—')) + '</div><div class="stat-label" style="color:rgba(255,255,255,0.85);">当前分数</div></div>' +
-                '<div class="stat-item"><div class="stat-num" style="color:white;">' + ((report && report.predicted_score != null) ? report.predicted_score : (predictScore && predictScore.final_predicted != null ? predictScore.final_predicted : '—')) + '</div><div class="stat-label" style="color:rgba(255,255,255,0.85);">AI 预测分</div></div>' +
-                '<div class="stat-item"><div class="stat-num" style="color:white;">' + ((report && report.target_score != null) ? report.target_score : '—') + '</div><div class="stat-label" style="color:rgba(255,255,255,0.85);">目标分</div></div>' +
-                '<div class="stat-item"><div class="stat-num" style="color:white;">' + ((predictRank && predictRank.rank != null) ? predictRank.rank : (report && report.rank != null ? report.rank : '—')) + '</div><div class="stat-label" style="color:rgba(255,255,255,0.85);">' + ((predictRank && predictRank.province) ? predictRank.province : (report && report.province ? report.province : '全省')) + '预测排名</div></div>' +
+                '<div class="stat-item-light"><div class="stat-num">' + ((_report && _report.current_score != null) ? _report.current_score : (_predictScore && _predictScore.current_predicted != null ? _predictScore.current_predicted : '—')) + '</div><div class="stat-label">当前分数</div></div>' +
+                '<div class="stat-item-light"><div class="stat-num">' + ((_report && _report.predicted_score != null) ? _report.predicted_score : (_predictScore && _predictScore.final_predicted != null ? _predictScore.final_predicted : '—')) + '</div><div class="stat-label">AI 预测分</div></div>' +
+                '<div class="stat-item-light"><div class="stat-num">' + ((_report && _report.target_score != null) ? _report.target_score : '—') + '</div><div class="stat-label">目标分</div></div>' +
+                '<div class="stat-item-light"><div class="stat-num">' + ((_predictRank && _predictRank.rank != null) ? _predictRank.rank : (_report && _report.rank != null ? _report.rank : '—')) + '</div><div class="stat-label">' + ((_predictRank && _predictRank.province) ? _predictRank.province : (_report && _report.province ? _report.province : '全省')) + '预测排名</div></div>' +
             '</div>' +
         '</div></div>' +
         '<div class="row"><div class="card" style="flex:1;">' +
@@ -2618,9 +2842,9 @@ async function renderAnalysisReport(container) {
                         '<div style="margin-top:10px;height:8px;background:white;border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + pctNum + '%;background:' + row[2] + ';"></div></div>' +
                     '</div>';
                 }).join('') + '</div>' +
-                (report && report.yiben_line_diff != null ?
-                    '<div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:' + (report.yiben_line_diff>=0?'#ECFDF5':'#FEF2F2') + ';color:' + (report.yiben_line_diff>=0?'#065F46':'#991B1B') + ';font-size:13px;font-weight:600;">' +
-                        '📘 距一本线 ' + (report.yiben_line_diff>=0?'超 ':'差 ') + Math.abs(report.yiben_line_diff) + ' 分' +
+                (_report && _report.yiben_line_diff != null ?
+                    '<div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:' + (_report.yiben_line_diff>=0?'#ECFDF5':'#FEF2F2') + ';color:' + (_report.yiben_line_diff>=0?'#065F46':'#991B1B') + ';font-size:13px;font-weight:600;">' +
+                        '📘 距一本线 ' + (_report.yiben_line_diff>=0?'超 ':'差 ') + Math.abs(_report.yiben_line_diff) + ' 分' +
                     '</div>' : '') : '<div style="color:#9CA3AF;padding:20px;text-align:center;">暂无概率数据</div>') +
         '</div></div>' +
         '<div class="row"><div class="card" style="flex:1;background:#EFF6FF;border:1px solid #DBEAFE;">' +
@@ -2633,19 +2857,19 @@ async function renderAnalysisReport(container) {
             '</div></div></div>';
 
     // 绘制报告里的成绩趋势图
-    if (typeof Chart !== 'undefined' && scoreTrend && scoreTrend.labels) {
+    if (typeof Chart !== 'undefined' && _scoreTrend && _scoreTrend.labels) {
         const ctx = document.getElementById('analysisReportChart');
         if (ctx) {
-            const target = scoreTrend.target_score;
-            const yiben = scoreTrend.yiben_line || 520;
+            const target = _scoreTrend.target_score;
+            const yiben = _scoreTrend.yiben_line || 520;
             registerAnalysisChart('report', new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: scoreTrend.labels,
+                    labels: _scoreTrend.labels,
                     datasets: [
-                        { label:'真实分', data: scoreTrend.history, borderColor:'#3B82F6', backgroundColor:'rgba(59,130,246,0.15)',
+                        { label:'真实分', data: _scoreTrend.history, borderColor:'#3B82F6', backgroundColor:'rgba(59,130,246,0.15)',
                             borderWidth:2, tension:0.3, fill:true, pointRadius:1 },
-                        { label:'预测分', data: scoreTrend.predict, borderColor:'#F59E0B', backgroundColor:'rgba(245,158,11,0.1)',
+                        { label:'预测分', data: _scoreTrend.predict, borderColor:'#F59E0B', backgroundColor:'rgba(245,158,11,0.1)',
                             borderDash:[6,4], borderWidth:2, tension:0.3, fill:true, pointRadius:1, spanGaps:false }
                     ]
                 },
@@ -2766,6 +2990,66 @@ function switchSegment(el) {
     window._currentPlanRange = newRange;
     loadSegmentPlan(newRange);
 }
+// 生成默认学习计划数据（云端静态环境回退用）
+function getDefaultWeekPlan(range) {
+    var dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+    var todayIdx = new Date().getDay();
+    todayIdx = (todayIdx === 0) ? 6 : todayIdx - 1;
+    var dateBase = new Date();
+    var taskPool = [
+        { subject: '数学', point: '圆锥曲线综合', time: 45, difficulty: '★★★★', type: '专项训练' },
+        { subject: '数学', point: '导数应用专题', time: 40, difficulty: '★★★★', type: '专项训练' },
+        { subject: '物理', point: '电磁感应综合', time: 35, difficulty: '★★★★', type: '专项训练' },
+        { subject: '物理', point: '力学综合分析', time: 30, difficulty: '★★★', type: '专项训练' },
+        { subject: '化学', point: '有机推断题型', time: 30, difficulty: '★★★★', type: '专项训练' },
+        { subject: '化学', point: '化学平衡计算', time: 25, difficulty: '★★★', type: '专项训练' },
+        { subject: '英语', point: '完形填空技巧', time: 25, difficulty: '★★★', type: '专项训练' },
+        { subject: '英语', point: '书面表达高级句式', time: 30, difficulty: '★★★★', type: '专项训练' },
+        { subject: '语文', point: '古诗文鉴赏', time: 32, difficulty: '★★★', type: '专项训练' },
+        { subject: '语文', point: '现代文阅读理解', time: 35, difficulty: '★★★', type: '专项训练' },
+        { subject: '数学', point: '数列求和方法', time: 40, difficulty: '★★★', type: '专项训练' },
+        { subject: '物理', point: '动量与冲量', time: 28, difficulty: '★★★', type: '专项训练' },
+        { subject: '化学', point: '电化学原理', time: 25, difficulty: '★★★', type: '专项训练' },
+        { subject: '英语', point: '语法填空', time: 20, difficulty: '★★', type: '专项训练' },
+        { subject: '数学', point: '立体几何向量法', time: 35, difficulty: '★★★★', type: '专项训练' }
+    ];
+    var days = [];
+    var numDays = (range === 'this_month') ? 30 : 7;
+    var startOffset = (range === 'next_week') ? 7 : 0;
+    for (var i = 0; i < numDays; i++) {
+        var dayIdx = i % 7;
+        var dt = new Date(dateBase.getTime() + (startOffset + i - todayIdx) * 86400000);
+        var dayObj = {
+            day: dayNames[dayIdx],
+            date: dt.toISOString().slice(0, 10),
+            isToday: (dayIdx === todayIdx && range !== 'next_week'),
+            tasks: []
+        };
+        var numTasks = 1 + (i % 3);
+        var shuffled = taskPool.slice();
+        for (var j = shuffled.length - 1; j > 0; j--) {
+            var k = Math.floor(Math.random() * (j + 1));
+            var tmp = shuffled[j]; shuffled[j] = shuffled[k]; shuffled[k] = tmp;
+        }
+        for (var t = 0; t < numTasks; t++) {
+            var task = shuffled[t];
+            dayObj.tasks.push({
+                subject: task.subject,
+                point: task.point,
+                time: task.time,
+                difficulty: task.difficulty,
+                type: task.type,
+                status: 'pending'
+            });
+        }
+        if (range === 'this_month') {
+            dayObj.week_group = Math.floor(i / 7);
+            dayObj.week_group_name = '第' + (dayObj.week_group + 1) + '周';
+        }
+        days.push(dayObj);
+    }
+    return days;
+}
 // 加载指定范围的计划（供 switchSegment / renderPlanPage / executeReplan 复用）
 function loadSegmentPlan(range, shuffle) {
     const listContainer = document.getElementById('week-plan-list');
@@ -2787,16 +3071,86 @@ function loadSegmentPlan(range, shuffle) {
     api.getWeekPlan(!!shuffle, range).then(function (data) {
         // 如果当前DOM已不存在（页面切换了），静默退出
         if (!document.getElementById('week-plan-list')) return;
-        if (data && data.week_plan && data.week_plan.length) {
+        // 云端静态环境回退：API 失败时使用默认学习计划数据
+        if (!data) {
+            var defaultDays = getDefaultWeekPlan(range);
+            if (defaultDays && defaultDays.length) {
+                var todayIdx2 = new Date().getDay();
+                todayIdx2 = (todayIdx2 === 0) ? 6 : todayIdx2 - 1;
+                var dayNames2 = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+                var todayStr2 = dayNames2[todayIdx2];
+                var dateBase2 = new Date();
+                defaultDays.forEach(function (d, i) {
+                    if (d.isToday === undefined) d.isToday = (d.day === todayStr2);
+                    if (!d.date) {
+                        var dt2 = new Date(dateBase2.getTime() - (todayIdx2 - i) * 86400000);
+                        d.date = dt2.toISOString().slice(0, 10);
+                    }
+                });
+                var list2 = document.getElementById('week-plan-list');
+                if (list2) list2.innerHTML = renderWeekPlanGrouped(defaultDays, range);
+                var summary2 = document.getElementById('week-plan-summary');
+                if (summary2) {
+                    var totalTasks2 = defaultDays.reduce(function (s, d) { return s + (d.tasks ? d.tasks.length : 0); }, 0);
+                    summary2.innerHTML = '<div style="font-size:15px;font-weight:700;">AI智能学习计划</div>' +
+                        '<div style="font-size:12px;opacity:0.85;margin-top:2px;">基于薄弱点分析 · ' + (range === 'this_week' ? '本周' : range === 'next_week' ? '下周' : '本月') + '共' + totalTasks2 + '个任务</div>';
+                }
+                if (shuffle) showToast('AI已为你重新生成学习计划');
+                return;
+            }
+        }
+        // 兼容后端两种字段名：days（新） 或 week_plan（旧）
+        var planDays = (data && data.days) || (data && data.week_plan) || [];
+        if (data && planDays.length) {
+            // 补充今日标记和日期（后端可能未返回）
+            var todayIdx = new Date().getDay();
+            todayIdx = (todayIdx === 0) ? 6 : todayIdx - 1; // 周一=0 ... 周日=6
+            var dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+            var todayStr = dayNames[todayIdx];
+            var dateBase = new Date();
+            planDays.forEach(function (d, i) {
+                if (d.isToday === undefined) d.isToday = (d.day === todayStr);
+                if (!d.date) {
+                    var dt = new Date(dateBase.getTime() - (todayIdx - i) * 86400000);
+                    d.date = dt.toISOString().slice(0, 10);
+                }
+                // 兼容任务的 priority 字段（后端有，前端不用）
+            });
             const list = document.getElementById('week-plan-list');
-            list.innerHTML = renderWeekPlanGrouped(data.week_plan, range);
-            fillWeekPlanSummary(data);
+            list.innerHTML = renderWeekPlanGrouped(planDays, range);
+            fillWeekPlanSummary(data, planDays);
         } else {
             document.getElementById('week-plan-list').innerHTML =
                 '<div class="card" style="margin:0 0 12px;text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">暂无学习数据</div></div>';
         }
         if (shuffle) showToast('AI已为你重新生成学习计划');
     }).catch(function () {
+        // 云端静态环境回退：catch 时使用默认学习计划
+        var defaultDays = getDefaultWeekPlan(range);
+        if (defaultDays && defaultDays.length) {
+            var todayIdx3 = new Date().getDay();
+            todayIdx3 = (todayIdx3 === 0) ? 6 : todayIdx3 - 1;
+            var dayNames3 = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+            var todayStr3 = dayNames3[todayIdx3];
+            var dateBase3 = new Date();
+            defaultDays.forEach(function (d, i) {
+                if (d.isToday === undefined) d.isToday = (d.day === todayStr3);
+                if (!d.date) {
+                    var dt3 = new Date(dateBase3.getTime() - (todayIdx3 - i) * 86400000);
+                    d.date = dt3.toISOString().slice(0, 10);
+                }
+            });
+            var list3 = document.getElementById('week-plan-list');
+            if (list3) list3.innerHTML = renderWeekPlanGrouped(defaultDays, range);
+            var summary3 = document.getElementById('week-plan-summary');
+            if (summary3) {
+                var totalTasks3 = defaultDays.reduce(function (s, d) { return s + (d.tasks ? d.tasks.length : 0); }, 0);
+                summary3.innerHTML = '<div style="font-size:15px;font-weight:700;">AI智能学习计划</div>' +
+                    '<div style="font-size:12px;opacity:0.85;margin-top:2px;">基于薄弱点分析 · ' + (range === 'this_week' ? '本周' : range === 'next_week' ? '下周' : '本月') + '共' + totalTasks3 + '个任务</div>';
+            }
+            if (shuffle) showToast('AI已为你重新生成学习计划');
+            return;
+        }
         const lc = document.getElementById('week-plan-list');
         if (lc) lc.innerHTML = '<div class="card" style="margin:0 0 12px;text-align:center;padding:40px;color:#EF4444;"><div style="font-size:13px;">加载失败，请稍后重试</div></div>';
         if (shuffle) showToast('重新规划失败，请稍后重试');
@@ -2891,13 +3245,25 @@ function renderWeekPlanDayCard(d) {
         '<div style="display:flex;flex-direction:column;gap:8px;">' + taskCards + '</div></div>';
 }
 // 填充周计划头部摘要
-function fillWeekPlanSummary(data) {
+function fillWeekPlanSummary(data, planDays) {
     const summaryContainer = document.getElementById('week-plan-summary');
     if (!summaryContainer) return;
-    const rangeLabel = (data && data.range_label) ? data.range_label : '本周';
+    const rangeMap = { 'this_week': '本周', 'next_week': '下周', 'this_month': '本月' };
+    const rangeLabel = (data && data.range_label) ? data.range_label : (rangeMap[data && data.range] || '本周');
+    // 计算任务总数和完成数（兼容后端字段缺失情况）
+    var totalTasks = (data && data.total_tasks) || 0;
+    var doneTasks = (data && data.done_tasks) || 0;
+    if (!totalTasks && planDays && planDays.length) {
+        planDays.forEach(function (d) {
+            (d.tasks || []).forEach(function (t) {
+                totalTasks++;
+                if (t.done) doneTasks++;
+            });
+        });
+    }
     summaryContainer.innerHTML =
         '<div style="font-size:15px;font-weight:700;">AI智能学习计划</div>' +
-        '<div style="font-size:12px;opacity:0.85;margin-top:2px;">基于薄弱点分析 · ' + rangeLabel + '共' + data.total_tasks + '个任务</div>';
+        '<div style="font-size:12px;opacity:0.85;margin-top:2px;">基于薄弱点分析 · ' + rangeLabel + '共' + totalTasks + '个任务</div>';
     const parent = summaryContainer.parentElement;
     if (!parent) return;
     // 先移除旧徽章（重新规划/切换分段时会重建）
@@ -2906,7 +3272,7 @@ function fillWeekPlanSummary(data) {
     const badge = document.createElement('div');
     badge.className = 'done-badge';
     badge.style.cssText = 'text-align:center;background:rgba(255,255,255,0.2);border-radius:10px;padding:6px 10px;';
-    badge.innerHTML = '<div style="font-size:18px;font-weight:800;">' + data.done_tasks + '</div><div style="font-size:9px;">已完成</div>';
+    badge.innerHTML = '<div style="font-size:18px;font-weight:800;">' + doneTasks + '</div><div style="font-size:9px;">已完成</div>';
     parent.appendChild(badge);
 }
 // AI 重新规划：弹窗确认
@@ -3532,10 +3898,29 @@ async function renderAICoachPage(container) {
                     ${(data.quick_questions||[]).map(q => '<div onclick="window.__coachAsk(\''+q.replace(/'/g,"\\'")+'\')" style="background:#EFF6FF;border:1px solid #BFDBFE;color:#2563EB;padding:6px 12px;border-radius:16px;font-size:12px;cursor:pointer;">'+q+'</div>').join('')}
                 </div>
                 <div style="display:flex;gap:8px;">
-                    <input type="text" id="ai-coach-input" placeholder="${data.input_placeholder||'问我任何学习问题...'}" style="flex:1;padding:10px 16px;border:1.5px solid #E5E7EB;border-radius:22px;font-size:14px;outline:none;" onkeydown="if(event.key==='Enter') window.__coachSend()">
+                    <input type="text" id="ai-coach-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${data.input_placeholder||'问我任何学习问题...'}" style="flex:1;padding:10px 16px;border:1.5px solid #E5E7EB;border-radius:22px;font-size:14px;outline:none;caret-color:#3B82F6;user-select:text;-webkit-user-select:text;">
                     <div onclick="window.__coachSend()" style="width:40px;height:40px;border-radius:50%;background:#3B82F6;color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;"><i class="fas fa-paper-plane"></i></div>
                 </div>
             </div></div>`;
+
+        // 使用 composition 标记变量，兼容所有浏览器和输入法的中文输入
+        (function() {
+            const input = document.getElementById('ai-coach-input');
+            if (!input) return;
+            let composing = false;
+            input.addEventListener('compositionstart', function() { composing = true; });
+            input.addEventListener('compositionend', function() { composing = false; });
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    // IME 正在组合候选词时，让浏览器处理，不触发发送
+                    if (composing || e.isComposing || e.keyCode === 229 || e.code === '229') {
+                        return;
+                    }
+                    e.preventDefault();
+                    window.__coachSend();
+                }
+            });
+        })();
 
         window.__coachSend = function() {
             const input = document.getElementById('ai-coach-input');
@@ -4200,17 +4585,69 @@ function renderTodayTaskPage(container) {
 
     setTimeout(async () => {
         try {
-            const data = await api.getTodayTasks();
-            if (!data || !data.tasks) return;
+            let data = await api.getTodayTasks();
+            // 云端静态环境回退：API 失败时使用静态 JSON 文件
+            if (!data || !data.tasks) {
+                try {
+                    const resp = await fetch('prototype/data/pages/home-task.json');
+                    if (resp.ok) {
+                        data = await resp.json();
+                    }
+                } catch(e2) {}
+            }
+            if (!data || !data.tasks) {
+                // 静态 JSON 也失败时，显示友好的默认状态（含实时日期）
+                const _now = new Date();
+                const _weekNames = ['日','一','二','三','四','五','六'];
+                const _todayStr = (_now.getMonth() + 1) + '月' + _now.getDate() + '日 周' + _weekNames[_now.getDay()];
+                const headerEl = document.getElementById('today-task-header');
+                if (headerEl) {
+                    headerEl.innerHTML = `
+                        <div>
+                            <div style="font-size:12px;opacity:0.85;"><i class="fas fa-calendar-check"></i> 今日任务</div>
+                            <div style="font-size:20px;font-weight:800;margin-top:4px;">${_todayStr}</div>
+                            <div style="font-size:12px;opacity:0.85;margin-top:2px;">点击下方按钮开始今日学习</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="width:72px;height:72px;border-radius:50%;background:conic-gradient(#FCD34D 0deg,rgba(255,255,255,0.2) 0);display:flex;align-items:center;justify-content:center;">
+                                <div style="width:56px;height:56px;border-radius:50%;background:rgba(59,130,246,0.8);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;">0%</div>
+                            </div>
+                            <div style="font-size:11px;opacity:0.85;margin-top:4px;">完成率</div>
+                        </div>`;
+                }
+                const listEl = document.getElementById('today-task-list');
+                if (listEl) {
+                    listEl.innerHTML = '<div class="card" style="text-align:center;padding:30px;color:#6B7280;"><i class="fas fa-clipboard-list" style="font-size:28px;color:#3B82F6;margin-bottom:8px;"></i><div style="font-size:14px;font-weight:600;color:#374151;">今日学习计划</div><div style="font-size:12px;margin-top:6px;">点击"开始学习"进入今日学习会话</div></div>';
+                }
+                const statsEl = document.getElementById('today-task-stats');
+                if (statsEl) {
+                    statsEl.innerHTML = `
+                        <div style="font-size:14px;font-weight:700;margin-bottom:12px;"><i class="fas fa-chart-bar" style="color:#3B82F6;margin-right:6px;"></i>今日进度</div>
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;">
+                            <div style="text-align:center;padding:10px;background:rgba(16,185,129,0.06);border-radius:8px;"><div style="font-size:20px;font-weight:800;color:#10B981;">0</div><div style="font-size:11px;color:#6B7280;">已完成</div></div>
+                            <div style="text-align:center;padding:10px;background:rgba(245,158,11,0.06);border-radius:8px;"><div style="font-size:20px;font-weight:800;color:#F59E0B;">0</div><div style="font-size:11px;color:#6B7280;">待完成</div></div>
+                            <div style="text-align:center;padding:10px;background:rgba(59,130,246,0.06);border-radius:8px;"><div style="font-size:20px;font-weight:800;color:#3B82F6;">0</div><div style="font-size:11px;color:#6B7280;">总任务</div></div>
+                        </div>
+                        <div style="height:8px;background:#E5E7EB;border-radius:4px;overflow:hidden;"><div style="height:100%;background:#3B82F6;border-radius:4px;width:0%;transition:width 0.6s;"></div></div>
+                        <div style="font-size:11px;color:#9CA3AF;margin-top:6px;">暂无任务数据</div>`;
+                }
+                return;
+            }
             const tasks = data.tasks;
             const tagClass = {'数学':'tag-math','语文':'tag-chinese','英语':'tag-english','物理':'tag-physics','化学':'tag-chem','生物':'tag-bio','政治':'tag-politics','历史':'tag-history','地理':'tag-geo'};
+
+            // 如果 API 返回的日期为空，使用实时日期
+            const _now2 = new Date();
+            const _weekNames2 = ['日','一','二','三','四','五','六'];
+            const _todayStr2 = (_now2.getMonth() + 1) + '月' + _now2.getDate() + '日 周' + _weekNames2[_now2.getDay()];
+            const displayDate = data.date || _todayStr2;
 
             const headerEl = document.getElementById('today-task-header');
             if (headerEl) {
                 headerEl.innerHTML = `
                     <div>
                         <div style="font-size:12px;opacity:0.85;"><i class="fas fa-calendar-check"></i> 今日任务</div>
-                        <div style="font-size:20px;font-weight:800;margin-top:4px;">${data.date}</div>
+                        <div style="font-size:20px;font-weight:800;margin-top:4px;">${displayDate}</div>
                         <div style="font-size:12px;opacity:0.85;margin-top:2px;">已完成 ${data.done_count}/${data.total_count}，加油冲刺！</div>
                     </div>
                     <div style="text-align:center;">
@@ -4384,20 +4821,22 @@ function renderLearnSessionQuestion(el) {
     if (!session || !session.questions) return;
     const q = session.questions[session.index];
     if (!q) {
-        el.innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-check-circle" style="font-size:36px;color:#10B981;margin-bottom:12px;"></i><div style="font-size:16px;font-weight:700;">本组题目已完成！</div><div style="font-size:13px;color:#6B7280;margin-top:8px;">共完成 ' + session.questions.length + ' 题</div><button onclick="switchPage(\'home-task\')" style="margin-top:16px;padding:8px 24px;background:#3B82F6;color:white;border:none;border-radius:20px;font-size:13px;cursor:pointer;">返回任务列表</button></div>';
+        el.innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-check-circle" style="font-size:36px;color:#10B981;margin-bottom:12px;"></i><div style="font-size:16px;font-weight:700;color:#111827;">本组题目已完成！</div><div style="font-size:13px;color:#6B7280;margin-top:8px;">共完成 ' + session.questions.length + ' 题</div><button onclick="switchPage(\'home-task\')" style="margin-top:16px;padding:8px 24px;background:#3B82F6;color:white;border:none;border-radius:20px;font-size:13px;cursor:pointer;">返回任务列表</button></div>';
         return;
     }
+    // 重置容器颜色，避免继承加载状态的灰色
+    el.style.color = '#111827';
     const tagClass = {'数学':'tag-math','语文':'tag-chinese','英语':'tag-english','物理':'tag-physics','化学':'tag-chem','生物':'tag-bio','政治':'tag-politics','历史':'tag-history','地理':'tag-geo'};
     const cls = tagClass[q.subject] || 'tag-math';
     let optionsHtml = '';
     if (q.options && Array.isArray(q.options)) {
         optionsHtml = q.options.map((opt, i) => {
             const letter = String.fromCharCode(65 + i);
-            return '<div onclick="window.__selectAnswer(\'' + letter + '\')" data-opt="' + letter + '" style="display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor=\'#3B82F6\';this.style.background=\'#EFF6FF\'" onmouseout="this.style.borderColor=\'#E5E7EB\';this.style.background=\'#F9FAFB\'"><div style="width:28px;height:28px;border-radius:50%;background:#E5E7EB;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">' + letter + '</div><div style="font-size:13px;flex:1;white-space:pre-wrap;">' + opt + '</div></div>';
+            return '<div onclick="window.__selectAnswer(\'' + letter + '\')" data-opt="' + letter + '" style="display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor=\'#3B82F6\';this.style.background=\'#EFF6FF\'" onmouseout="this.style.borderColor=\'#E5E7EB\';this.style.background=\'#F9FAFB\'"><div style="width:28px;height:28px;border-radius:50%;background:#E5E7EB;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#374151;flex-shrink:0;">' + letter + '</div><div style="font-size:14px;color:#1F2937;flex:1;white-space:pre-wrap;">' + opt + '</div></div>';
         }).join('');
     }
 
-    el.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="display:flex;align-items:center;gap:8px;"><span class="' + cls + '" style="padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">' + q.subject + '</span><span style="font-size:11px;color:#9CA3AF;">' + (q.type||'选择题') + '</span><span style="font-size:11px;color:#9CA3AF;">难度' + '★'.repeat(q.difficulty||3) + '</span></div><span style="font-size:12px;color:#6B7280;">第 ' + (session.index+1) + '/' + session.questions.length + ' 题</span></div><div style="font-size:14px;line-height:1.8;margin-bottom:16px;white-space:pre-wrap;">' + q.content + '</div>' + (q.knowledge_point_name ? '<div style="font-size:11px;color:#9CA3AF;margin-bottom:12px;"><i class="fas fa-tag"></i> 知识点：' + q.knowledge_point_name + '</div>' : '') + '<div id="learn-options">' + optionsHtml + '</div><div id="learn-feedback" style="margin-top:12px;"></div><div style="display:flex;justify-content:space-between;margin-top:16px;"><button onclick="window.__prevQuestion()" style="padding:8px 16px;background:white;color:#6B7280;border:1px solid #E5E7EB;border-radius:8px;font-size:13px;cursor:pointer;' + (session.index===0?'opacity:0.5;cursor:not-allowed;':'') + '"><i class="fas fa-chevron-left"></i> 上一题</button><button onclick="window.__nextQuestion()" style="padding:8px 16px;background:#3B82F6;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">下一题 <i class="fas fa-chevron-right"></i></button></div>';
+    el.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="display:flex;align-items:center;gap:8px;"><span class="' + cls + '" style="padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">' + q.subject + '</span><span style="font-size:11px;color:#6B7280;">' + (q.type||'选择题') + '</span><span style="font-size:11px;color:#6B7280;">难度' + '★'.repeat(q.difficulty||3) + '</span></div><span style="font-size:12px;color:#6B7280;">第 ' + (session.index+1) + '/' + session.questions.length + ' 题</span></div><div style="font-size:15px;line-height:1.8;margin-bottom:16px;white-space:pre-wrap;color:#111827;font-weight:500;">' + (q.content || q.title || '') + '</div>' + (q.knowledge_point_name ? '<div style="font-size:11px;color:#6B7280;margin-bottom:12px;"><i class="fas fa-tag"></i> 知识点：' + q.knowledge_point_name + '</div>' : '') + '<div id="learn-options">' + optionsHtml + '</div><div id="learn-feedback" style="margin-top:12px;"></div><div style="display:flex;justify-content:space-between;margin-top:16px;"><button onclick="window.__prevQuestion()" style="padding:8px 16px;background:white;color:#6B7280;border:1px solid #E5E7EB;border-radius:8px;font-size:13px;cursor:pointer;' + (session.index===0?'opacity:0.5;cursor:not-allowed;':'') + '"><i class="fas fa-chevron-left"></i> 上一题</button><button onclick="window.__nextQuestion()" style="padding:8px 16px;background:#3B82F6;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">下一题 <i class="fas fa-chevron-right"></i></button></div>';
 
     window.__selectAnswer = function(letter) {
         const opts = document.querySelectorAll('#learn-options [data-opt]');
@@ -4510,9 +4949,141 @@ function renderCollegeRecommendTab(container, data) {
             </div>`;
         });
     }
-    html += `<button onclick="showToast('调整推荐条件功能开发中','info')" style="margin-top:8px;width:100%;padding:10px;border:1px solid #3B82F6;background:white;color:#3B82F6;border-radius:10px;font-size:13px;cursor:pointer;font-weight:600;"><i class="fas fa-sliders-h"></i> 调整推荐条件</button>`;
+    html += `<button onclick="window.collegeRecommendAdjust()" style="margin-top:8px;width:100%;padding:10px;border:1px solid #3B82F6;background:white;color:#3B82F6;border-radius:10px;font-size:13px;cursor:pointer;font-weight:600;"><i class="fas fa-sliders-h"></i> 调整推荐条件</button>`;
     container.innerHTML = html;
 }
+
+// 调整推荐条件：弹出表单模态框
+window.collegeRecommendAdjust = function() {
+    const data = window.__collegeData || [];
+    // 从当前显示的推荐条件解析默认值
+    let curScore = '598', curProv = '浙江省', curSub = '物化生', curRank = '8231';
+    const condEl = document.querySelector('[style*="推荐条件"]');
+    if (condEl) {
+        const condText = condEl.textContent;
+        const scoreMatch = condText.match(/预估\s*(\d+)\s*分/);
+        const rankMatch = condText.match(/全省\s*([\d,]+)\s*名/);
+        if (scoreMatch) curScore = scoreMatch[1];
+        if (rankMatch) curRank = rankMatch[1].replace(/,/g, '');
+        // 查找省份
+        const provinces = ['北京市','天津市','河北省','山西省','辽宁省','吉林省','黑龙江省','上海市','江苏省','浙江省','安徽省','福建省','江西省','山东省','河南省','湖北省','湖南省','广东省','海南省','重庆市','四川省','贵州省','云南省','陕西省','甘肃省','青海省'];
+        for (const p of provinces) {
+            if (condText.indexOf(p) >= 0) { curProv = p; break; }
+        }
+        // 查找选科组合
+        const subjectSets = ['物化生','物化政','物化地','物生政','物生地','史政地','史政生','史地生'];
+        for (const s of subjectSets) {
+            if (condText.indexOf(s) >= 0) { curSub = s; break; }
+        }
+    }
+
+    const provinces = ['北京市','天津市','河北省','山西省','辽宁省','吉林省','黑龙江省','上海市','江苏省','浙江省','安徽省','福建省','江西省','山东省','河南省','湖北省','湖南省','广东省','海南省','重庆市','四川省','贵州省','云南省','陕西省','甘肃省','青海省'];
+    const subjectSets = ['物化生','物化政','物化地','物生政','物生地','史政地','史政生','史地生'];
+    const provOpts = provinces.map(p => `<option value="${p}"${p===curProv?' selected':''}>${p}</option>`).join('');
+    const subOpts = subjectSets.map(s => `<option value="${s}"${s===curSub?' selected':''}>${s}</option>`).join('');
+
+    const formHtml = `
+        <div style="font-size:12px;color:#6B7280;margin-bottom:14px;line-height:1.6;">调整以下条件，AI 将重新计算录取概率并重新排序推荐院校。</div>
+        <div style="margin-bottom:14px;">
+            <div style="font-size:12px;color:#6B7280;margin-bottom:6px;">预估分数</div>
+            <input id="cr-score" type="number" value="${curScore}" style="width:100%;height:40px;padding:0 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:14px;">
+            <div style="font-size:12px;color:#6B7280;margin-bottom:6px;">所在省份</div>
+            <select id="cr-province" style="width:100%;height:40px;padding:0 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box;">${provOpts}</select>
+        </div>
+        <div style="margin-bottom:14px;">
+            <div style="font-size:12px;color:#6B7280;margin-bottom:6px;">选科组合</div>
+            <select id="cr-subject" style="width:100%;height:40px;padding:0 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box;">${subOpts}</select>
+        </div>
+        <div style="margin-bottom:18px;">
+            <div style="font-size:12px;color:#6B7280;margin-bottom:6px;">全省位次</div>
+            <input id="cr-rank" type="number" value="${curRank}" style="width:100%;height:40px;padding:0 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box;">
+        </div>
+        <button onclick="window.collegeRecommendReapply()" style="width:100%;height:44px;border-radius:8px;background:#3B82F6;color:white;border:none;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;"><i class="fas fa-sync-alt"></i> 重新推荐</button>
+    `;
+
+    openModal('调整推荐条件', formHtml);
+};
+
+// 根据新条件重新计算录取概率并重新渲染
+window.collegeRecommendReapply = function() {
+    const scoreEl = document.getElementById('cr-score');
+    const provEl = document.getElementById('cr-province');
+    const subEl = document.getElementById('cr-subject');
+    const rankEl = document.getElementById('cr-rank');
+    if (!scoreEl || !provEl || !subEl || !rankEl) return;
+
+    const score = parseInt(scoreEl.value, 10) || 598;
+    const province = provEl.value;
+    const subject = subEl.value;
+    const rank = parseInt(rankEl.value, 10) || 8231;
+
+    // 关闭模态框
+    document.getElementById('modal-overlay').classList.remove('show');
+
+    // 获取当前院校数据
+    const oldData = window.__collegeData || [];
+    if (!oldData.length) { showToast('院校数据未加载', 'warning'); return; }
+
+    // 重新计算每所院校的录取概率
+    const newColleges = oldData.map(c => {
+        const collegeScore = c.score || 600;
+        const diff = score - collegeScore;
+        // 基础概率：分数差越大，概率越高
+        let prob;
+        if (diff >= 30) prob = 95;
+        else if (diff >= 15) prob = 85;
+        else if (diff >= 0) prob = 70;
+        else if (diff >= -10) prob = 50;
+        else if (diff >= -20) prob = 35;
+        else if (diff >= -30) prob = 20;
+        else prob = 10;
+
+        // 位次调整：位次越靠前，概率越高
+        if (rank < 5000) prob = Math.min(99, prob + 5);
+        else if (rank > 15000) prob = Math.max(5, prob - 5);
+
+        // 同省院校加成
+        if (c.province && c.province === province) prob = Math.min(99, prob + 3);
+
+        // 确定类型
+        let type;
+        if (prob >= 75) type = '保底';
+        else if (prob >= 50) type = '稳妥';
+        else type = '冲刺';
+
+        return { ...c, prob, type };
+    });
+
+    // 按概率降序排序
+    newColleges.sort((a, b) => b.prob - a.prob);
+
+    // 更新数据缓存
+    window.__collegeData = newColleges;
+
+    // 更新推荐条件标签
+    const newConditions = [`预估 ${score}分`, province, subject, `全省${rank.toLocaleString('en')}名`];
+
+    // 重新渲染
+    const content = document.getElementById('volunteer-content');
+    if (!content) return;
+
+    // 显示加载状态
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-spinner fa-spin" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">AI 正在重新计算录取概率...</div></div>';
+
+    setTimeout(() => {
+        // 调用后端保存条件
+        if (typeof api !== 'undefined' && api.saveCollegeConditions) {
+            api.saveCollegeConditions({ score, province, subject, rank }).catch(() => {});
+        }
+
+        // 构建新的数据对象
+        const newData = { colleges: newColleges, conditions: newConditions };
+        renderCollegeRecommendTab(content, newData);
+        showToast('已根据新条件重新推荐', 'success');
+    }, 800);
+};
 
 window.openCollegeDetail = function(name) {
     const data = window.__collegeData || [];
@@ -6962,7 +7533,7 @@ async function renderDiscoverPage(container) {
         { icon: 'fa-camera', bg: '#FCE7F3', color: '#EC4899', label: '拍照搜题', action: "switchPage('photo-ocr');setTimeout(function(){(window.__PHOTO_CAMERAGO__||function(){});(window.__PHOTO_CAMERA__&&typeof window.__PHOTO_CAMERA__.open==='function')&&window.__PHOTO_CAMERA__.open('camera','photo-parse');},180);" },
         { icon: 'fa-chart-line', bg: '#D1FAE5', color: '#10B981', label: '成绩分析', action: "switchPage('analysis')" },
         { icon: 'fa-map', bg: '#FEF3C7', color: '#F59E0B', label: '知识图谱', action: "switchPage('knowledge')" },
-        { icon: 'fa-robot', bg: '#EDE9FE', color: '#8B5CF6', label: 'AI教练', action: "toggleAIChat()" },
+        { icon: 'fa-robot', bg: '#EDE9FE', color: '#8B5CF6', label: 'AI教练', action: "switchPage('ai-coach')" },
         { icon: 'fa-file-alt', bg: '#DBEAFE', color: '#3B82F6', label: 'AI组卷', action: "handleRecommend('智能组卷')" },
         { icon: 'fa-university', bg: '#FEE2E2', color: '#EF4444', label: '院校推荐', action: "switchPage('volunteer')" },
         { icon: 'fa-bullseye', bg: '#D1FAE5', color: '#10B981', label: '提分预测', action: "switchPage('exam-predict')" }
@@ -7687,14 +8258,30 @@ function renderMessagePage(container) {
 
 // ========== 拍照搜题页（内容与完整产品原型 photo-ocr 模块一致） ==========
 function renderPhotoOcrPage(container) {
-    // 最近搜题记录
+    // 最近搜题记录（含题目详情，点击可查看完整解析）
     const records = [
-        { subject: '数学', q: '已知函数 f(x)=x³-3x+1，求极值', time: '2小时前', bg: '#DBEAFE', icon: 'fa-book-open' },
-        { subject: '物理', q: '通电导线在磁场中受力方向判断', time: '昨天', bg: '#EDE9FE', icon: 'fa-atom' },
-        { subject: '化学', q: '氧化还原反应电子转移表示法', time: '3天前', bg: '#FEF3C7', icon: 'fa-flask' }
+        {
+            subject: '数学', q: '已知函数 f(x)=x³-3x+1，求极值', time: '2小时前', bg: '#DBEAFE', icon: 'fa-book-open',
+            answer: 'f(x)在 x=1 处取得极大值 -1；在 x=-1 处取得极小值 3',
+            analysis: '【L1 定位】三次函数求极值，考查导数应用\n【L2 方法】f\'(x)=3x²-3，令 f\'(x)=0 解得 x=±1\n【L3 步骤】\n① 求导：f\'(x) = 3x² - 3 = 3(x²-1) = 3(x-1)(x+1)\n② 令 f\'(x)=0，得 x₁=1, x₂=-1\n③ 列表判断单调性：\n   x < -1：f\'(x) > 0，f 单调递增\n   -1 < x < 1：f\'(x) < 0，f 单调递减\n   x > 1：f\'(x) > 0，f 单调递增\n④ 极值：x=-1 处极大值 f(-1)=3；x=1 处极小值 f(1)=-1\n【L4 检验】f\'\'(x)=6x，f\'\'(-1)=-6<0 确为极大值点\n【L5 反思】三次函数 ax³+bx²+cx+d 至多两个极值点',
+            similar: '① f(x)=x³-3x²+2，求极值\n② f(x)=2x³-9x²+12x-3，求极值与最值'
+        },
+        {
+            subject: '物理', q: '通电导线在磁场中受力方向判断', time: '昨天', bg: '#EDE9FE', icon: 'fa-atom',
+            answer: '根据左手定则判断安培力方向：F = BIL × sinθ',
+            analysis: '【L1 定位】考查安培力与左手定则\n【L2 方法】左手定则：磁场线穿掌心，四指指电流方向，拇指指安培力方向\n【L3 步骤】\n① 确定磁场 B 的方向\n② 确定电流 I 的方向\n③ 伸开左手，掌心迎向 B，四指指向 I 方向\n④ 拇指垂直于四指的方向即为安培力 F 的方向\n⑤ F = BILsinθ，θ为 B 与 I 的夹角\n【L4 检验】当 θ=90° 时 F 最大；当 θ=0° 时 F=0\n【L5 反思】安培力总是垂直于 B 和 I 所在的平面',
+            similar: '① 两根平行通电导线间相互作用力方向判断\n② 螺线管内部小磁针的偏转方向'
+        },
+        {
+            subject: '化学', q: '氧化还原反应电子转移表示法', time: '3天前', bg: '#FEF3C7', icon: 'fa-flask',
+            answer: '双线桥法：从反应物指向生成物；单线桥法：从还原剂指向氧化剂',
+            analysis: '【L1 定位】氧化还原反应电子转移表示法\n【L2 方法】双线桥法与单线桥法\n【L3 步骤】\n① 标出反应前后化合价变化\n② 双线桥：箭头从反应物某元素指向生成物对应元素\n   - 标注"失去"或"得到"电子数\n   - 电子数 = 化合价变化数 × 原子数\n③ 单线桥：箭头从还原剂(失电子)指向氧化剂(得电子)\n   - 只标注电子总数，不写"得失"\n④ 守恒检验：失电子总数 = 得电子总数\n【L4 检验】例如 2Na + Cl₂ = 2NaCl，Na 失 2e⁻，Cl 得 2e⁻\n【L5 反思】单线桥法在配平复杂反应时更直观',
+            similar: '① 用双线桥法表示 Cu + 2H₂SO₄(浓) = CuSO₄ + SO₂↑+ 2H₂O 的电子转移\n② 用单线桥法表示 2Fe + 3Cl₂ = 2FeCl₃ 的电子转移'
+        }
     ];
-    const recordsHTML = records.map(r => `
-        <div style="display:flex;align-items:center;gap:12px;padding:14px;background:white;border-radius:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;" onclick="window.__PHOTO_CAMERAGO__('camera','photo-parse')">
+    window.__photoRecords = records;
+    const recordsHTML = records.map((r, idx) => `
+        <div style="display:flex;align-items:center;gap:12px;padding:14px;background:white;border-radius:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;" onclick="window.showPhotoRecordDetail(${idx})">
             <div style="width:40px;height:40px;border-radius:10px;background:${r.bg};display:flex;align-items:center;justify-content:center;font-size:18px;color:#3B82F6;flex-shrink:0;"><i class="fas ${r.icon}"></i></div>
             <div style="flex:1;min-width:0;">
                 <div style="font-size:14px;font-weight:600;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.subject} · ${r.q}</div>
@@ -7740,3 +8327,49 @@ function renderPhotoOcrPage(container) {
         </div>
     `;
 }
+
+// 显示搜题记录的题目详情（含答案、五层架构解析、相似题推荐）
+window.showPhotoRecordDetail = function(idx) {
+    const records = window.__photoRecords || [];
+    const r = records[idx];
+    if (!r) { showToast('记录不存在', 'warning'); return; }
+
+    const subjectColor = r.subject === '数学' ? '#3B82F6' : r.subject === '物理' ? '#8B5CF6' : r.subject === '化学' ? '#F59E0B' : '#6B7280';
+
+    const html = `
+        <div style="padding:0;font-size:13px;line-height:1.7;">
+            <!-- 题目 -->
+            <div style="background:linear-gradient(135deg,${subjectColor}11,${subjectColor}05);border-left:4px solid ${subjectColor};padding:14px;border-radius:8px;margin-bottom:14px;">
+                <div style="font-size:11px;color:${subjectColor};font-weight:700;margin-bottom:8px;"><i class="fas ${r.icon}"></i> ${r.subject} · 搜题记录</div>
+                <div style="font-size:15px;font-weight:600;color:#111827;margin-bottom:6px;">${r.q}</div>
+                <div style="font-size:11px;color:#9CA3AF;">${r.time}</div>
+            </div>
+
+            <!-- 答案 -->
+            <div style="background:#ECFDF5;border:1px solid #A7F3D0;border-radius:10px;padding:12px;margin-bottom:14px;">
+                <div style="font-size:12px;color:#047857;font-weight:700;margin-bottom:6px;"><i class="fas fa-check-circle"></i> 参考答案</div>
+                <div style="font-size:13px;color:#065F46;line-height:1.8;">${r.answer}</div>
+            </div>
+
+            <!-- AI 解析（五层架构） -->
+            <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:12px;margin-bottom:14px;">
+                <div style="font-size:12px;color:#92400E;font-weight:700;margin-bottom:8px;"><i class="fas fa-lightbulb"></i> AI 五层架构解析</div>
+                <div style="font-size:13px;color:#78350F;line-height:1.9;white-space:pre-wrap;">${r.analysis}</div>
+            </div>
+
+            <!-- 相似题推荐 -->
+            <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:12px;margin-bottom:14px;">
+                <div style="font-size:12px;color:#1E40AF;font-weight:700;margin-bottom:8px;"><i class="fas fa-clone"></i> 相似题推荐</div>
+                <div style="font-size:13px;color:#1E3A8A;line-height:1.9;white-space:pre-wrap;">${r.similar}</div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div style="display:flex;gap:10px;">
+                <button onclick="document.getElementById('modal-overlay').classList.remove('show');window.__PHOTO_CAMERAGO__('camera','photo-parse')" style="flex:1;padding:11px;border:1px solid ${subjectColor};background:white;color:${subjectColor};border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;"><i class="fas fa-redo"></i> 再搜一题</button>
+                <button onclick="document.getElementById('modal-overlay').classList.remove('show');showToast('已加入错题本','success')" style="flex:1;padding:11px;border:none;background:${subjectColor};color:white;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;"><i class="fas fa-bookmark"></i> 加入错题本</button>
+            </div>
+        </div>
+    `;
+
+    openModal(r.subject + ' · 搜题解析', html);
+};

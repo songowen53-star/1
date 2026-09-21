@@ -6326,8 +6326,15 @@ window.PAGE_SAMPLE_DATA = {
 };
 
 // 今日任务 Mock 数据（无后端服务时回退，供 home-task 及首页"今日学习计划"使用）
+// 日期动态生成：始终使用当前实时日期，避免显示过期日期
+(function () {
+    var _wn = ['日','一','二','三','四','五','六'];
+    var _d = new Date();
+    var _dateStr = (_d.getMonth() + 1) + '月' + _d.getDate() + '日 周' + _wn[_d.getDay()];
+    window.__TODAY_DATE_STR = _dateStr;
+})();
 window.TODAY_TASKS_MOCK = {
-        "date": "8月9日 周日",
+        "date": (window.__TODAY_DATE_STR || ''),
         "tasks": [
             {
                 "subject": "语文",

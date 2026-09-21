@@ -244,6 +244,98 @@ const api = {
             body: JSON.stringify({ data: data })
         });
     },
+
+    // ========== AI模型中心 专用接口 ==========
+    // 获取模型中心数据（含动态运行状态）
+    async getAiModelCenter() {
+        try {
+            const data = await this.request('/api/ai/model-center');
+            if (data) return data;
+        } catch (e) { /* 专用接口不可用，回退 */ }
+        return this.getPageData('ai-model-center');
+    },
+    // 模型连通性/能力测试
+    testAiModel(modelName, testType) {
+        return this.request('/api/ai/model-center/test', {
+            method: 'POST',
+            body: JSON.stringify({ model_name: modelName, test_type: testType || 'connectivity' })
+        });
+    },
+
+    // ========== AI学习中心 专用接口 ==========
+    // AI学习教练（含动态今日日期）
+    async getAiModuleCoach() {
+        try {
+            const data = await this.request('/api/ai-module/coach');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('ai-module-coach');
+    },
+    // AI讲题引擎
+    async getAiModuleExplain() {
+        try {
+            const data = await this.request('/api/ai-module/explain');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('ai-module-explain');
+    },
+    // AI组卷引擎（含动态生成时间）
+    async getAiModulePaper() {
+        try {
+            const data = await this.request('/api/ai-module/paper');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('ai-module-paper');
+    },
+    // AI知识图谱
+    async getAiModuleGraph() {
+        try {
+            const data = await this.request('/api/ai-module/graph');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('ai-module-graph');
+    },
+    // AI预测高考（含动态距高考天数）
+    async getAiModulePredict() {
+        try {
+            const data = await this.request('/api/ai-module/predict');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('ai-module-predict');
+    },
+
+    // ========== 志愿填报 专用接口 ==========
+    // AI院校推荐（含个性化录取概率）
+    async getCollegeRecommend() {
+        try {
+            const data = await this.request(`/api/college/recommend?user_id=${getUserId()}`);
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('college-recommend');
+    },
+    // 专业推荐
+    async getCollegeMajor() {
+        try {
+            const data = await this.request('/api/college/major');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('college-major');
+    },
+    // 位次分析
+    async getCollegeRank() {
+        try {
+            const data = await this.request('/api/college/rank');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('college-rank');
+    },
+    // 保存用户调整的推荐条件
+    saveCollegeConditions(conditions) {
+        return this.request('/api/college/recommend/conditions', {
+            method: 'PUT',
+            body: JSON.stringify({ user_id: getUserId(), conditions: conditions })
+        });
+    },
     // 教师上传试卷
     uploadPaper(formData) {
         return this.request('/api/teacher/upload', {

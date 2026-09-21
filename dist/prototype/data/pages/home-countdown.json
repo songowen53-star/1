@@ -1,0 +1,62 @@
+{
+  "module": "home-countdown",
+  "name": "首页-高考倒计时",
+  "version": "20260921A",
+  "updated_at": "2026-09-21T00:00:00.000Z",
+  "source": "prototype/js/pages-home.js (render 内嵌 UI + 兜底 defaults 数据，已提取)",
+  "browser_url": "http://localhost:8788/prototype/index.html",
+  "cloud_url": "https://ai-gaokao-static.pages.dev/prototype/index.html",
+  "interactions": [
+    {
+      "id": "enter-home-countdown",
+      "type": "navigation",
+      "desc": "从首页点击「高考倒计时」卡片进入 home-countdown 页面"
+    },
+    {
+      "id": "show-countdown",
+      "type": "display",
+      "desc": "实时计算显示距最近未来高考（每年6月7-9日）剩余天数"
+    },
+    {
+      "id": "show-calendar",
+      "type": "display",
+      "desc": "渲染高考所在年6月日历，标记高考日(7/8/9)与今天"
+    },
+    {
+      "id": "show-review-progress",
+      "type": "display",
+      "desc": "异步加载各科复习进度（数学/语文/英语等9学科）"
+    },
+    {
+      "id": "show-motto",
+      "type": "display",
+      "desc": "显示每日寄语：最后冲刺，坚持就是胜利"
+    }
+  ],
+  "interaction_count": 5,
+  "data": {
+    "gaokao_date": "6月7日 - 6月9日",
+    "gaokao_year": 2027,
+    "countdown_days": 259,
+    "motto": "最后冲刺，坚持就是胜利",
+    "motto_source": "AI高考每日寄语",
+    "review_progress": [
+      { "subject": "数学", "percent": 55, "color": "#3B82F6", "icon": "fa-square-root-variable" },
+      { "subject": "语文", "percent": 61, "color": "#F59E0B", "icon": "fa-book" },
+      { "subject": "英语", "percent": 66, "color": "#10B981", "icon": "fa-language" },
+      { "subject": "物理", "percent": 58, "color": "#8B5CF6", "icon": "fa-atom" },
+      { "subject": "化学", "percent": 66, "color": "#06B6D4", "icon": "fa-flask" },
+      { "subject": "生物", "percent": 66, "color": "#EC4899", "icon": "fa-dna" },
+      { "subject": "思想政治", "percent": 63, "color": "#EF4444", "icon": "fa-landmark" },
+      { "subject": "历史", "percent": 64, "color": "#D97706", "icon": "fa-ribbon" },
+      { "subject": "地理", "percent": 64, "color": "#059669", "icon": "fa-globe-asia" }
+    ],
+    "review_progress_basis": "基于知识点掌握率",
+    "review_progress_count": 9,
+    "calendar_legend": {
+      "exam_day_bg": "#EF4444",
+      "today_bg": "#3B82F6",
+      "normal_bg": "#F9FAFB"
+    }
+  }
+}

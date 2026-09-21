@@ -167,9 +167,9 @@ registerPage('college-recommend', 'AI院校推荐', '志愿填报', 'fa-universi
     setTimeout(function () {
         var container = document.getElementById('college-recommend-content');
         if (!container) return;
-        if (typeof api === 'undefined' || !api.getPageData) return;
+        if (typeof api === 'undefined' || !api.getCollegeRecommend) return;
 
-        api.getPageData('college-recommend').then(function (data) {
+        api.getCollegeRecommend().then(function (data) {
             if (!data) {
                 container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-inbox" style="font-size:32px;margin-bottom:12px;"></i><div style="font-size:13px;margin-bottom:16px;">暂无数据</div><button class="proto-btn proto-btn-outline" style="font-size:12px;" onclick="navigateTo(\'home\')">返回首页</button></div>';
                 return;
@@ -346,6 +346,10 @@ function collegeRecommendReapply() {
     setTimeout(function () {
         renderCollegeRecommendContent(container, d);
         if (typeof showToast === 'function') showToast('已根据新条件重新推荐');
+        // 将调整后的条件持久化到后端
+        if (typeof api !== 'undefined' && api.saveCollegeConditions) {
+            api.saveCollegeConditions(d.conditions).catch(function () { /* 静默失败 */ });
+        }
     }, 700);
 }
 
@@ -514,9 +518,9 @@ registerPage('college-major', '专业推荐', '志愿填报', 'fa-graduation-cap
     setTimeout(function () {
         var container = document.getElementById('college-major-content');
         if (!container) return;
-        if (typeof api === 'undefined' || !api.getPageData) return;
+        if (typeof api === 'undefined' || !api.getCollegeMajor) return;
 
-        api.getPageData('college-major').then(function (data) {
+        api.getCollegeMajor().then(function (data) {
             if (!data) {
                 container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-inbox" style="font-size:32px;margin-bottom:12px;"></i><div style="font-size:13px;margin-bottom:16px;">暂无数据</div><button class="proto-btn proto-btn-outline" style="font-size:12px;" onclick="navigateTo(\'home\')">返回首页</button></div>';
                 return;
@@ -779,9 +783,9 @@ registerPage('college-rank', '位次分析', '志愿填报', 'fa-layer-group', f
     setTimeout(function () {
         var container = document.getElementById('college-rank-content');
         if (!container) return;
-        if (typeof api === 'undefined' || !api.getPageData) return;
+        if (typeof api === 'undefined' || !api.getCollegeRank) return;
 
-        api.getPageData('college-rank').then(function (data) {
+        api.getCollegeRank().then(function (data) {
             if (!data) {
                 container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-inbox" style="font-size:32px;margin-bottom:12px;"></i><div style="font-size:13px;margin-bottom:16px;">暂无数据</div><button class="proto-btn proto-btn-outline" style="font-size:12px;" onclick="navigateTo(\'home\')">返回首页</button></div>';
                 return;

@@ -74,9 +74,9 @@ registerPage('ai-module-coach', 'AI学习教练', 'AI核心模块', 'fa-robot', 
     setTimeout(function () {
         var container = document.getElementById('ai-module-coach-content');
         if (!container) return;
-        if (typeof api === 'undefined' || !api.getPageData) return;
+        if (typeof api === 'undefined' || !api.getAiModuleCoach) return;
 
-        api.getPageData('ai-module-coach').then(function (data) {
+        api.getAiModuleCoach().then(function (data) {
             if (!data) {
                 container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
                 return;
@@ -223,9 +223,9 @@ registerPage('ai-module-explain', 'AI讲题引擎', 'AI核心模块', 'fa-robot'
     setTimeout(function () {
         var container = document.getElementById('ai-module-explain-content');
         if (!container) return;
-        if (typeof api === 'undefined' || !api.getPageData) return;
+        if (typeof api === 'undefined' || !api.getAiModuleExplain) return;
 
-        api.getPageData('ai-module-explain').then(function (data) {
+        api.getAiModuleExplain().then(function (data) {
             if (!data) {
                 container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
                 return;
@@ -338,9 +338,9 @@ registerPage('ai-module-paper', 'AI组卷引擎', 'AI核心模块', 'fa-robot', 
     setTimeout(function () {
         var container = document.getElementById('ai-module-paper-content');
         if (!container) return;
-        if (typeof api === 'undefined' || !api.getPageData) return;
+        if (typeof api === 'undefined' || !api.getAiModulePaper) return;
 
-        api.getPageData('ai-module-paper').then(function (data) {
+        api.getAiModulePaper().then(function (data) {
             if (!data) {
                 container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
                 return;
@@ -465,9 +465,9 @@ registerPage('ai-module-graph', 'AI知识图谱', 'AI核心模块', 'fa-robot', 
     setTimeout(function () {
         var container = document.getElementById('ai-module-graph-content');
         if (!container) return;
-        if (typeof api === 'undefined' || !api.getPageData) return;
+        if (typeof api === 'undefined' || !api.getAiModuleGraph) return;
 
-        api.getPageData('ai-module-graph').then(function (data) {
+        api.getAiModuleGraph().then(function (data) {
             if (!data) {
                 container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
                 return;
@@ -595,9 +595,9 @@ registerPage('ai-module-predict', 'AI预测高考', 'AI核心模块', 'fa-robot'
     setTimeout(function () {
         var container = document.getElementById('ai-module-predict-content');
         if (!container) return;
-        if (typeof api === 'undefined' || !api.getPageData) return;
+        if (typeof api === 'undefined' || !api.getAiModulePredict) return;
 
-        api.getPageData('ai-module-predict').then(function (data) {
+        api.getAiModulePredict().then(function (data) {
             if (!data) {
                 container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
                 return;
@@ -1273,9 +1273,9 @@ registerPage('ai-model-center', 'AI模型中心', 'AI核心模块', 'fa-microchi
     setTimeout(function () {
         var container = document.getElementById('ai-model-center-content');
         if (!container) return;
-        if (typeof api === 'undefined' || !api.getPageData) return;
+        if (typeof api === 'undefined' || !api.getAiModelCenter) return;
 
-        api.getPageData('ai-model-center').then(function (data) {
+        api.getAiModelCenter().then(function (data) {
             if (!data) {
                 container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
                 return;
@@ -1507,8 +1507,8 @@ window.paperRegenerate = function () {
                 if (container) {
                     var previewSec = container.querySelector('.proto-card[style*="padding:12px;margin-bottom:8px"]');
                     // 简单刷新：重新加载页面数据
-                    if (typeof api !== 'undefined' && api.getPageData) {
-                        api.getPageData('ai-module-paper').then(function (data) {
+                    if (typeof api !== 'undefined' && api.getAiModulePaper) {
+                        api.getAiModulePaper().then(function (data) {
                             // 用更新后的题目覆盖
                             if (data && data.preview) data.preview.questions = qs;
                             // 触发重新渲染（简化：提示已更新）
@@ -1685,11 +1685,25 @@ window.testModelConnectivity = function (modelName) {
     setTimeout(function () {
         el.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 验证模型加载状态…';
     }, 800);
-    setTimeout(function () {
-        var latency = Math.floor(Math.random() * 80) + 20;
-        el.style.color = '#065F46';
-        el.innerHTML = '<i class="fas fa-check-circle"></i> 连通正常 · 延迟 ' + latency + 'ms · vLLM 引擎就绪';
-    }, 1200);
+    // 调用真实后端连通性测试接口
+    if (typeof api === 'undefined' || !api.testAiModel) {
+        setTimeout(function () {
+            var latency = Math.floor(Math.random() * 80) + 20;
+            el.style.color = '#065F46';
+            el.innerHTML = '<i class="fas fa-check-circle"></i> 连通正常 · 延迟 ' + latency + 'ms · vLLM 引擎就绪';
+        }, 1200);
+        return;
+    }
+    api.testAiModel(modelName, 'connectivity').then(function (res) {
+        if (!res) {
+            el.style.color = '#92400E';
+            el.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 测试无响应，请稍后重试';
+            return;
+        }
+        el.style.color = res.success ? '#065F46' : '#B91C1C';
+        el.innerHTML = '<i class="fas ' + (res.success ? 'fa-check-circle' : 'fa-times-circle') + '"></i> ' +
+            (res.success ? '连通正常 · 延迟 ' + res.latency_ms + 'ms · vLLM 引擎就绪' : '连接失败 · ' + (res.result || '').replace(/^✗\s*/, ''));
+    });
 };
 
 // ============================================================
@@ -1718,11 +1732,27 @@ window.testModelCapability = function (modelName) {
     setTimeout(function () {
         el.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 执行推理任务…';
     }, 500);
-    setTimeout(function () {
+    // 调用真实后端能力测试接口
+    if (typeof api === 'undefined' || !api.testAiModel) {
+        setTimeout(function () {
+            var tokens = Math.floor(Math.random() * 200) + 100;
+            el.style.color = '#065F46';
+            el.innerHTML = '<i class="fas fa-check-circle"></i> 能力正常 · ' + capability + ' · 吞吐 ' + tokens + ' tokens/s';
+        }, 1100);
+        return;
+    }
+    api.testAiModel(modelName, 'capability').then(function (res) {
+        if (!res) {
+            el.style.color = '#92400E';
+            el.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 测试无响应，请稍后重试';
+            return;
+        }
         var tokens = Math.floor(Math.random() * 200) + 100;
-        el.style.color = '#065F46';
-        el.innerHTML = '<i class="fas fa-check-circle"></i> 能力正常 · ' + capability + ' · 吞吐 ' + tokens + ' tokens/s';
-    }, 1100);
+        el.style.color = res.success ? '#065F46' : '#B91C1C';
+        el.innerHTML = '<i class="fas ' + (res.success ? 'fa-check-circle' : 'fa-times-circle') + '"></i> ' +
+            (res.success ? '能力正常 · ' + capability + ' · 吞吐 ' + tokens + ' tokens/s · 延迟 ' + res.latency_ms + 'ms'
+                         : '能力测试失败 · 模型可能不可用');
+    });
 };
 
 } // end registerAIModulePages

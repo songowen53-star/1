@@ -1,0 +1,204 @@
+{
+  "module": "home-plan",
+  "name": "AI智能学习计划",
+  "version": "20260824A",
+  "updated_at": "2026-08-18T05:04:13.398Z",
+  "source": "prototype/js/design-system.js (WEEK_PLAN_MOCK)",
+  "browser_url": "http://localhost:8788/prototype/index.html",
+  "cloud_url": "https://ai-gaokao-static.pages.dev/prototype/index.html",
+  "interactions": [
+    {
+      "id": "navigate-to-plan",
+      "type": "navigation",
+      "desc": "从首页点击「AI学习计划」卡片进入 home-plan 页面"
+    },
+    {
+      "id": "load-week-plan",
+      "type": "async-load",
+      "desc": "异步加载 WEEK_PLAN_MOCK，显示本周7天14个任务"
+    },
+    {
+      "id": "filter-week",
+      "type": "tab",
+      "desc": "点击「本周/下周/本月」Tab 切换（本周为默认）"
+    },
+    {
+      "id": "task-detail",
+      "type": "click",
+      "desc": "点击任务卡片弹出详情 Modal（科目、知识点、时间、题量、状态）"
+    },
+    {
+      "id": "toggle-task",
+      "type": "click",
+      "desc": "点击圆形勾选框 toggleTask，切换任务完成状态（边框/背景/✓图标）"
+    },
+    {
+      "id": "ai-replan",
+      "type": "click",
+      "desc": "点击「让AI重新规划」按钮 aiReplan()，重新生成学习计划"
+    }
+  ],
+  "interaction_count": 6,
+  "data": {
+    "week_plan": [
+      {
+        "day": "周一",
+        "date": "8月10日",
+        "isToday": true,
+        "tasks": [
+          {
+            "subject": "语文",
+            "color": "red",
+            "point": "古诗文鉴赏",
+            "time": "32min",
+            "questions_count": 10,
+            "done": false
+          },
+          {
+            "subject": "物理",
+            "color": "purple",
+            "point": "力学综合",
+            "time": "28min",
+            "questions_count": 8,
+            "done": false
+          },
+          {
+            "subject": "数学",
+            "color": "blue",
+            "point": "圆锥曲线综合",
+            "time": "47min",
+            "questions_count": 12,
+            "done": false
+          }
+        ]
+      },
+      {
+        "day": "周二",
+        "date": "8月11日",
+        "isToday": false,
+        "tasks": [
+          {
+            "subject": "英语",
+            "color": "green",
+            "point": "完形填空专项",
+            "time": "35min",
+            "questions_count": 10,
+            "done": false
+          },
+          {
+            "subject": "化学",
+            "color": "orange",
+            "point": "氧化还原反应",
+            "time": "40min",
+            "questions_count": 8,
+            "done": false
+          }
+        ]
+      },
+      {
+        "day": "周三",
+        "date": "8月12日",
+        "isToday": false,
+        "tasks": [
+          {
+            "subject": "数学",
+            "color": "blue",
+            "point": "导数与极值",
+            "time": "45min",
+            "questions_count": 10,
+            "done": false
+          },
+          {
+            "subject": "物理",
+            "color": "purple",
+            "point": "电磁感应综合",
+            "time": "38min",
+            "questions_count": 8,
+            "done": false
+          }
+        ]
+      },
+      {
+        "day": "周四",
+        "date": "8月13日",
+        "isToday": false,
+        "tasks": [
+          {
+            "subject": "语文",
+            "color": "red",
+            "point": "现代文阅读",
+            "time": "30min",
+            "questions_count": 8,
+            "done": false
+          },
+          {
+            "subject": "英语",
+            "color": "green",
+            "point": "阅读理解D篇",
+            "time": "32min",
+            "questions_count": 5,
+            "done": false
+          }
+        ]
+      },
+      {
+        "day": "周五",
+        "date": "8月14日",
+        "isToday": false,
+        "tasks": [
+          {
+            "subject": "数学",
+            "color": "blue",
+            "point": "概率统计",
+            "time": "40min",
+            "questions_count": 8,
+            "done": false
+          },
+          {
+            "subject": "化学",
+            "color": "orange",
+            "point": "化学平衡",
+            "time": "35min",
+            "questions_count": 6,
+            "done": false
+          }
+        ]
+      },
+      {
+        "day": "周六",
+        "date": "8月15日",
+        "isToday": false,
+        "tasks": [
+          {
+            "subject": "综合",
+            "color": "purple",
+            "point": "理科综合模拟",
+            "time": "90min",
+            "questions_count": 21,
+            "done": false
+          }
+        ]
+      },
+      {
+        "day": "周日",
+        "date": "8月16日",
+        "isToday": false,
+        "tasks": [
+          {
+            "subject": "综合",
+            "color": "orange",
+            "point": "错题回顾与总结",
+            "time": "60min",
+            "questions_count": 15,
+            "done": false
+          }
+        ]
+      }
+    ],
+    "total_tasks": 14,
+    "done_tasks": 0,
+    "estimated_score_gain": 18,
+    "weak_point_count": 8,
+    "replanned": false
+  }
+}

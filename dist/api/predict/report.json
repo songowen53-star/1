@@ -1,0 +1,25 @@
+{"code":0,"data":{
+"predicted_score":568,
+"rank":12580,
+"percentile":15,
+"days_to_exam":259,
+"yiben_line_diff":3,
+"probability":{"p985":35,"p211":62,"yiben":85},
+"trend_impact":5,
+"confidence":89,
+"model":"AI-Gaokao-Predict-v3.2",
+"subject_scores":[
+{"subject":"语文","score":112,"max_score":150},
+{"subject":"数学","score":105,"max_score":150},
+{"subject":"英语","score":118,"max_score":150},
+{"subject":"物理","score":78,"max_score":100},
+{"subject":"化学","score":85,"max_score":100},
+{"subject":"生物","score":70,"max_score":100}
+],
+"weak_advice":[
+"数学圆锥曲线和导数模块掌握率偏低，建议每日专项训练 30 分钟",
+"物理电磁感应是薄弱环节，建议结合实验视频加深理解",
+"英语书面表达可提升空间大，多背诵高级句式模板",
+"化学有机推断题错误率高，建议系统梳理有机反应类型"
+]
+}}

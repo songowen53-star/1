@@ -1,0 +1,23 @@
+{"code":0,"data":{
+"paper":[
+{"id":"q_1001","subject":"数学","type":"选择题","difficulty":4,"knowledge_point":"圆锥曲线综合","title":"已知椭圆 C: x²/4 + y²/3 = 1，过点 P(1,1) 的直线与椭圆交于 A,B 两点，求弦长 |AB| 的取值范围。","options":["A. [2,2√3]","B. [√3,2√3]","C. [2,4]","D. [√2,2√2]"],"answer":"B","analysis":"设直线斜率为 k，联立椭圆方程，利用韦达定理求弦长公式。"},
+{"id":"q_1002","subject":"物理","type":"计算题","difficulty":4,"knowledge_point":"电磁感应综合题","title":"导体棒 ab 在匀强磁场 B 中以速度 v 向右运动，求感应电流。","answer":"I = BLv/R","analysis":"由法拉第电磁感应定律和欧姆定律求解。"},
+{"id":"q_1003","subject":"化学","type":"推断题","difficulty":5,"knowledge_point":"有机推断题型","title":"某链状化合物 A 分子式 C₄H₈O₂，可与 NaHCO₃ 反应，推断结构。","answer":"A: 丁酸","analysis":"根据官能团反应特性推断。"},
+{"id":"q_1004","subject":"英语","type":"完形填空","difficulty":3,"knowledge_point":"完形填空技巧","title":"The students were ___ by the inspiring speech.","options":["A. bored","B. moved","C. confused","D. scared"],"answer":"B","analysis":"语境推断题。"},
+{"id":"q_1005","subject":"数学","type":"解答题","difficulty":5,"knowledge_point":"导数应用专题","title":"f(x) = x³ - 3x + 1，求极值及零点个数。","answer":"极大值3，极小值-1，3个零点","analysis":"利用导数和零点定理。"},
+{"id":"q_1006","subject":"物理","type":"选择题","difficulty":4,"knowledge_point":"力学综合分析","title":"物体自由下落高度 h，落地速度 v，合外力做功？","options":["A. mgh","B. ½mv²","C. mgh-½mv²","D. 0"],"answer":"B","analysis":"动能定理。"},
+{"id":"q_1007","subject":"化学","type":"选择题","difficulty":3,"knowledge_point":"电化学原理","title":"原电池中正确的是？","options":["A. 正极氧化","B. 负极还原","C. 电子负→正","D. 阳离子向负极"],"answer":"C","analysis":"原电池原理。"},
+{"id":"q_1008","subject":"英语","type":"写作","difficulty":4,"knowledge_point":"书面表达高级句式","title":"描写家乡，至少2种高级句式。","answer":"见范文","analysis":"倒装、强调、非限制性定语从句。"},
+{"id":"q_1009","subject":"数学","type":"选择题","difficulty":3,"knowledge_point":"概率统计","title":"从 5 男 3 女中选 3 人，至少 1 女的概率？","options":["A. 5/14","B. 9/14","C. 15/28","D. 23/28"],"answer":"D","analysis":"对立事件：全男概率 C(5,3)/C(8,3)=10/56，所求=1-10/56=23/28。"},
+{"id":"q_1010","subject":"物理","type":"选择题","difficulty":3,"knowledge_point":"动量与冲量","title":"质量 2kg 物体速度从 3m/s 增大到 5m/s，动量变化量大小？","options":["A. 4 kg·m/s","B. 6 kg·m/s","C. 8 kg·m/s","D. 10 kg·m/s"],"answer":"A","analysis":"Δp=m(v₂-v₁)=2×(5-3)=4 kg·m/s。"}
+],
+"meta":{
+"total_count":10,
+"subjects":["数学","物理","化学","英语"],
+"total_score":150,
+"estimated_time":120,
+"difficulty":"中等偏难",
+"generated_by":"AI推荐引擎 v2.1",
+"generated_at":"2026-09-21T10:00:00.000Z"
+}
+}}
