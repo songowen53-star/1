@@ -12,10 +12,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: fb1176b63978555cec647e7f061c09fa
-          projectName: ai-gaokao-static
-          directory: dist
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy dist --project-name=ai-gaokao-static --commit-dirty=true
