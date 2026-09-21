@@ -3422,20 +3422,25 @@ async function loadTrainingTab(key) {
     const content = document.getElementById('training-content');
     if (!content) return;
     content.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-spinner fa-spin" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">加载中…</div></div>';
+    const keyMap = { real:'practice-real-exam', mock:'practice-mock', ai:'practice-ai-recommend', mistake:'practice-mistakes', hot:'practice-hotpoints' };
+    const dataKey = keyMap[key] || 'practice-real-exam';
     try {
-        const keyMap = { real:'practice-real-exam', mock:'practice-mock', ai:'practice-ai-recommend', mistake:'practice-mistakes', hot:'practice-hotpoints' };
-        const dataKey = keyMap[key] || 'practice-real-exam';
-        const resp = await fetch(`/api/page-data/${dataKey}`);
+        let resp = await fetch(`/api/page-data/${dataKey}`);
+        if (!resp.ok) resp = await fetch(`/api/page-data/${dataKey}.json`);
         const json = await resp.json();
-        const data = json.data;
-        if (!data) { content.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">暂无数据</div></div>'; return; }
+        const data = json.data || json;
+        if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) {
+            content.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">暂无数据</div></div>';
+            return;
+        }
         if (key === 'real') renderRealExamTab(content, data);
         else if (key === 'mock') renderMockTab(content, data);
         else if (key === 'ai') renderAITab(content, data);
         else if (key === 'mistake') renderMistakeTab(content, data);
         else if (key === 'hot') renderHotTab(content, data);
     } catch (e) {
-        content.innerHTML = `<div style="text-align:center;padding:40px;color:#EF4444;"><div style="font-size:13px;">加载失败：${e.message}</div></div>`;
+        console.warn('loadTrainingTab 失败:', key, e);
+        content.innerHTML = `<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">数据加载失败，请刷新重试</div></div>`;
     }
 }
 
