@@ -557,8 +557,10 @@ function startLearnSession(subject, point, action, qCount) {
         point: point,
         action: action || '开始',
         qCount: qCount || 8,
+        taskId: window.__pendingTaskId || null,
         startTime: Date.now()
     };
+    window.__pendingTaskId = null;
     // 接入数据中台：学习会话参数持久化到 KV（支持跨页读取与断点续学）
     if (typeof api !== 'undefined' && api.savePageData) {
         api.savePageData('home-learn-session', window.__learnSession).catch(function () {});
@@ -741,6 +743,7 @@ function showNotifications() {
 window._currentPlanRange = window._currentPlanRange || 'this_week';
 // 渲染单日计划卡片（原型端使用 Tag()）
 function protoRenderPlanDayCard(d) {
+    d.tasks = d.tasks || [];
     var totalMin = d.tasks.reduce(function(a, b) { return a + parseInt(b.time); }, 0);
     var taskCards = d.tasks.map(function(t) {
         var qCount = t.questions_count || 8;
@@ -910,20 +913,41 @@ registerPage('home', 'AI今日提分', '首页', 'fa-home', () => {
     const diffMs = gaokaoDate - today;
     const countdownDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
 
+    // 用登录用户的目标分数/当前估分覆盖 AI今日提分卡片的硬编码值
+    setTimeout(function() {
+        try {
+            var _cu = JSON.parse(localStorage.getItem('aigaokao_user') || 'null');
+            if (_cu) {
+                var ts = document.getElementById('home-target-score');
+                var cs = document.getElementById('home-current-score');
+                if (ts && _cu.target_score) ts.textContent = _cu.target_score;
+                if (cs && _cu.current_score) cs.textContent = _cu.current_score;
+            }
+        } catch (e) {}
+    }, 200);
+
     // 异步加载首页今日学习计划预览（取今日任务前3个）
     setTimeout(function() {
         const container = document.getElementById('home-today-plan-preview');
         if (!container) return;
 
-        // API 不可用时的回退提示
+        // 无真实数据时的引导（不使用 Mock 数据）
         function showPreviewFallback() {
-            container.innerHTML = '<div style="text-align:center;padding:16px;color:#9CA3AF;font-size:13px;"><i class="fas fa-clipboard-list" style="color:#3B82F6;margin-right:6px;"></i>暂无今日任务数据，点击"查看全部"进入今日任务页</div>';
+            let tip = '完成 AI 学情诊断后自动生成今日学习计划';
+            let btn = '<div onclick="navigateTo(\\\'home-diagnostic\\\')" style="margin-top:10px;background:#3B82F6;color:#fff;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;"><i class="fas fa-stethoscope"></i> 开始 AI 学情诊断</div>';
+            if (typeof Auth !== 'undefined' && !Auth.isLoggedIn()) {
+                tip = '登录后开始 AI 学情诊断，生成专属学习计划';
+                btn = '<div onclick="openProtoAuthModal()" style="margin-top:10px;background:#3B82F6;color:#fff;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;"><i class="fas fa-right-to-bracket"></i> 登录 / 注册</div>';
+            }
+            container.innerHTML = '<div style="text-align:center;padding:16px;color:#6B7280;font-size:13px;">' +
+                '<i class="fas fa-clipboard-list" style="color:#3B82F6;margin-right:6px;"></i>' + tip + btn + '</div>';
         }
 
         if (typeof api === 'undefined' || !api.getTodayTasks) { showPreviewFallback(); return; }
 
         api.getTodayTasks().then(function(data) {
             if (!data || !data.tasks) { showPreviewFallback(); return; }
+            if (data.need_diagnosis && (!data.tasks || data.tasks.length === 0)) { showPreviewFallback(); return; }
             const tasks = data.tasks.slice(0, 3); // 只显示前3个任务
             const doneCount = data.done_count || 0;
             const totalCount = data.total_count || 0;
@@ -966,6 +990,86 @@ registerPage('home', 'AI今日提分', '首页', 'fa-home', () => {
         }).catch(function() { showPreviewFallback(); });
     }, 100);
 
+    // 首页统一数据源：Student Intelligence Profile API
+    setTimeout(function() {
+        if (typeof api === 'undefined' || !api.getIntelligenceProfile) return;
+        api.getIntelligenceProfile().then(function(p) {
+            if (!p) {
+                // 未登录或接口失败：保持访客态，引导登录
+                const onboarding = document.getElementById('home-score-onboarding');
+                const body = document.getElementById('home-score-body');
+                if (onboarding && body) {
+                    body.style.display = 'none';
+                    onboarding.style.display = 'block';
+                    onboarding.querySelector('div').textContent = '登录后完成 AI 学情诊断，生成专属提分方案与学习计划';
+                }
+                return;
+            }
+            const name = (p.user && p.user.name) || '同学';
+            const g = document.getElementById('home-greeting-name');
+            if (g) g.textContent = '你好，' + name;
+            const av = document.getElementById('home-avatar');
+            if (av) av.textContent = name.slice(-1) || '同';
+
+            const hasDiagnosis = !!(p.diagnosis && p.diagnosis.completed);
+            const onboarding = document.getElementById('home-score-onboarding');
+            const body = document.getElementById('home-score-body');
+            if (onboarding && body) {
+                onboarding.style.display = hasDiagnosis ? 'none' : 'block';
+                body.style.display = hasDiagnosis ? 'block' : 'none';
+            }
+
+            if (hasDiagnosis) {
+                const cs = document.getElementById('home-current-score');
+                if (cs) cs.textContent = p.level.current_score != null ? p.level.current_score : '--';
+                const ts = document.getElementById('home-target-score');
+                if (ts && p.level.target_score != null) ts.textContent = p.level.target_score;
+                const gap = document.getElementById('home-score-gap');
+                if (gap) gap.textContent = p.level.score_gap != null ? ('距目标 ' + p.level.score_gap + ' 分') : '';
+                const basis = document.getElementById('home-score-basis');
+                if (basis) basis.textContent = '基于 ' + p.diagnosis.report.summary.total_questions + ' 题诊断数据';
+                const gain = document.getElementById('home-today-gain');
+                if (gain) gain.textContent = '正确率 ' + p.level.accuracy + '%';
+                const advice = document.getElementById('home-ai-advice');
+                if (advice) {
+                    advice.textContent = (p.weak_points && p.weak_points.length)
+                        ? 'AI建议：重点突破' + p.weak_points.slice(0, 2).map(w => w.subject + w.knowledge_point).join('、')
+                        : '继续保持当前学习节奏';
+                }
+                const ps = document.getElementById('home-predict-score');
+                if (ps && p.prediction && p.prediction.available) {
+                    ps.innerHTML = p.prediction.predicted_score + '<span style="font-size:14px;opacity:0.8;">分</span>';
+                }
+                const pb = document.getElementById('home-predict-basis');
+                if (pb) pb.textContent = (p.prediction && p.prediction.available) ? p.prediction.based_on : '暂无足够数据生成预测';
+            } else {
+                const ts = document.getElementById('home-target-score');
+                if (ts && p.goal && p.goal.target_score) ts.textContent = p.goal.target_score;
+                const cs = document.getElementById('home-current-score');
+                if (cs) cs.textContent = '--';
+                const ps = document.getElementById('home-predict-score');
+                if (ps) ps.innerHTML = '--<span style="font-size:14px;opacity:0.8;">分</span>';
+                const pb = document.getElementById('home-predict-basis');
+                if (pb) pb.textContent = '完成AI学情诊断后生成预测';
+            }
+
+            // 本周学习时长（真实统计数据）
+            const wk = p.weekly || {};
+            const wh = document.getElementById('home-week-hours');
+            if (wh) wh.textContent = wk.week_hours != null ? wk.week_hours : 0;
+            const wg = document.getElementById('home-week-goal');
+            if (wg) wg.textContent = 'h / ' + (wk.goal_hours != null ? wk.goal_hours : 0) + 'h';
+            const tm = document.getElementById('home-today-minutes');
+            if (tm) tm.textContent = '今日 ' + (wk.today_minutes || 0) + 'min';
+            const wp = document.getElementById('home-week-progress');
+            if (wp) wp.innerHTML = Progress(wk.goal_rate || 0, '#10B981');
+            const wr = document.getElementById('home-week-rate');
+            if (wr) wr.textContent = wk.week_hours > 0
+                ? '本周目标完成 ' + (wk.goal_rate || 0) + '%，继续保持！'
+                : '还未记录学习时长，完成一项今日任务即可开始统计';
+        }).catch(function() { /* 网络异常时保留引导态 */ });
+    }, 150);
+
     return Page({
         title: 'AI今日提分',
         navbar: false,
@@ -978,9 +1082,9 @@ registerPage('home', 'AI今日提分', '首页', 'fa-home', () => {
                 <div style="position:absolute;bottom:-40px;left:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.06);"></div>
                 <div style="display:flex;align-items:center;justify-content:space-between;position:relative;">
                     <div style="display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openProtoAuthModal()" title="点击登录 / 注册">
-                        <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.55);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;letter-spacing:1px;backdrop-filter:blur(6px);">ZH</div>
+                        <div id="home-avatar" style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.55);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;letter-spacing:1px;backdrop-filter:blur(6px);">--</div>
                         <div>
-                            <div style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px;">你好，访客 <i class="fas fa-chevron-down" style="font-size:11px;opacity:0.7;"></i></div>
+                            <div style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px;"><span id="home-greeting-name">你好，访客</span> <i class="fas fa-chevron-down" style="font-size:11px;opacity:0.7;"></i></div>
                             <div style="font-size:12px;opacity:0.85;margin-top:2px;"><i class="fas fa-calendar-day"></i> 距离${gaokaoYear}高考还有 <b style="font-size:14px;">${countdownDays}</b> 天</div>
                         </div>
                     </div>
@@ -991,31 +1095,39 @@ registerPage('home', 'AI今日提分', '首页', 'fa-home', () => {
                 </div>
             </div>
 
-            <!-- AI今日提分卡片 -->
+            <!-- AI今日提分卡片（数据来自 Student Intelligence Profile API） -->
             ${GradientCard('blue', `
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-                    <div>
-                        <div style="font-size:12px;opacity:0.85;"><i class="fas fa-robot"></i> AI今日提分</div>
-                        <div style="font-size:13px;opacity:0.7;margin-top:2px;">基于今日学习数据智能预测</div>
-                    </div>
-                    <div style="background:rgba(255,255,255,0.2);padding:4px 10px;border-radius:12px;font-size:11px;">今日 +3 分</div>
-                </div>
-                <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <div style="text-align:center;">
-                        <div style="font-size:11px;opacity:0.8;">当前估分</div>
-                        <div style="font-size:30px;font-weight:800;">580</div>
-                    </div>
-                    <div style="flex:1;padding:0 12px;text-align:center;">
-                        <i class="fas fa-arrow-right" style="font-size:18px;opacity:0.7;"></i>
-                        <div style="font-size:11px;opacity:0.85;margin-top:2px;color:#FCD34D;">↑ 预计提分 +3</div>
-                    </div>
-                    <div style="text-align:center;">
-                        <div style="font-size:11px;opacity:0.8;">目标分数</div>
-                        <div style="font-size:30px;font-weight:800;color:#FCD34D;">620</div>
+                <div id="home-score-onboarding" style="display:none;text-align:center;padding:6px 0 4px;">
+                    <div style="font-size:13px;opacity:0.9;line-height:1.7;margin-bottom:12px;">完成 AI 学情诊断，生成你的专属提分方案与学习计划</div>
+                    <div onclick="navigateTo('home-diagnostic')" style="background:#FCD34D;color:#1E3A8A;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;">
+                        <i class="fas fa-stethoscope"></i> 开始 AI 学情诊断
                     </div>
                 </div>
-                <div style="margin-top:14px;background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 10px;font-size:11px;display:flex;align-items:center;gap:6px;">
-                    <i class="fas fa-lightbulb"></i> AI建议：重点突破数学导数与物理电磁感应
+                <div id="home-score-body">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                        <div>
+                            <div style="font-size:12px;opacity:0.85;"><i class="fas fa-robot"></i> AI今日提分</div>
+                            <div style="font-size:13px;opacity:0.7;margin-top:2px;" id="home-score-basis">基于今日学习数据智能预测</div>
+                        </div>
+                        <div id="home-today-gain" style="background:rgba(255,255,255,0.2);padding:4px 10px;border-radius:12px;font-size:11px;">--</div>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <div style="text-align:center;">
+                            <div style="font-size:11px;opacity:0.8;">当前估分</div>
+                            <div style="font-size:30px;font-weight:800;" id="home-current-score">--</div>
+                        </div>
+                        <div style="flex:1;padding:0 12px;text-align:center;">
+                            <i class="fas fa-arrow-right" style="font-size:18px;opacity:0.7;"></i>
+                            <div style="font-size:11px;opacity:0.85;margin-top:2px;color:#FCD34D;" id="home-score-gap">待诊断</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:11px;opacity:0.8;">目标分数</div>
+                            <div style="font-size:30px;font-weight:800;color:#FCD34D;" id="home-target-score">--</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:14px;background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 10px;font-size:11px;display:flex;align-items:center;gap:6px;">
+                        <i class="fas fa-lightbulb"></i> <span id="home-ai-advice">完成诊断后生成AI建议</span>
+                    </div>
                 </div>
             `)}
 
@@ -1047,30 +1159,30 @@ registerPage('home', 'AI今日提分', '首页', 'fa-home', () => {
                     <span style="font-size:12px;color:#3B82F6;cursor:pointer;">详情 ›</span>
                 </div>
                 <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px;">
-                    <span style="font-size:26px;font-weight:800;color:#111827;">28</span>
-                    <span style="font-size:13px;color:#6B7280;">h / 42h</span>
-                    <span style="font-size:12px;color:#10B981;margin-left:auto;"><i class="fas fa-arrow-up"></i> +15%</span>
+                    <span style="font-size:26px;font-weight:800;color:#111827;" id="home-week-hours">0</span>
+                    <span style="font-size:13px;color:#6B7280;" id="home-week-goal">h / --h</span>
+                    <span style="font-size:12px;color:#10B981;margin-left:auto;" id="home-today-minutes">今日 0min</span>
                 </div>
-                ${Progress(67, '#10B981')}
-                <div style="font-size:11px;color:#9CA3AF;margin-top:6px;">本周目标完成 67%，继续保持！</div>
+                <div id="home-week-progress">${Progress(0, '#10B981')}</div>
+                <div style="font-size:11px;color:#9CA3AF;margin-top:6px;" id="home-week-rate">完成AI学情诊断后开始记录学习时长</div>
             </div>
 
-            <!-- AI提分预测卡片 -->
+            <!-- AI提分预测卡片（仅真实数据） -->
             ${GradientCard('purple', `
                 <div style="display:flex;align-items:center;justify-content:space-between;">
                     <div style="flex:1;">
                         <div style="font-size:12px;opacity:0.85;"><i class="fas fa-brain"></i> AI提分预测</div>
-                        <div style="font-size:32px;font-weight:800;margin-top:6px;">615<span style="font-size:14px;opacity:0.8;">分</span></div>
-                        <div style="font-size:12px;opacity:0.85;margin-top:4px;">较上次预测 <span style="color:#FCD34D;">↑ 8分</span></div>
+                        <div style="font-size:32px;font-weight:800;margin-top:6px;" id="home-predict-score">--<span style="font-size:14px;opacity:0.8;">分</span></div>
+                        <div style="font-size:12px;opacity:0.85;margin-top:4px;" id="home-predict-basis">完成AI学情诊断后生成预测</div>
                     </div>
-                    <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+                    <div id="home-predict-prob" style="display:none;flex-direction:column;gap:8px;align-items:flex-end;">
                         <div style="background:rgba(255,255,255,0.18);border-radius:10px;padding:8px 12px;text-align:center;">
                             <div style="font-size:11px;opacity:0.85;">985录取概率</div>
-                            <div style="font-size:20px;font-weight:800;color:#FCD34D;">67%</div>
+                            <div style="font-size:20px;font-weight:800;color:#FCD34D;">--</div>
                         </div>
                         <div style="background:rgba(255,255,255,0.18);border-radius:10px;padding:8px 12px;text-align:center;">
                             <div style="font-size:11px;opacity:0.85;">211录取概率</div>
-                            <div style="font-size:20px;font-weight:800;">85%</div>
+                            <div style="font-size:20px;font-weight:800;">--</div>
                         </div>
                     </div>
                 </div>
@@ -1334,7 +1446,7 @@ registerPage('home-task', '今日任务', '首页', 'fa-home', () => {
                     ${t.status === 'done'
                         ? `<button class="proto-btn proto-btn-outline" style="height:36px;font-size:13px;flex:1;" onclick="startTask('${t.subject}','${t.point}','重练', ${t.questions_count || 8}, '${t.time}')"><i class="fas fa-redo"></i> 再练一次</button>
                            <button class="proto-btn proto-btn-outline" style="height:36px;font-size:13px;flex:1;" onclick="viewAnalysis('${t.subject}','${t.point}')"><i class="fas fa-file-alt"></i> 查看解析</button>`
-                        : `<button class="proto-btn proto-btn-primary" style="height:36px;font-size:13px;flex:1;" onclick="startTask('${t.subject}','${t.point}','开始', ${t.questions_count || 8}, '${t.time}')"><i class="fas fa-play"></i> 开始学习</button>
+                        : `<button class="proto-btn proto-btn-primary" style="height:36px;font-size:13px;flex:1;" onclick="startLearningTask('${t.id}','${t.subject}','${t.point}', ${t.questions_count || 8}, '${t.time}')"><i class="fas fa-play"></i> ${t.status === 'doing' ? '继续学习' : '开始学习'}</button>
                            <button class="proto-btn proto-btn-outline" style="height:36px;font-size:13px;width:44px;" onclick="showTaskMore('${t.subject}','${t.point}')"><i class="fas fa-ellipsis-h"></i></button>`
                     }
                 </div>
@@ -1348,20 +1460,27 @@ registerPage('home-task', '今日任务', '首页', 'fa-home', () => {
         const statsContainer = document.getElementById('today-task-stats');
         if (!listContainer) return;
 
-        // API 不可用时的回退：保留实时日期，显示提示
-        function showFallback() {
+        // 无真实数据时的引导（不使用 Mock 数据）
+        function showFallback(needDiagnosis) {
             if (headerContainer) {
                 headerContainer.innerHTML =
                     '<div>' +
                     '<div style="font-size:12px;opacity:0.85;"><i class="fas fa-calendar-check"></i> 今日任务</div>' +
                     '<div style="font-size:20px;font-weight:800;margin-top:4px;">' + _todayStr + '</div>' +
-                    '<div style="font-size:12px;opacity:0.85;margin-top:2px;">点击下方按钮开始今日学习</div>' +
+                    '<div style="font-size:12px;opacity:0.85;margin-top:2px;">' + (needDiagnosis ? '完成AI学情诊断后生成学习计划' : '登录后开始今日学习') + '</div>' +
                     '</div>' +
                     '<div style="text-align:center;">' +
                     RingChart(0, '#FCD34D', 72) +
                     '<div style="font-size:11px;opacity:0.85;margin-top:4px;">完成率</div></div>';
             }
-            listContainer.innerHTML = '<div class="proto-card" style="margin:0 0 12px;text-align:center;padding:30px;color:#9CA3AF;"><i class="fas fa-clipboard-list" style="font-size:28px;margin-bottom:8px;color:#3B82F6;"></i><div style="font-size:14px;font-weight:600;">暂无今日任务数据</div><div style="font-size:12px;margin-top:4px;">服务端任务接口暂不可用，可点击下方按钮开始练习</div></div>';
+            const loggedIn = typeof Auth !== 'undefined' && Auth.isLoggedIn();
+            const btnText = loggedIn ? '<i class="fas fa-stethoscope"></i> 开始 AI 学情诊断' : '<i class="fas fa-right-to-bracket"></i> 登录 / 注册';
+            const btnAction = loggedIn ? "navigateTo('home-diagnostic')" : 'openProtoAuthModal()';
+            listContainer.innerHTML = '<div class="proto-card" style="margin:0 0 12px;text-align:center;padding:30px;color:#9CA3AF;">' +
+                '<i class="fas fa-clipboard-list" style="font-size:28px;margin-bottom:8px;color:#3B82F6;"></i>' +
+                '<div style="font-size:14px;font-weight:600;">' + (needDiagnosis ? '还没有你的学习数据' : '登录后查看今日任务') + '</div>' +
+                '<div style="font-size:12px;margin-top:4px;">' + (needDiagnosis ? '完成AI学情诊断后自动生成第一套学习计划' : '学生数据按账号隔离，请先登录') + '</div>' +
+                '<div onclick="' + btnAction + '" style="margin-top:14px;background:#3B82F6;color:#fff;border-radius:10px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;">' + btnText + '</div></div>';
             if (statsContainer) {
                 statsContainer.innerHTML =
                     '<div style="font-size:14px;font-weight:700;margin-bottom:12px;"><i class="fas fa-chart-bar" style="color:#3B82F6;margin-right:6px;"></i>今日进度</div>' +
@@ -1371,14 +1490,15 @@ registerPage('home-task', '今日任务', '首页', 'fa-home', () => {
                     StatCard('总任务', '0', 0, 'blue') +
                     '</div>' +
                     Progress(0, '#3B82F6') +
-                    '<div style="font-size:11px;color:#9CA3AF;margin-top:6px;">等待加载今日任务…</div>';
+                    '<div style="font-size:11px;color:#9CA3AF;margin-top:6px;">暂无学习记录</div>';
             }
         }
 
-        if (typeof api === 'undefined' || !api.getTodayTasks) { showFallback(); return; }
+        if (typeof api === 'undefined' || !api.getTodayTasks) { showFallback(true); return; }
 
         api.getTodayTasks().then(function(data) {
-            if (!data || !data.tasks) { showFallback(); return; }
+            if (!data || !data.tasks) { showFallback(true); return; }
+            if (data.need_diagnosis && (!data.tasks || data.tasks.length === 0)) { showFallback(true); return; }
             const tasks = data.tasks;
 
             // 更新头部：日期 + 进度（始终使用实时日期，避免 mock 数据中的过期日期覆盖）
@@ -1399,7 +1519,7 @@ registerPage('home-task', '今日任务', '首页', 'fa-home', () => {
             if (tasks.length > 0) {
                 listContainer.innerHTML = tasks.map(renderTaskCard).join('');
             } else {
-                listContainer.innerHTML = '<div class="proto-card" style="margin:0 0 12px;text-align:center;padding:30px;color:#9CA3AF;"><i class="fas fa-check-circle" style="font-size:28px;margin-bottom:8px;color:#10B981;"></i><div style="font-size:14px;font-weight:600;">今日任务已完成</div><div style="font-size:12px;margin-top:4px;">快去挑战更多题目吧</div></div>';
+                listContainer.innerHTML = '<div class="proto-card" style="margin:0 0 12px;text-align:center;padding:30px;color:#9CA3AF;"><i class="fas fa-check-circle" style="font-size:28px;margin-bottom:8px;color:#10B981;"></i><div style="font-size:14px;font-weight:600;">今日暂无学习任务</div><div style="font-size:12px;margin-top:4px;">可前往“AI学情诊断”重新生成学习计划</div></div>';
             }
 
             // 更新进度统计
@@ -1418,8 +1538,21 @@ registerPage('home-task', '今日任务', '首页', 'fa-home', () => {
                     Progress(data.completion_rate, '#3B82F6') +
                     '<div style="font-size:11px;color:#9CA3AF;margin-top:6px;">总时长 ' + totalMin + 'min · 已用 ' + usedMin + 'min · 预计还需 ' + Math.max(0, totalMin - usedMin) + 'min</div>';
             }
-        }).catch(function() { showFallback(); });
+        }).catch(function() { showFallback(true); });
     }, 100);
+
+    // 开始学习任务：先落库（doing），再进入学习会话；结束后自动完成任务
+    window.startLearningTask = function(taskId, subject, point, count, time) {
+        window.__pendingTaskId = taskId;
+        if (typeof api !== 'undefined' && api.startStudyTask) {
+            api.startStudyTask(taskId).then(function(t) {
+                if (!t) { alert('任务状态更新失败，请重新登录后再试'); return; }
+                startTask(subject, point, '开始', count, time);
+            });
+        } else {
+            startTask(subject, point, '开始', count, time);
+        }
+    };
 
     return Page({
         title: '今日任务',
@@ -1783,6 +1916,11 @@ registerPage('home-duration', '学习时长', '首页', 'fa-home', () => {
         ]).then(function(results) {
             var trend = results[0] || {};
             var ans = results[1] || {};
+            // 优先使用注册用户的目标分数
+            try {
+                var _cu = JSON.parse(localStorage.getItem('aigaokao_user') || 'null');
+                if (_cu && _cu.target_score) trend.target_score = _cu.target_score;
+            } catch (e) {}
             var labels = trend.labels || [];
             var hist = (trend.history || []).map(function(v){ return v == null ? null : v; });
             var pred = (trend.predict || []).map(function(v){ return v == null ? null : v; });
@@ -2011,6 +2149,11 @@ registerPage('home-duration', '学习时长', '首页', 'fa-home', () => {
             var strong = (m.strongest_subjects || [])[0];
             var scoreNow = p.current_score || 0;
             var scoreTarget = p.target_score || scoreNow;
+            // 优先使用注册用户的目标分数
+            try {
+                var _cu2 = JSON.parse(localStorage.getItem('aigaokao_user') || 'null');
+                if (_cu2 && _cu2.target_score) scoreTarget = _cu2.target_score;
+            } catch (e) {}
             var diff = scoreTarget - scoreNow;
             var daysExam = p.days_to_exam || 0;
             var advice = (dur && dur.advice) ? dur.advice : (weak
@@ -2608,6 +2751,15 @@ registerPage('home-task-learn', '学习会话', '首页', 'fa-home', function ()
             }
         });
         var elapsedMin = Math.max(1, Math.round((Date.now() - (session.startTime || Date.now())) / 60000));
+
+        // 完成任务并更新学生画像（真实数据链路）
+        if (session.taskId && typeof api !== 'undefined' && api.completeStudyTask) {
+            api.completeStudyTask(session.taskId, {
+                duration_min: elapsedMin,
+                answered: answered,
+                correct: correct
+            }).catch(function () {});
+        }
 
         // 接入数据中台：本次学习记录持久化到 KV（供首页学习统计/错题本回看）
         if (typeof api !== 'undefined' && api.savePageData) {
@@ -3221,3 +3373,273 @@ registerPage('discover', '发现', '首页', 'fa-compass', function () {
         return Page({ title: '消息', navbar: false, tabbar: 'message', content: c });
     });
 })();
+
+// ============================================================
+// AI学情诊断（真实数据链路：作答 → 保存行为 → 掌握度 → 报告 → 学习计划）
+// ============================================================
+registerPage('home-diagnostic', 'AI学情诊断', '首页', 'fa-stethoscope', () => {
+    function pageContent() {
+        return `
+        <div style="background:#F3F4F6;min-height:100%;padding:12px 12px 24px;">
+            <div id="diag-container">
+                <div class="proto-card" style="text-align:center;padding:28px 16px;">
+                    <i class="fas fa-spinner fa-spin" style="color:#3B82F6;font-size:22px;"></i>
+                    <div style="font-size:13px;color:#6B7280;margin-top:10px;">正在读取诊断状态…</div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function renderLogin() {
+        const c = document.getElementById('diag-container');
+        if (!c) return;
+        c.innerHTML = `
+            <div class="proto-card" style="text-align:center;padding:30px 18px;">
+                <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#3B82F6,#1D4ED8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+                    <i class="fas fa-stethoscope" style="color:#fff;font-size:26px;"></i>
+                </div>
+                <div style="font-size:17px;font-weight:800;">登录后开始 AI 学情诊断</div>
+                <div style="font-size:12px;color:#6B7280;line-height:1.8;margin-top:8px;">
+                    诊断数据会绑定到你的账号，用于生成专属能力画像与学习计划
+                </div>
+                <div onclick="openProtoAuthModal()" style="margin-top:18px;background:#3B82F6;color:#fff;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;">
+                    <i class="fas fa-right-to-bracket"></i> 登录 / 注册
+                </div>
+            </div>`;
+    }
+
+    function renderIntro() {
+        const c = document.getElementById('diag-container');
+        if (!c) return;
+        c.innerHTML = `
+            <div class="proto-card" style="padding:20px;">
+                <div style="font-size:18px;font-weight:800;">AI学情诊断</div>
+                <div style="font-size:12px;color:#6B7280;line-height:1.8;margin-top:8px;">
+                    共 12 道题，覆盖数学、物理、化学、英语四个学科。<br>
+                    系统会记录你的每题作答，计算知识掌握度与能力状态，并生成 AI 诊断报告和第一套学习计划。
+                </div>
+                <div onclick="window.__DIAG_START__()" id="diag-start-btn" style="margin-top:18px;background:linear-gradient(135deg,#3B82F6,#1D4ED8);color:#fff;border-radius:12px;padding:13px;text-align:center;font-size:15px;font-weight:700;cursor:pointer;">
+                    <i class="fas fa-play"></i> 开始 AI 学情诊断
+                </div>
+                <div id="diag-old-report" style="margin-top:10px;text-align:center;font-size:12px;color:#3B82F6;cursor:pointer;display:none;" onclick="window.__DIAG_SHOW_LATEST__()">查看最近一次诊断报告 ›</div>
+            </div>
+            <div class="proto-card" style="margin-top:12px;padding:16px;">
+                <div style="font-size:13px;font-weight:700;margin-bottom:8px;"><i class="fas fa-info-circle" style="color:#3B82F6;"></i> 诊断说明</div>
+                <div style="font-size:12px;color:#6B7280;line-height:1.9;">
+                    · 每答一题立即保存作答行为，可中途退出<br>
+                    · 提交后自动计算知识掌握度与学科能力状态<br>
+                    · 自动生成 AI 诊断报告与今日学习计划
+                </div>
+            </div>`;
+    }
+
+    function renderQuestions(data) {
+        const c = document.getElementById('diag-container');
+        if (!c) return;
+        window.__DIAG_STATE__.sessionId = data.session_id;
+        window.__DIAG_STATE__.questions = data.questions;
+        const subjectIcons = { '数学': 'fa-square-root-variable', '物理': 'fa-atom', '化学': 'fa-flask', '英语': 'fa-language' };
+        let html = `
+            <div class="proto-card" style="padding:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div style="font-size:15px;font-weight:800;">AI学情诊断</div>
+                    <div style="font-size:12px;color:#6B7280;" id="diag-progress-text">已作答 0/${data.questions.length}</div>
+                </div>
+                <div style="margin-top:8px;" id="diag-progress-bar">${Progress(0, '#3B82F6')}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;">`;
+        data.questions.forEach(function(q, i) {
+            html += `<div class="proto-card" style="padding:16px;" data-qid="${q.id}">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span style="font-size:11px;color:#3B82F6;font-weight:700;"><i class="fas ${subjectIcons[q.subject] || 'fa-book'}"></i> ${q.subject} · ${q.knowledge_point}</span>
+                    <span style="font-size:11px;color:#9CA3AF;">第 ${i + 1} 题 · 难度 ${q.difficulty}</span>
+                </div>
+                <div style="font-size:14px;line-height:1.7;font-weight:600;color:#111827;">${q.stem}</div>
+                <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">`;
+            q.options.forEach(function(opt, oi) {
+                html += `<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #E5E7EB;border-radius:10px;font-size:13px;cursor:pointer;" class="diag-opt-label">
+                    <input type="radio" name="q_${q.id}" value="${oi}" onchange="window.__DIAG_ANSWER__('${q.id}', ${oi})" style="accent-color:#3B82F6;">
+                    <span>${opt}</span>
+                </label>`;
+            });
+            html += `</div><div class="diag-analysis" style="display:none;margin-top:10px;font-size:12px;color:#059669;background:#ECFDF5;border-radius:8px;padding:8px;"></div></div>`;
+        });
+        html += `</div>
+            <div onclick="window.__DIAG_SUBMIT__()" id="diag-submit-btn" style="margin-top:16px;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border-radius:12px;padding:14px;text-align:center;font-size:15px;font-weight:700;cursor:pointer;">
+                <i class="fas fa-paper-plane"></i> 提交诊断并生成报告
+            </div>`;
+        c.innerHTML = html;
+
+        // 恢复已作答状态
+        (data.questions || []).forEach(function(q) {
+            if (!q.answered || q.answer_index == null) return;
+            window.__DIAG_STATE__.answers[q.id] = q.answer_index;
+            const input = document.querySelector('input[name="q_' + q.id + '"][value="' + q.answer_index + '"]');
+            if (input) input.checked = true;
+            const card = document.querySelector('[data-qid="' + q.id + '"]');
+            if (card) {
+                const lbl = input && input.closest('.diag-opt-label');
+                if (lbl) {
+                    lbl.style.borderColor = q.is_correct ? '#10B981' : '#EF4444';
+                    lbl.style.background = q.is_correct ? '#ECFDF5' : '#FEF2F2';
+                }
+            }
+        });
+        window.__DIAG_UPDATE_PROGRESS__();
+    }
+
+    function renderReport(report, plan) {
+        const c = document.getElementById('diag-container');
+        if (!c) return;
+        const s = report.summary || {};
+        let html = `
+            <div class="proto-card" style="padding:18px;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);">
+                <div style="font-size:12px;color:#1D4ED8;font-weight:700;"><i class="fas fa-file-medical-alt"></i> AI诊断报告</div>
+                <div style="display:flex;gap:18px;margin-top:12px;align-items:flex-end;">
+                    <div><div style="font-size:11px;color:#6B7280;">当前水平</div><div style="font-size:30px;font-weight:800;color:#1D4ED8;">${s.estimated_score}<span style="font-size:13px;">分</span></div></div>
+                    <div><div style="font-size:11px;color:#6B7280;">正确率</div><div style="font-size:20px;font-weight:700;">${s.accuracy_pct}%</div></div>
+                    <div><div style="font-size:11px;color:#6B7280;">距目标</div><div style="font-size:20px;font-weight:700;color:#F59E0B;">${s.score_gap}分</div></div>
+                </div>
+                <div style="font-size:12px;color:#374151;line-height:1.9;margin-top:12px;">${(report.paragraphs || []).join('<br>')}</div>
+            </div>`;
+
+        html += `<div class="proto-card" style="margin-top:12px;padding:16px;">
+            <div style="font-size:14px;font-weight:800;margin-bottom:10px;"><i class="fas fa-exclamation-triangle" style="color:#F59E0B;"></i> 薄弱知识点</div>`;
+        if (report.weak_points && report.weak_points.length) {
+            report.weak_points.forEach(function(w) {
+                html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #F3F4F6;">
+                    <div><div style="font-size:13px;font-weight:600;">${w.subject} · ${w.knowledge_point}</div>
+                    <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">${w.suggestion}</div></div>
+                    <div style="font-size:14px;font-weight:700;color:#EF4444;">${Math.round(w.mastery * 100)}%</div>
+                </div>`;
+            });
+        } else {
+            html += '<div style="font-size:12px;color:#6B7280;">本次诊断未发现明显薄弱知识点</div>';
+        }
+        html += `</div>`;
+
+        html += `<div class="proto-card" style="margin-top:12px;padding:16px;">
+            <div style="font-size:14px;font-weight:800;margin-bottom:10px;"><i class="fas fa-chart-radar" style="color:#8B5CF6;"></i> 能力画像</div>`;
+        (report.ability_profile || []).forEach(function(a) {
+            html += `<div style="margin-bottom:10px;">
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                    <span style="font-weight:600;">${a.subject} · ${a.level}</span>
+                    <span style="color:#6B7280;">${Math.round(a.mastery * 100)}%（估分 ${a.estimated_score}/${a.full_score}）</span>
+                </div>
+                ${Progress(Math.round(a.mastery * 100), '#8B5CF6')}
+            </div>`;
+        });
+        html += `</div>`;
+
+        if (plan && plan.tasks && plan.tasks.length) {
+            html += `<div class="proto-card" style="margin-top:12px;padding:16px;">
+                <div style="font-size:14px;font-weight:800;margin-bottom:4px;"><i class="fas fa-calendar-check" style="color:#10B981;"></i> 第一套 AI 学习计划</div>
+                <div style="font-size:11px;color:#9CA3AF;margin-bottom:10px;">今日 ${plan.task_count} 项任务 · 预计 ${plan.total_minutes} 分钟</div>`;
+            plan.tasks.forEach(function(t) {
+                html += `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F3F4F6;">
+                    <div style="width:34px;height:34px;border-radius:10px;background:#EFF6FF;display:flex;align-items:center;justify-content:center;"><i class="fas ${t.icon || 'fa-book'}" style="color:#3B82F6;"></i></div>
+                    <div style="flex:1;"><div style="font-size:13px;font-weight:600;">${t.subject} · ${t.point}</div>
+                    <div style="font-size:11px;color:#9CA3AF;">${t.time} · ${t.questions_count} 道题</div></div>
+                    ${Tag(t.status === 'done' ? '已完成' : '待完成', t.status === 'done' ? 'green' : 'orange')}
+                </div>`;
+            });
+            html += `</div>`;
+        }
+
+        html += `<div onclick="navigateTo('home-task')" style="margin-top:16px;background:linear-gradient(135deg,#3B82F6,#1D4ED8);color:#fff;border-radius:12px;padding:14px;text-align:center;font-size:15px;font-weight:700;cursor:pointer;">
+            <i class="fas fa-play"></i> 开始今日学习
+        </div>
+        <div onclick="window.__DIAG_RESTART__()" style="margin-top:10px;text-align:center;font-size:12px;color:#6B7280;cursor:pointer;">重新诊断</div>`;
+        c.innerHTML = html;
+    }
+
+    function renderReportById() {
+        api.getLatestDiagnostic().then(function(d) {
+            if (d && d.report) renderReport(d.report, d.plan);
+        });
+    }
+
+    window.__DIAG_START__ = function() {
+        const btn = document.getElementById('diag-start-btn');
+        if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在准备诊断题…';
+        window.__DIAG_STATE__ = { sessionId: null, questions: [], answers: {}, answered: 0 };
+        api.startDiagnostic().then(function(data) {
+            if (!data) { renderLogin(); return; }
+            renderQuestions(data);
+        });
+    };
+
+    window.__DIAG_SHOW_LATEST__ = renderReportById;
+
+    window.__DIAG_ANSWER__ = function(qid, idx) {
+        const st = window.__DIAG_STATE__;
+        if (!st || !st.sessionId) return;
+        st.answers[qid] = idx;
+        api.submitDiagnosticAnswer(st.sessionId, { question_id: qid, answer_index: idx }).then(function(res) {
+            const card = document.querySelector('[data-qid="' + qid + '"]');
+            if (!card) return;
+            card.querySelectorAll('.diag-opt-label').forEach(function(l) { l.style.borderColor = '#E5E7EB'; l.style.background = '#fff'; });
+            const checked = card.querySelector('input:checked');
+            if (checked) {
+                const lbl = checked.closest('.diag-opt-label');
+                if (lbl) { lbl.style.borderColor = res && res.is_correct ? '#10B981' : '#EF4444'; lbl.style.background = res && res.is_correct ? '#ECFDF5' : '#FEF2F2'; }
+            }
+            if (res && res.analysis) {
+                const a = card.querySelector('.diag-analysis');
+                if (a) { a.style.display = 'block'; a.textContent = (res.is_correct ? '回答正确 · ' : '回答错误 · ') + res.analysis; }
+            }
+            window.__DIAG_UPDATE_PROGRESS__();
+        });
+    };
+
+    window.__DIAG_UPDATE_PROGRESS__ = function() {
+        const st = window.__DIAG_STATE__;
+        if (!st) return;
+        const done = Object.keys(st.answers).length;
+        const total = (st.questions || []).length || 12;
+        const t = document.getElementById('diag-progress-text');
+        if (t) t.textContent = '已作答 ' + done + '/' + total;
+        const bar = document.getElementById('diag-progress-bar');
+        if (bar) bar.innerHTML = Progress(Math.round(done / total * 100), '#3B82F6');
+    };
+
+    window.__DIAG_SUBMIT__ = function() {
+        const st = window.__DIAG_STATE__;
+        if (!st || !st.sessionId) return;
+        const answered = Object.keys(st.answers).length;
+        if (answered === 0) { alert('请至少完成 1 道诊断题'); return; }
+        const btn = document.getElementById('diag-submit-btn');
+        if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在生成报告…'; btn.style.pointerEvents = 'none'; }
+        api.submitDiagnostic(st.sessionId).then(function(res) {
+            if (!res || !res.report) {
+                if (btn) { btn.innerHTML = '<i class="fas fa-paper-plane"></i> 提交诊断并生成报告'; btn.style.pointerEvents = 'auto'; }
+                alert('提交失败，请稍后重试');
+                return;
+            }
+            renderReport(res.report, res.plan);
+        });
+    };
+
+    window.__DIAG_RESTART__ = function() {
+        window.__DIAG_STATE__ = { sessionId: null, questions: [], answers: {}, answered: 0 };
+        api.startDiagnostic().then(function(data) { if (data) renderQuestions(data); });
+    };
+
+    setTimeout(function() {
+        if (typeof api === 'undefined' || !api.getLatestDiagnostic) return;
+        if (typeof Auth !== 'undefined' && !Auth.isLoggedIn()) { renderLogin(); return; }
+        api.getLatestDiagnostic().then(function(d) {
+            if (d && d.status === 'completed' && d.report) {
+                renderReport(d.report, d.plan);
+            } else {
+                renderIntro();
+                if (d && d.report) {
+                    const old = document.getElementById('diag-old-report');
+                    if (old) old.style.display = 'block';
+                }
+            }
+        }).catch(function() { renderIntro(); });
+    }, 120);
+
+    return Page({ title: 'AI学情诊断', navbar: false, tabbar: 'learn', content: pageContent() });
+});

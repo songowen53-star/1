@@ -4,12 +4,15 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const store = require('./learning-store');
+const registerStudentApi = require('./student-api');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(cors());
-app.use(express.json());
+// 提高 JSON 请求体上限，支持通过 data-manager 上传较大文件
+app.use(express.json({ limit: '20mb' }));
 
 // 简易请求日志中间件
 app.use((req, res, next) => {
@@ -192,7 +195,9 @@ app.get('/api/page-data/:key', (req, res) => {
         }
         try {
             const parsed = JSON.parse(data);
-            res.json(ok(parsed));
+            // 文件内容包含元数据 wrapper，前端只需要 inner data
+            const inner = parsed && parsed.data != null ? parsed.data : parsed;
+            res.json(ok(inner));
         } catch (e) {
             res.status(500).json({ code: 1, msg: 'invalid json', key });
         }
@@ -238,25 +243,71 @@ app.get('/api/questions/:id', (req, res) => {
     else res.status(404).json({ code: 1, msg: '题目不存在' });
 });
 
-// ========== 学情数据 ==========
+// ========== 学情数据（按 user_id 读取真实数据） ==========
+function _realSummary(userId, days) {
+    const db = store.db();
+    const since = Date.now() - days * 86400000;
+    const answers = db.answer_records.filter(r => r.user_id === userId && new Date(r.answered_at).getTime() >= since);
+    const tasks = db.learning_tasks.filter(t =>
+        t.user_id === userId && t.status === 'done' && t.completed_at && new Date(t.completed_at).getTime() >= since);
+    const questions = answers.length;
+    const correct = answers.filter(a => a.is_correct).length;
+    const durationMin = tasks.reduce((s, t) => s + (t.duration_min || 0), 0);
+    const dayKeys = Array.from(new Set(tasks.map(t => (t.completed_at || '').slice(0, 10)).concat(answers.map(a => a.date_key))));
+    const subjects = {};
+    answers.forEach(a => {
+        if (!subjects[a.subject]) subjects[a.subject] = { subject: a.subject, questions: 0, correct: 0, duration_min: 0 };
+        subjects[a.subject].questions++;
+        if (a.is_correct) subjects[a.subject].correct++;
+    });
+    tasks.forEach(t => {
+        if (!subjects[t.subject]) subjects[t.subject] = { subject: t.subject, questions: 0, correct: 0, duration_min: 0 };
+        subjects[t.subject].duration_min += t.duration_min || 0;
+    });
+    const subjectList = Object.values(subjects).map(s => ({
+        subject: s.subject,
+        duration_min: s.duration_min,
+        duration_hours: Math.round(s.duration_min / 6) / 10,
+        questions: s.questions,
+        correct_rate: s.questions ? Math.round(s.correct / s.questions * 100) : 0
+    }));
+    return {
+        has_data: questions > 0 || tasks.length > 0,
+        days,
+        duration_hours: Math.round(durationMin / 6) / 10,
+        questions_count: questions,
+        correct_rate: questions ? Math.round(correct / questions * 100) : 0,
+        points: tasks.length * 10,
+        study_days: dayKeys.length,
+        avg_daily_hours: dayKeys.length ? Math.round(durationMin / dayKeys.length / 6) / 10 : 0,
+        changes: { duration: 0, questions: 0, correct_rate: 0, points: 0 },
+        subjects: subjectList
+    };
+}
+
 app.get('/api/learning/:userId/summary', (req, res) => {
     const days = parseInt(req.query.days) || 7;
-    const base = MOCK.learningSummary;
-    // 根据天数调整数据
-    const factor = days / 7;
-    const data = {
-        ...base,
-        duration_hours: Math.round(base.duration_hours * factor * 10) / 10,
-        questions_count: Math.round(base.questions_count * factor),
-        study_days: Math.min(7, Math.round(base.study_days * factor)),
-        avg_daily_hours: Math.round(base.avg_daily_hours * 10) / 10
-    };
-    res.json(ok(data));
+    res.json(ok(_realSummary(req.params.userId, days)));
 });
 
 app.get('/api/learning/:userId/subject-stats', (req, res) => {
     const days = parseInt(req.query.days) || 14;
-    res.json(ok(MOCK.subjectStats));
+    const summary = _realSummary(req.params.userId, days);
+    const ability = store.db().ability_states[req.params.userId] || [];
+    const list = (summary.subjects || []).map(s => {
+        const ab = ability.find(a => a.subject === s.subject);
+        return {
+            subject: s.subject,
+            duration_min: s.duration_min,
+            questions: s.questions,
+            correct_rate: s.correct_rate,
+            score: ab ? ab.estimated_score : null,
+            max_score: ab ? ab.full_score : null,
+            mastery_rate: ab ? ab.mastery : null,
+            trend: 'stable'
+        };
+    });
+    res.json(ok(list));
 });
 
 // ========== AI 推荐 ==========
@@ -302,42 +353,132 @@ app.get('/api/recommend/:userId/paper', (req, res) => {
     }));
 });
 
-// ========== 模考预测 ==========
+// ========== 模考预测（仅使用真实已有数据） ==========
+function _prediction(userId) {
+    const db = store.db();
+    const report = db.ai_diagnosis_reports[userId] || null;
+    if (!report) {
+        return {
+            available: false,
+            reason: '暂无诊断数据，完成AI学情诊断后生成预测',
+            predicted_score: null,
+            rank: null,
+            percentile: null,
+            confidence: null
+        };
+    }
+    return {
+        available: true,
+        predicted_score: report.summary.estimated_score,
+        target_score: report.summary.target_score,
+        score_gap: report.summary.score_gap,
+        rank: null,
+        percentile: null,
+        confidence: null,
+        based_on: 'AI学情诊断（' + report.summary.total_questions + ' 题作答数据）',
+        updated_at: report.created_at
+    };
+}
+
 app.get('/api/predict/:userId/score', (req, res) => {
-    res.json(ok({ predicted_score: MOCK.predictReport.predicted_score }));
+    res.json(ok(_prediction(req.params.userId)));
 });
 
 app.get('/api/predict/:userId/rank', (req, res) => {
-    res.json(ok({ rank: MOCK.predictReport.rank, percentile: MOCK.predictReport.percentile }));
+    const p = _prediction(req.params.userId);
+    res.json(ok({ available: p.available, rank: null, percentile: null, reason: p.available ? '暂无排名数据' : p.reason }));
 });
 
 app.get('/api/predict/:userId/report', (req, res) => {
-    res.json(ok(MOCK.predictReport));
+    const p = _prediction(req.params.userId);
+    const report = store.db().ai_diagnosis_reports[req.params.userId] || null;
+    res.json(ok(Object.assign({}, p, {
+        report,
+        predicted_subjects: (store.db().ability_states[req.params.userId] || []).map(a => ({
+            subject: a.subject, score: a.estimated_score, full_score: a.full_score
+        }))
+    })));
 });
 
-// ========== 答题 ==========
+// ========== 答题（真实记录，按 user_id 归属） ==========
 app.post('/api/answers', (req, res) => {
-    res.json(ok({ success: true, question_id: req.body.question_id, is_correct: true }));
+    const u = _authUser(req);
+    if (!u) return res.status(401).json({ code: 1, msg: '未登录' });
+    const b = req.body || {};
+    const db = store.db();
+    db.answer_records.push({
+        id: store.uid('ans'),
+        user_id: u.id,
+        session_id: b.session_id || null,
+        question_id: b.question_id || '',
+        subject: b.subject || '',
+        knowledge_point_id: b.knowledge_point_id || '',
+        knowledge_point: b.knowledge_point || '',
+        difficulty: parseInt(b.difficulty) || 3,
+        answer_index: b.answer_index,
+        is_correct: !!b.is_correct,
+        duration_sec: parseInt(b.duration_sec) || 0,
+        answered_at: store.nowIso(),
+        date_key: store.todayKey()
+    });
+    store.save();
+    store.addBehaviorEvent(u.id, 'question_answered', {
+        question_id: b.question_id, is_correct: !!b.is_correct
+    });
+    res.json(ok({ success: true, question_id: b.question_id, is_correct: !!b.is_correct }));
 });
 
 app.post('/api/answers/batch', (req, res) => {
-    const records = req.body.records || [];
+    const u = _authUser(req);
+    if (!u) return res.status(401).json({ code: 1, msg: '未登录' });
+    const records = (req.body && req.body.records) || [];
+    const db = store.db();
+    records.forEach(b => {
+        db.answer_records.push({
+            id: store.uid('ans'),
+            user_id: u.id,
+            session_id: b.session_id || null,
+            question_id: b.question_id || '',
+            subject: b.subject || '',
+            knowledge_point_id: b.knowledge_point_id || '',
+            knowledge_point: b.knowledge_point || '',
+            difficulty: parseInt(b.difficulty) || 3,
+            answer_index: b.answer_index,
+            is_correct: !!b.is_correct,
+            duration_sec: parseInt(b.duration_sec) || 0,
+            answered_at: store.nowIso(),
+            date_key: store.todayKey()
+        });
+    });
+    store.save();
+    store.addBehaviorEvent(u.id, 'questions_batch_answered', { count: records.length });
     res.json(ok({ success: true, count: records.length }));
 });
 
 app.get('/api/answers/:userId/stats', (req, res) => {
     const days = parseInt(req.query.days) || 30;
+    const db = store.db();
+    const since = Date.now() - days * 86400000;
+    const list = db.answer_records.filter(r =>
+        r.user_id === req.params.userId && new Date(r.answered_at).getTime() >= since);
+    const total = list.length;
+    const correct = list.filter(r => r.is_correct).length;
+    const kp = {};
+    list.forEach(r => {
+        const key = r.knowledge_point_id || r.knowledge_point || 'unknown';
+        if (!kp[key]) kp[key] = { id: key, subject: r.subject, name: r.knowledge_point, total: 0, correct: 0 };
+        kp[key].total++;
+        if (r.is_correct) kp[key].correct++;
+    });
     res.json(ok({
-        total: Math.round(MOCK.learningSummary.questions_count * days / 7),
-        correct: Math.round(MOCK.learningSummary.questions_count * days / 7 * MOCK.learningSummary.correct_rate / 100),
-        correct_rate: MOCK.learningSummary.correct_rate,
-        avg_time_per_question: 180,
-        knowledge_point_stats: MOCK.weakPoints.map(k => ({
-            id: k.id,
-            subject: k.subject,
-            name: k.name,
-            total: k.total_questions || Math.floor(Math.random() * 30) + 15,
-            correct_rate: Math.round(k.mastery_rate * 100)
+        has_data: total > 0,
+        total,
+        correct,
+        correct_rate: total ? Math.round(correct / total * 100) : 0,
+        avg_time_per_question: total ? Math.round(list.reduce((s, r) => s + (r.duration_sec || 0), 0) / total) : 0,
+        knowledge_point_stats: Object.values(kp).map(k => ({
+            id: k.id, subject: k.subject, name: k.name, total: k.total,
+            correct_rate: Math.round(k.correct / k.total * 100)
         }))
     }));
 });
@@ -414,21 +555,47 @@ app.get('/api/search/:userId/history', (req, res) => {
 
 // ========== 用户信息 ==========
 app.get('/api/users/:userId', (req, res) => {
+    const u = store.findUserById(req.params.userId);
+    if (!u) return res.status(404).json({ code: 1, msg: '用户不存在' });
+    const profile = store.getProfile(u.id) || {};
+    const goal = store.getGoal(u.id) || {};
+    const report = store.db().ai_diagnosis_reports[u.id] || null;
+    const examYear = parseInt(goal.exam_year) || parseInt(profile.exam_year) || 2027;
+    const examDate = new Date(examYear, 5, 7);
+    const days = Math.max(0, Math.ceil((examDate - new Date()) / 86400000));
     res.json(ok({
-        id: req.params.userId,
-        name: '张同学',
+        id: u.id,
+        username: u.username,
+        name: profile.name || u.name,
         avatar: '',
-        is_vip: true,
-        grade: '高三',
-        province: '浙江',
-        current_score: 580,
-        target_score: 620,
-        days_to_gaokao: 259
+        is_vip: false,
+        grade: profile.grade || u.grade || '',
+        province: profile.province || u.province || '',
+        current_score: report ? report.summary.estimated_score : null,
+        target_score: Number(goal.target_score) || Number(profile.target_score) || null,
+        target_school: goal.target_school || profile.target_school || '',
+        days_to_gaokao: days
     }));
 });
 
 app.put('/api/users/:userId', (req, res) => {
-    res.json(ok({ ...req.body, id: req.params.userId }));
+    const u = store.findUserById(req.params.userId);
+    if (!u) return res.status(404).json({ code: 1, msg: '用户不存在' });
+    const b = req.body || {};
+    const patch = {};
+    ['name', 'grade', 'province', 'target_score', 'target_school'].forEach(k => {
+        if (b[k] !== undefined) patch[k] = b[k];
+    });
+    if (patch.target_score !== undefined) patch.target_score = parseInt(patch.target_score) || 600;
+    const profile = store.saveProfile(u.id, patch);
+    if (patch.target_score !== undefined || patch.target_school !== undefined) {
+        store.saveGoal(u.id, {
+            target_score: Number(patch.target_score) || Number(store.getGoal(u.id) && store.getGoal(u.id).target_score) || 600,
+            target_school: patch.target_school !== undefined ? patch.target_school : (store.getGoal(u.id) || {}).target_school || ''
+        });
+    }
+    store.addBehaviorEvent(u.id, 'profile_updated', patch);
+    res.json(ok(profile));
 });
 
 // ========== AI模型中心 ==========
@@ -607,61 +774,78 @@ app.put('/api/modules/:key', (req, res) => {
 });
 
 // ========== 认证（auth）==========
-// 简易内存态用户表 + token 池，演示用
-const _users = {};           // username -> {id, username, password, name, grade, province}
-const _tokens = {};          // token -> userId
-let _userSeq = 0;
-function _newToken() { return 'tk_' + Math.random().toString(36).slice(2) + Date.now().toString(36); }
-function _newUserId() { _userSeq++; return 'u_' + String(_userSeq).padStart(3, '0'); }
-function _userPublic(u) { if (!u) return null; const { password, ...pub } = u; return pub; }
+// 用户与 token 持久化到 learning-db.json，保证重启后登录态与数据不丢失
+const _users = store.db().users;  // username -> user（持久化）
+function _userPublic(u) { return store.publicUser(u); }
 function _authUser(req) {
     const auth = req.headers.authorization || '';
     const m = auth.match(/^Bearer\s+(.+)$/);
     if (!m) return null;
-    const uid = _tokens[m[1]];
-    if (!uid) return null;
-    return Object.values(_users).find(u => u.id === uid);
+    return store.userByToken(m[1]);
+}
+function _tokenFromReq(req) {
+    const auth = req.headers.authorization || '';
+    const m = auth.match(/^Bearer\s+(.+)$/);
+    return m ? m[1] : '';
 }
 
 app.post('/api/auth/register', (req, res) => {
-    const { username, password, name, grade, province } = (req.body || {});
+    const { username, password, name, grade, province, target_score, target_school, exam_year } = (req.body || {});
     if (!username || !password) return res.status(400).json({ code: 1, msg: '用户名和密码必填' });
-    if (_users[username]) return res.status(409).json({ code: 1, msg: '用户名已存在' });
-    const user = { id: _newUserId(), username, password, name: name || username, grade: grade || '高三', province: province || '浙江' };
-    _users[username] = user;
-    const token = _newToken(); _tokens[token] = user.id;
-    res.json(ok({ token, user_id: user.id, user: _userPublic(user) }));
+    if (store.findUserByName(username)) return res.status(409).json({ code: 1, msg: '用户名已存在' });
+    const user = store.createUser({ username, password, name, grade, province });
+    // 建立学生档案与学习目标
+    const profile = store.saveProfile(user.id, {
+        name: user.name, grade: user.grade, province: user.province,
+        exam_year: parseInt(exam_year) || 2027,
+        target_score: parseInt(target_score) || 600,
+        target_school: target_school || ''
+    });
+    store.saveGoal(user.id, {
+        target_score: parseInt(target_score) || 600,
+        target_school: target_school || '',
+        exam_year: parseInt(exam_year) || 2027,
+        daily_minutes: 120,
+        status: 'active'
+    });
+    store.addBehaviorEvent(user.id, 'user_registered', { username: user.username });
+    const token = store.issueToken(user.id);
+    res.json(ok({ token, user_id: user.id, user: _userPublic(user), profile }));
 });
 app.post('/api/auth/login', (req, res) => {
     const { username, password } = (req.body || {});
-    const u = _users[username];
-    if (!u || u.password !== password) return res.status(401).json({ code: 1, msg: '用户名或密码错误' });
-    const token = _newToken(); _tokens[token] = u.id;
-    res.json(ok({ token, user_id: u.id, user: _userPublic(u) }));
+    const u = store.findUserByName(username);
+    if (!u || !store.verifyPassword(password, u)) return res.status(401).json({ code: 1, msg: '用户名或密码错误' });
+    const token = store.issueToken(u.id);
+    store.addBehaviorEvent(u.id, 'user_login', {});
+    res.json(ok({ token, user_id: u.id, user: _userPublic(u), profile: store.getProfile(u.id) }));
 });
 app.post('/api/auth/logout', (req, res) => {
-    const auth = req.headers.authorization || '';
-    const m = auth.match(/^Bearer\s+(.+)$/);
-    if (m) delete _tokens[m[1]];
+    const t = _tokenFromReq(req);
+    if (t) store.revokeToken(t);
     res.json(ok({ success: true }));
 });
 app.get('/api/auth/me', (req, res) => {
     const u = _authUser(req);
     if (!u) return res.status(401).json({ code: 1, msg: '未登录' });
-    res.json(ok(_userPublic(u)));
+    res.json(ok(Object.assign(_userPublic(u), {
+        profile: store.getProfile(u.id),
+        goal: store.getGoal(u.id)
+    })));
 });
 app.post('/api/auth/wechat-login', (req, res) => {
     const code = (req.body || {}).code;
     if (!code) return res.status(400).json({ code: 1, msg: '缺少 code' });
     // 演示：以 code 生成临时微信用户
     const username = 'wx_' + code.slice(0, 8);
-    let u = _users[username];
+    let u = store.findUserByName(username);
     if (!u) {
-        u = { id: _newUserId(), username, password: '', name: '微信用户', grade: '高三', province: '浙江', openid: code };
-        _users[username] = u;
+        u = store.createUser({ username, password: '', name: '微信用户', grade: '高三', province: '', openid: code });
+        store.saveProfile(u.id, { name: u.name, grade: u.grade, province: u.province, exam_year: 2027, target_score: 600 });
+        store.saveGoal(u.id, { target_score: 600, exam_year: 2027, daily_minutes: 120, status: 'active' });
     }
-    const token = _newToken(); _tokens[token] = u.id;
-    res.json(ok({ token, user_id: u.id, user: _userPublic(u), is_new: !u.password }));
+    const token = store.issueToken(u.id);
+    res.json(ok({ token, user_id: u.id, user: _userPublic(u), is_new: !u.password_hash }));
 });
 // ===== 微信扫码登录 =====
 const _qrScenes = {};  // sceneId -> { status, openid, created_at, mock_openid }
@@ -718,13 +902,14 @@ app.post('/api/auth/sms-login', (req, res) => {
     const { phone, code } = (req.body || {});
     if (!phone || !code) return res.status(400).json({ code: 1, msg: '缺少参数' });
     if (code !== '8888') return res.status(401).json({ code: 1, msg: '验证码错误' });
-    let u = Object.values(_users).find(x => x.username === phone);
+    let u = store.findUserByName(phone);
     if (!u) {
-        u = { id: _newUserId(), username: phone, password: '', name: '手机用户', grade: '高三', province: '浙江', phone };
-        _users[phone] = u;
+        u = store.createUser({ username: phone, password: '', name: '手机用户', grade: '高三', province: '', phone });
+        store.saveProfile(u.id, { name: u.name, grade: u.grade, province: u.province, exam_year: 2027, target_score: 600 });
+        store.saveGoal(u.id, { target_score: 600, exam_year: 2027, daily_minutes: 120, status: 'active' });
     }
-    const token = _newToken(); _tokens[token] = u.id;
-    res.json(ok({ token, user_id: u.id, user: _userPublic(u), is_new: !u.password }));
+    const token = store.issueToken(u.id);
+    res.json(ok({ token, user_id: u.id, user: _userPublic(u), is_new: !u.password_hash }));
 });
 app.post('/api/auth/parent-bind', (req, res) => {
     const { student_phone, parent_phone, relation, sms_code } = (req.body || {});
@@ -750,250 +935,274 @@ app.post('/api/questions/import', (req, res) => {
     if (!data) return res.status(400).json({ code: 1, msg: '缺少数据' });
     // 演示：返回导入统计（不真实落库）
     const count = Array.isArray(data) ? data.length : (typeof data === 'string' ? data.split('\n').filter(Boolean).length : 1);
+    res.json({
+        code: 0,
+        msg: `已导入 ${count} 条题目`,
+        data: {
+            format: format || 'json',
+            imported: count,
+            skipped: 0,
+            imported_at: new Date().toISOString()
+        }
+    });
+});
+
+// ========== 学情扩展（全部基于真实数据） ==========
+function _knowledgeStates(userId) { return store.db().knowledge_states[userId] || []; }
+function _abilityStates(userId) { return store.db().ability_states[userId] || []; }
+
+app.get('/api/learning/:userId/review-progress', (req, res) => {
+    const ks = _knowledgeStates(req.params.userId);
+    const reviewed = ks.filter(k => k.mastery >= 0.8).length;
+    const reviewing = ks.filter(k => k.mastery >= 0.5 && k.mastery < 0.8).length;
+    const notStarted = ks.filter(k => k.mastery < 0.5).length;
+    const total = ks.length;
     res.json(ok({
-        format: format || 'json',
-        imported: count,
-        skipped: 0,
-        imported_at: new Date().toISOString()
+        has_data: total > 0,
+        user_id: req.params.userId,
+        total_points: total,
+        reviewed,
+        reviewing,
+        not_started: notStarted,
+        review_rate: total ? Math.round(reviewed / total * 100) / 100 : 0,
+        next_review: ks.filter(k => k.mastery < 0.6).slice(0, 3).map(k => k.knowledge_point)
     }));
 });
 
-// ========== 学情扩展 ==========
-app.get('/api/learning/:userId/review-progress', (req, res) => {
-    res.json(ok({
-        user_id: req.params.userId,
-        total_points: 120,
-        reviewed: 78,
-        reviewing: 22,
-        not_started: 20,
-        review_rate: 0.65,
-        next_review: ['导数应用专题', '电磁感应综合题', '有机推断题型']
-    }));
-});
 app.get('/api/learning/:userId/today-tasks', (req, res) => {
-    const _now = new Date();
-    const _w = ['日', '一', '二', '三', '四', '五', '六'];
-    const dateStr = `${_now.getMonth() + 1}月${_now.getDate()}日 周${_w[_now.getDay()]}`;
-    res.json(ok({
-        date: dateStr,
-        tasks: [
-            { subject: '语文', color: 'red', icon: 'fa-book', knowledge_point_id: 'kp_chn_01', point: '古诗文鉴赏', difficulty: '困难', time: '32min', questions_count: 10, status: 'todo' },
-            { subject: '物理', color: 'purple', icon: 'fa-atom', knowledge_point_id: 'kp_phy_02', point: '力学综合', difficulty: '困难', time: '28min', questions_count: 6, status: 'todo' },
-            { subject: '数学', color: 'blue', icon: 'fa-square-root-variable', knowledge_point_id: 'kp_math_01', point: '圆锥曲线综合', difficulty: '困难', time: '47min', questions_count: 22, status: 'todo' },
-            { subject: '数学', color: 'blue', icon: 'fa-square-root-variable', knowledge_point_id: 'kp_math_02', point: '导数第二问', difficulty: '困难', time: '41min', questions_count: 17, status: 'todo' }
-        ],
-        done_count: 0,
-        total_count: 4,
-        completion_rate: 0
-    }));
+    const userId = req.params.userId;
+    const helpers = app.locals.studentHelpers;
+    const data = helpers.getTodayTasks(userId);
+    const report = store.db().ai_diagnosis_reports[userId] || null;
+    if (!data.tasks.length) {
+        data.need_diagnosis = !report;
+        data.message = report ? '今日暂无学习任务' : '完成AI学情诊断后自动生成学习计划';
+    }
+    res.json(ok(data));
 });
+
 app.get('/api/learning/:userId/duration-stats', (req, res) => {
-    const _now = new Date();
-    const _w = ['日', '一', '二', '三', '四', '五', '六'];
-    const _dayIdx = (_now.getDay() + 6) % 7; // 周一为0
-    const _weekHours = [2.1, 2.8, 3.5, 2.0, 2.6, 1.4, 3.2];
-    const _total = _weekHours.reduce((s, v) => s + v, 0);
-    const _today = _weekHours[_dayIdx];
+    const userId = req.params.userId;
+    const db = store.db();
+    const weekKeys = store.weekDayKeys();
+    const done = db.learning_tasks.filter(t => t.user_id === userId && t.status === 'done');
+    const minByDay = {};
+    weekKeys.forEach(k => { minByDay[k] = 0; });
+    done.forEach(t => {
+        const d = (t.completed_at || '').slice(0, 10);
+        if (minByDay[d] !== undefined) minByDay[d] += (t.duration_min || 0);
+    });
+    // 答题时长也计入（按 date_key）
+    db.answer_records.filter(r => r.user_id === userId).forEach(r => {
+        if (minByDay[r.date_key] !== undefined) minByDay[r.date_key] += Math.round((r.duration_sec || 0) / 60);
+    });
+    const dayNames = ['一', '二', '三', '四', '五', '六', '日'];
+    const weekly = weekKeys.map((k, i) => ({
+        day: dayNames[i],
+        date: k,
+        hours: Math.round(minByDay[k] / 6) / 10,
+        min: minByDay[k],
+        is_today: k === store.todayKey()
+    }));
+    const weekTotalMin = Object.values(minByDay).reduce((s, v) => s + v, 0);
+    const weekHours = Math.round(weekTotalMin / 6) / 10;
+    const goal = store.getGoal(userId) || {};
+    const dailyGoalHours = (Number(goal.daily_minutes) || 120) / 60;
+    const todayMin = minByDay[store.todayKey()] || 0;
+    const subjectMin = {};
+    done.forEach(t => {
+        if (!subjectMin[t.subject]) subjectMin[t.subject] = 0;
+        subjectMin[t.subject] += (t.duration_min || 0);
+    });
+    const subjectMeta = app.locals.studentHelpers.SUBJECT_META;
+    const subjects = Object.keys(subjectMin).map(s => ({
+        subject: s,
+        hours: Math.round(subjectMin[s] / 6) / 10,
+        color: (subjectMeta[s] && subjectMeta[s].color) || 'blue'
+    })).sort((a, b) => b.hours - a.hours);
+    const monthTotal = done.filter(t => t.completed_at && new Date(t.completed_at) >= new Date(Date.now() - 30 * 86400000))
+        .reduce((s, t) => s + (t.duration_min || 0), 0);
     res.json(ok({
-        today: { duration_min: Math.round(_today * 60), duration_hours: _today, change_pct: 12, daily_goal_hours: 6, goal_rate: Math.round(_today / 6 * 100) },
-        summary: { week_hours: _total, week_change: 8, month_hours: _total * 4, month_change: 5, avg_hours: Math.round(_total / 7 * 10) / 10, avg_change: 6 },
-        weekly: _weekHours.map((h, i) => ({ day: ['一', '二', '三', '四', '五', '六', '日'][i], date: new Date(_now.getTime() - (_dayIdx - i) * 86400000).toISOString().slice(0, 10), hours: h, min: Math.round(h * 60), is_today: i === _dayIdx })),
-        week_total_hours: _total,
-        week_goal_hours: 42,
-        week_goal_rate: Math.round(_total / 42 * 100),
-        subjects: [
-            { subject: '数学', hours: 5.2, color: '#3B82F6' },
-            { subject: '物理', hours: 3.8, color: '#F59E0B' },
-            { subject: '英语', hours: 3.1, color: '#10B981' },
-            { subject: '化学', hours: 2.4, color: '#8B5CF6' }
-        ],
-        subject_total_hours: 14.5,
+        has_data: weekTotalMin > 0,
+        today: {
+            duration_min: todayMin,
+            duration_hours: Math.round(todayMin / 6) / 10,
+            change_pct: 0,
+            daily_goal_hours: dailyGoalHours,
+            goal_rate: Math.round(Math.min(1, todayMin / (dailyGoalHours * 60)) * 100)
+        },
+        summary: {
+            week_hours: weekHours,
+            week_change: 0,
+            month_hours: Math.round(monthTotal / 6) / 10,
+            month_change: 0,
+            avg_hours: Math.round(weekHours / 7 * 10) / 10,
+            avg_change: 0
+        },
+        weekly,
+        week_total_hours: weekHours,
+        week_goal_hours: Math.round(dailyGoalHours * 7 * 10) / 10,
+        week_goal_rate: Math.round(Math.min(1, weekHours / (dailyGoalHours * 7)) * 100),
+        subjects,
+        subject_total_hours: Math.round(weekTotalMin / 6) / 10,
         heatmap: []
     }));
 });
+
 app.get('/api/learning/:userId/daily-series', (req, res) => {
     const days = parseInt(req.query.days) || 30;
     const subject = req.query.subject;
-    const series = [];
-    const labels = [];
-    const duration_minutes = [];
-    const answer_count = [];
-    const correct_rate = [];
-    const _now = Date.now();
+    const db = store.db();
+    const labels = [], duration_minutes = [], answer_count = [], correct_rate = [], series = [];
     for (let i = days - 1; i >= 0; i--) {
-        const d = new Date(_now - i * 86400000);
-        const dateStr = d.toISOString().slice(0, 10);
-        const label = (d.getMonth() + 1) + '/' + d.getDate();
-        const hours = Math.round((1.5 + Math.random() * 2.5) * 10) / 10;
-        const questions = Math.floor(20 + Math.random() * 40);
-        const rate = Math.floor(60 + Math.random() * 35);
-        series.push({ date: dateStr, hours, questions, correct_rate: rate, subject: subject || '全部' });
-        labels.push(label);
-        duration_minutes.push(Math.round(hours * 60));
-        answer_count.push(questions);
+        const d = new Date(Date.now() - i * 86400000);
+        const key = store.todayKey(d);
+        const answers = db.answer_records.filter(r =>
+            r.user_id === req.params.userId && r.date_key === key && (!subject || r.subject === subject));
+        const tasks = db.learning_tasks.filter(t =>
+            t.user_id === req.params.userId && t.status === 'done' &&
+            (t.completed_at || '').slice(0, 10) === key && (!subject || t.subject === subject));
+        const mins = tasks.reduce((s, t) => s + (t.duration_min || 0), 0) +
+            Math.round(answers.reduce((s, r) => s + (r.duration_sec || 0), 0) / 60);
+        const qCount = answers.length;
+        const rate = qCount ? Math.round(answers.filter(a => a.is_correct).length / qCount * 100) : 0;
+        labels.push((d.getMonth() + 1) + '/' + d.getDate());
+        duration_minutes.push(mins);
+        answer_count.push(qCount);
         correct_rate.push(rate);
+        series.push({ date: key, hours: Math.round(mins / 6) / 10, questions: qCount, correct_rate: rate, subject: subject || '全部' });
     }
-    // 字段对齐前端 renderAnalysisScoreTrend：daily.labels/duration_minutes, answerTrend.labels/answer_count/correct_rate
-    res.json(ok({ days, subject: subject || '全部', series, labels, duration_minutes, answer_count, correct_rate }));
+    res.json(ok({ days, subject: subject || '全部', has_data: answer_count.some(v => v > 0) || duration_minutes.some(v => v > 0), series, labels, duration_minutes, answer_count, correct_rate }));
 });
+
 app.get('/api/learning/:userId/subject-mastery', (req, res) => {
     const days = parseInt(req.query.days) || 30;
-    // 字段对齐前端 renderAnalysisRadar：
-    //   radar[] 用于学科掌握详情（current_mastery/target_mastery/color/icon/duration_hours/questions_count/correct_rate）
-    //   radar_labels/radar_current/radar_target 用于 Chart.js 雷达图
-    const subjects = [
-        { subject: '数学', current_mastery: 68, target_mastery: 85, color: '#3B82F6', icon: 'fa-square-root-variable', duration_hours: 5.3, questions_count: 486, correct_rate: 72 },
-        { subject: '语文', current_mastery: 75, target_mastery: 80, color: '#EF4444', icon: 'fa-book-open', duration_hours: 4.7, questions_count: 412, correct_rate: 75 },
-        { subject: '英语', current_mastery: 80, target_mastery: 85, color: '#10B981', icon: 'fa-language', duration_hours: 5.8, questions_count: 538, correct_rate: 79 },
-        { subject: '物理', current_mastery: 71, target_mastery: 82, color: '#8B5CF6', icon: 'fa-atom', duration_hours: 4.0, questions_count: 367, correct_rate: 78 },
-        { subject: '化学', current_mastery: 66, target_mastery: 80, color: '#F59E0B', icon: 'fa-flask', duration_hours: 3.5, questions_count: 325, correct_rate: 85 },
-        { subject: '生物', current_mastery: 70, target_mastery: 78, color: '#06B6D4', icon: 'fa-dna', duration_hours: 3.0, questions_count: 274, correct_rate: 70 },
-        { subject: '政治', current_mastery: 73, target_mastery: 80, color: '#DC2626', icon: 'fa-landmark', duration_hours: 2.5, questions_count: 198, correct_rate: 76 },
-        { subject: '历史', current_mastery: 76, target_mastery: 82, color: '#7C3AED', icon: 'fa-landmark-flag', duration_hours: 2.8, questions_count: 215, correct_rate: 78 },
-        { subject: '地理', current_mastery: 74, target_mastery: 80, color: '#0891B2', icon: 'fa-earth-asia', duration_hours: 2.6, questions_count: 188, correct_rate: 75 }
-    ];
+    const ability = _abilityStates(req.params.userId);
+    const meta = app.locals.studentHelpers.SUBJECT_META;
+    const radar = ability.map(a => {
+        const m = meta[a.subject] || {};
+        const current = Math.round(a.mastery * 100);
+        const target = Math.min(100, current + (current < 60 ? 20 : current < 80 ? 12 : 6));
+        return {
+            subject: a.subject,
+            current_mastery: current,
+            target_mastery: target,
+            color: '#' + ({ blue: '3B82F6', red: 'EF4444', green: '10B981', purple: '8B5CF6', orange: 'F59E0B', cyan: '06B6D4', amber: 'D97706', teal: '0D9488' }[a.color] || '3B82F6'),
+            icon: a.icon || 'fa-book',
+            duration_hours: 0,
+            questions_count: a.attempts,
+            correct_rate: Math.round(a.accuracy * 100)
+        };
+    });
     res.json(ok({
+        has_data: radar.length > 0,
         days,
-        // 学科掌握详情数据（前端变量名为 radar）
-        radar: subjects,
-        // 雷达图数据（Chart.js labels + 两条 dataset）
-        radar_labels: subjects.map(s => s.subject),
-        radar_current: subjects.map(s => s.current_mastery),
-        radar_target: subjects.map(s => s.target_mastery),
-        subjects: subjects.map(s => ({ subject: s.subject, mastery: s.current_mastery / 100, change: 0.05 })),
-        weakest_subjects: subjects.filter(s => s.target_mastery - s.current_mastery >= 10).sort((a, b) => (b.target_mastery - b.current_mastery) - (a.target_mastery - a.current_mastery)).map(s => ({ ...s, gap: s.target_mastery - s.current_mastery, current: s.current_mastery, target: s.target_mastery })),
-        strongest_subjects: subjects.filter(s => s.target_mastery - s.current_mastery < 8).sort((a, b) => b.current_mastery - a.current_mastery).map(s => ({ ...s, gap: Math.max(0, s.target_mastery - s.current_mastery), current: s.current_mastery, target: s.target_mastery }))
+        radar,
+        radar_labels: radar.map(s => s.subject),
+        radar_current: radar.map(s => s.current_mastery),
+        radar_target: radar.map(s => s.target_mastery),
+        subjects: radar.map(s => ({ subject: s.subject, mastery: s.current_mastery / 100, change: 0 })),
+        weakest_subjects: radar.filter(s => s.target_mastery - s.current_mastery > 0)
+            .map(s => Object.assign({}, s, { gap: s.target_mastery - s.current_mastery, current: s.current_mastery, target: s.target_mastery })),
+        strongest_subjects: radar.slice().sort((a, b) => b.current_mastery - a.current_mastery)
+            .map(s => Object.assign({}, s, { gap: Math.max(0, s.target_mastery - s.current_mastery), current: s.current_mastery, target: s.target_mastery }))
     }));
 });
 
-// ========== 答题分析 ==========
+// ========== 答题分析（真实数据） ==========
 app.get('/api/answers/:userId/trend-series', (req, res) => {
     const days = parseInt(req.query.days) || 14;
-    const series = [];
-    const labels = [];
-    const answer_count = [];
-    const correct_rate = [];
-    const _now = Date.now();
+    const db = store.db();
+    const labels = [], answer_count = [], correct_rate = [], series = [];
     for (let i = days - 1; i >= 0; i--) {
-        const d = new Date(_now - i * 86400000);
-        const dateStr = d.toISOString().slice(0, 10);
-        const label = (d.getMonth() + 1) + '/' + d.getDate();
-        const rate = Math.round((0.65 + Math.random() * 0.25) * 100);
-        const total = Math.floor(15 + Math.random() * 30);
-        series.push({ date: dateStr, correct_rate: rate / 100, total });
-        labels.push(label);
-        answer_count.push(total);
-        correct_rate.push(rate);
+        const d = new Date(Date.now() - i * 86400000);
+        const key = store.todayKey(d);
+        const list = db.answer_records.filter(r => r.user_id === req.params.userId && r.date_key === key);
+        const correct = list.filter(r => r.is_correct).length;
+        labels.push((d.getMonth() + 1) + '/' + d.getDate());
+        answer_count.push(list.length);
+        correct_rate.push(list.length ? Math.round(correct / list.length * 100) : 0);
+        series.push({ date: key, correct_rate: list.length ? correct / list.length : 0, total: list.length });
     }
-    // 字段对齐前端 renderAnalysisScoreTrend：answerTrend.labels/answer_count/correct_rate
-    res.json(ok({ days, series, labels, answer_count, correct_rate }));
+    res.json(ok({ days, has_data: answer_count.some(v => v > 0), series, labels, answer_count, correct_rate }));
 });
+
 app.get('/api/answers/:userId/loss-analysis', (req, res) => {
-    const days = parseInt(req.query.days) || 30;
     const limit = parseInt(req.query.limit) || 10;
+    const ks = _knowledgeStates(req.params.userId).slice().sort((a, b) => a.mastery - b.mastery).slice(0, limit);
     res.json(ok({
-        days, limit,
-        items: MOCK.weakPoints.slice(0, limit).map(k => ({
-            knowledge_point_id: k.id,
+        has_data: ks.length > 0,
+        days: parseInt(req.query.days) || 30,
+        limit,
+        items: ks.map(k => ({
+            knowledge_point_id: k.knowledge_point_id,
             subject: k.subject,
-            point: k.name,
-            loss_score: Math.round((1 - k.mastery_rate) * 20),
-            total_wrong: k.total_questions - k.correct_count,
-            mastery_rate: k.mastery_rate
+            point: k.knowledge_point,
+            loss_score: Math.round((1 - k.mastery) * 10),
+            total_wrong: Math.max(0, k.attempts - k.correct),
+            mastery_rate: k.mastery
         }))
     }));
 });
 
-// ========== 预测扩展 ==========
+// ========== 预测扩展（仅真实数据） ==========
 app.get('/api/predict/:userId/score-trend', (req, res) => {
-    const days = parseInt(req.query.days) || 60;
-    const series = [];
-    const labels = [];
-    const history = [];
-    const predict = [];
-    const _now = Date.now();
-    const total = days;
-    const historyPortion = Math.floor(total * 0.6); // 前 60% 为历史真实分
-    let score = 565;
-    for (let i = total - 1; i >= 0; i--) {
-        const d = new Date(_now - i * 86400000);
-        const dateStr = d.toISOString().slice(0, 10);
-        const label = (d.getMonth() + 1) + '/' + d.getDate();
-        labels.push(label);
-        score += Math.round((Math.random() - 0.3) * 3);
-        if (score < 480) score = 480 + Math.floor(Math.random() * 10);
-        if (score > 640) score = 640 - Math.floor(Math.random() * 10);
-        series.push({ date: dateStr, estimated_score: score });
-        if (i >= total - historyPortion) {
-            // 历史真实分
-            history.push(score);
-            predict.push(null);
-        } else {
-            // 未来预测分
-            history.push(null);
-            predict.push(score + Math.round((Math.random() - 0.4) * 5));
-        }
+    const report = store.db().ai_diagnosis_reports[req.params.userId] || null;
+    if (!report) {
+        return res.json(ok({
+            available: false,
+            days: parseInt(req.query.days) || 60,
+            current_score: null,
+            target_score: null,
+            labels: [], history: [], predict: [], series: [],
+            reason: '暂无诊断数据，完成AI学情诊断后生成预测'
+        }));
     }
-    // 字段对齐前端 renderAnalysisScoreTrend：labels/history/predict/target_score/yiben_line/current_score
+    const key = report.created_at.slice(0, 10);
+    const label = Number(key.slice(5, 7)) + '/' + Number(key.slice(8, 10));
     res.json(ok({
-        days,
-        current_score: score,
-        target_score: 620,
-        yiben_line: 520,
-        labels,
-        history,
-        predict,
-        series
+        available: true,
+        days: parseInt(req.query.days) || 60,
+        current_score: report.summary.estimated_score,
+        target_score: report.summary.target_score,
+        yiben_line: null,
+        labels: [label],
+        history: [report.summary.estimated_score],
+        predict: [null],
+        series: [{ date: key, estimated_score: report.summary.estimated_score }],
+        reason: '未来预测需要在积累更多真实答题数据后生成'
     }));
 });
 
-// ========== 推荐扩展 ==========
+// ========== 推荐扩展（基于真实学习计划） ==========
 app.get('/api/recommend/:userId/week-plan', (req, res) => {
-    const shuffle = req.query.shuffle === '1';
-    const range = req.query.range || 'this_week';
-    // 候选任务池：覆盖多学科多知识点，模拟 AI 个性化推荐
-    const taskPool = [
-        { subject: '数学', point: '导数应用专题', time: '40min', priority: '高', color: 'blue' },
-        { subject: '数学', point: '圆锥曲线综合', time: '45min', priority: '高', color: 'blue' },
-        { subject: '数学', point: '概率统计', time: '30min', priority: '中', color: 'blue' },
-        { subject: '数学', point: '立体几何向量法', time: '35min', priority: '中', color: 'blue' },
-        { subject: '数学', point: '数列求和方法', time: '30min', priority: '中', color: 'blue' },
-        { subject: '物理', point: '电磁感应', time: '30min', priority: '中', color: 'purple' },
-        { subject: '物理', point: '力学综合分析', time: '35min', priority: '高', color: 'purple' },
-        { subject: '物理', point: '动量与冲量', time: '28min', priority: '中', color: 'purple' },
-        { subject: '物理', point: '光学与原子物理', time: '25min', priority: '低', color: 'purple' },
-        { subject: '英语', point: '完形填空技巧', time: '25min', priority: '中', color: 'green' },
-        { subject: '英语', point: '阅读理解推理题', time: '30min', priority: '高', color: 'green' },
-        { subject: '英语', point: '书面表达高级句式', time: '35min', priority: '高', color: 'green' },
-        { subject: '英语', point: '语法填空', time: '20min', priority: '中', color: 'green' },
-        { subject: '化学', point: '有机推断题型', time: '30min', priority: '高', color: 'orange' },
-        { subject: '化学', point: '化学平衡计算', time: '28min', priority: '中', color: 'orange' },
-        { subject: '化学', point: '电化学原理', time: '25min', priority: '中', color: 'orange' },
-        { subject: '化学', point: '实验综合分析', time: '32min', priority: '高', color: 'orange' },
-        { subject: '语文', point: '古诗文鉴赏', time: '30min', priority: '中', color: 'red' },
-        { subject: '语文', point: '现代文阅读理解', time: '35min', priority: '高', color: 'red' },
-        { subject: '语文', point: '作文立意深度', time: '40min', priority: '高', color: 'red' }
-    ];
-    // 随机抽取函数（不重复）
-    function pickTasks(pool, n) {
-        const arr = [...pool];
-        const result = [];
-        for (let i = 0; i < n && arr.length; i++) {
-            const idx = Math.floor(Math.random() * arr.length);
-            result.push(arr.splice(idx, 1)[0]);
-        }
-        return result;
-    }
-    let days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
-    if (shuffle) days = days.sort(() => Math.random() - 0.5);
-    res.json(ok({
-        range,
-        shuffle: !!shuffle,
-        days: days.map((d, i) => ({
-            day: d,
-            // 每天抽取 1-3 个任务（shuffle 时使用随机抽取，否则用固定模式）
-            tasks: shuffle ? pickTasks(taskPool, Math.floor(Math.random() * 3) + 1) : pickTasks(taskPool, (i % 3) + 1)
+    const userId = req.params.userId;
+    const db = store.db();
+    const plan = db.learning_plans[userId] || null;
+    const tasks = db.learning_tasks.filter(t => t.user_id === userId);
+    const weekKeys = store.weekDayKeys();
+    const dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+    const days = weekKeys.map((k, i) => ({
+        day: dayNames[i],
+        date: k,
+        is_today: k === store.todayKey(),
+        tasks: tasks.filter(t => t.planned_date === k).map(t => ({
+            id: t.id,
+            subject: t.subject,
+            point: t.point,
+            time: t.time,
+            priority: t.difficulty === '困难' ? '高' : t.difficulty === '简单' ? '低' : '中',
+            color: t.color,
+            status: t.status
         }))
+    }));
+    res.json(ok({
+        has_data: !!plan,
+        range: req.query.range || 'this_week',
+        shuffle: false,
+        plan_id: plan ? plan.plan_id : null,
+        days,
+        message: plan ? '' : '完成AI学情诊断后自动生成学习计划'
     }));
 });
 
@@ -1010,6 +1219,95 @@ app.post('/api/teacher/upload', _upload.single('file'), (req, res) => {
         paper_id: 'p_' + Math.random().toString(36).slice(2, 10),
         ocr_pending: true
     }));
+});
+
+// ========== 数据文件管理（data-manager.html）==========
+const DATA_DIR = path.join(__dirname, 'data');
+const DATA_ALLOWED_EXTS = ['.json', '.txt', '.csv', '.md'];
+
+// 校验并解析数据文件名，防止路径穿越与非法扩展名
+function _safeDataPath(name) {
+    const base = path.basename(String(name || ''));
+    if (!base || base.startsWith('.')) return null;
+    if (!DATA_ALLOWED_EXTS.includes(path.extname(base).toLowerCase())) return null;
+    return path.join(DATA_DIR, base);
+}
+
+// 上传文件（JSON 方式提交 filename + content）
+app.post('/api/upload', (req, res) => {
+    const { filename, content } = (req.body || {});
+    if (!filename) return res.status(400).json({ code: 1, msg: '缺少文件名' });
+    if (typeof content !== 'string') return res.status(400).json({ code: 1, msg: '缺少文件内容' });
+    const filePath = _safeDataPath(filename);
+    if (!filePath) return res.status(400).json({ code: 1, msg: '仅支持上传 .json/.txt/.csv/.md 文件' });
+
+    fs.mkdir(DATA_DIR, { recursive: true }, (mkErr) => {
+        if (mkErr) return res.status(500).json({ code: 1, msg: '创建目录失败: ' + mkErr.message });
+        fs.writeFile(filePath, content, 'utf8', (err) => {
+            if (err) return res.status(500).json({ code: 1, msg: '保存失败: ' + err.message });
+            let records = null;
+            if (path.extname(filePath).toLowerCase() === '.json') {
+                try {
+                    const parsed = JSON.parse(content);
+                    if (Array.isArray(parsed)) records = parsed.length;
+                    else if (parsed && typeof parsed === 'object') records = Object.keys(parsed).length;
+                    else records = 1;
+                } catch (e) { records = null; }
+            }
+            res.json({
+                code: 0,
+                msg: '上传成功',
+                data: {
+                    filename: path.basename(filePath),
+                    size: Buffer.byteLength(content, 'utf8'),
+                    records,
+                    saved_at: new Date().toISOString()
+                }
+            });
+        });
+    });
+});
+
+// 数据文件列表
+app.get('/api/data-files', (req, res) => {
+    fs.readdir(DATA_DIR, (err, files) => {
+        if (err) return res.json(ok([]));
+        const list = [];
+        let pending = files.length;
+        if (pending === 0) return res.json(ok([]));
+        files.forEach(name => {
+            const full = path.join(DATA_DIR, name);
+            fs.stat(full, (e, st) => {
+                if (!e && st.isFile()) {
+                    list.push({ name, size: st.size, mtime: st.mtime });
+                }
+                if (--pending === 0) {
+                    list.sort((a, b) => new Date(b.mtime) - new Date(a.mtime));
+                    res.json(ok(list));
+                }
+            });
+        });
+    });
+});
+
+// 查看数据文件内容
+app.get('/api/data-files/:name', (req, res) => {
+    const filePath = _safeDataPath(req.params.name);
+    if (!filePath) return res.status(400).json({ code: 1, msg: '非法文件名' });
+    fs.readFile(filePath, 'utf8', (err, content) => {
+        if (err) return res.status(404).json({ code: 1, msg: '文件不存在' });
+        res.json(ok({ name: path.basename(filePath), content }));
+    });
+});
+
+// 删除数据文件
+app.delete('/api/data-files/:name', (req, res) => {
+    const filePath = _safeDataPath(req.params.name);
+    if (!filePath) return res.status(400).json({ code: 1, msg: '非法文件名' });
+    fs.unlink(filePath, (err) => {
+        if (err) return res.status(404).json({ code: 1, msg: '文件不存在' });
+        res.json(ok({ name: path.basename(filePath), deleted: true }));
+    });
 });
 
 // ========== 页面数据保存 ==========
@@ -1046,6 +1344,9 @@ app.post('/api/modules/:key/import', (req, res) => {
 });
 
 // 根路径重定向到 prototype
+// ========== 学生智能档案 API（诊断/计划/画像/行为） ==========
+registerStudentApi(app, { ok });
+
 app.get('/', (req, res) => res.redirect('/prototype/'));
 
 // 静态托管（放在 API 路由之后，避免拦截 /api 请求）

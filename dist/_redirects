@@ -11,6 +11,7 @@
 /api/predict/:userId/rank /api/predict/rank.json 200
 /api/predict/:userId/report /api/predict/report.json 200
 /api/answers/:userId/stats /api/answers/stats.json 200
+/api/answers/:userId /api/answers/list.json 200
 /api/articles /api/articles.json 200
 /api/courses /api/courses.json 200
 /api/subjects /api/subjects.json 200
@@ -41,3 +42,5 @@
 /api/page-data/discover-articles /api/page-data/discover-articles.json 200
 /api/page-data/discover-courses /api/page-data/discover-courses.json 200
 /api/page-data/discover-subjects /api/page-data/discover-subjects.json 200
+# 兜底：所有未匹配的 /api/* 请求代理到 Cloudflare Worker
+/api/* https://ai-gaokao-api.songowen53.workers.dev/api/:splat 200

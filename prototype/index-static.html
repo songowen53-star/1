@@ -2422,8 +2422,8 @@ body.edit-mode [data-module]:hover {
 }
 
 </style>
-    <!-- Chart.js 图表库（须在 main.js 之前加载） -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js 图表库（本地静态资源，不依赖外部 CDN） -->
+    <script src="js/lib/chart.min.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -3851,7 +3851,7 @@ function renderExamPredict(report) {
 
 // 更新雷达图（用各科得分率作为掌握率）
 function updateRadarChart(subjectScores) {
-    if (!subjectScores) return;
+    if (!subjectScores || typeof Chart === 'undefined') return;
     const chart = Chart.getChart('radarChart');
     if (!chart) return;
     const currentData = subjectScores.map(s => Math.round(s.score / s.max_score * 100));
@@ -3861,6 +3861,7 @@ function updateRadarChart(subjectScores) {
 
 // 更新分数趋势图
 function updateScoreChart(currentPredicted, targetScore) {
+    if (typeof Chart === 'undefined') return;
     const chart = Chart.getChart('scoreChart');
     if (!chart) return;
     const improvement = (targetScore || 633) - currentPredicted;
@@ -3872,6 +3873,7 @@ function updateScoreChart(currentPredicted, targetScore) {
 
 // ========== 分数趋势折线图 ==========
 function initScoreChart() {
+    if (typeof Chart === 'undefined') return;
     const ctx = document.getElementById('scoreChart');
     if (!ctx) return;
 
@@ -3951,6 +3953,7 @@ function initScoreChart() {
 
 // ========== 学科能力雷达图 ==========
 function initRadarChart() {
+    if (typeof Chart === 'undefined') return;
     const ctx = document.getElementById('radarChart');
     if (!ctx) return;
 
@@ -5297,12 +5300,14 @@ function saveGoalScore() {
     document.getElementById('goal-progress-fill').style.width = rate + '%';
 
     // 更新折线图数据
+    if (typeof Chart !== 'undefined') {
     const chart = Chart.getChart('scoreChart');
     if (chart) {
         const mid1 = Math.round(current + improvement * 0.3);
         const mid2 = Math.round(current + improvement * 0.6);
         chart.data.datasets[0].data = [current, mid1, mid2, target];
         chart.update();
+    }
     }
 
     closeModal();
@@ -7754,6 +7759,7 @@ function applyModuleConfig(key, config) {
                 if (rateEl) rateEl.textContent = rate + '%';
                 if (fillEl) fillEl.style.width = rate + '%';
                 // 更新折线图
+                if (typeof Chart !== 'undefined') {
                 const chart = Chart.getChart('scoreChart');
                 if (chart) {
                     const improvement = config.target_score - config.current_score;
@@ -7764,6 +7770,7 @@ function applyModuleConfig(key, config) {
                         config.target_score
                     ];
                     chart.update();
+                }
                 }
             }
             break;
@@ -7827,10 +7834,12 @@ function applyModuleConfig(key, config) {
                 const radarScore = document.querySelector('.radar-score strong');
                 if (radarScore) radarScore.textContent = total;
                 // 更新雷达图
+                if (typeof Chart !== 'undefined') {
                 const chart = Chart.getChart('radarChart');
                 if (chart) {
                     chart.data.datasets[0].data = config.items.map(s => Math.round(s.score / s.max_score * 100));
                     chart.update();
+                }
                 }
             }
             break;

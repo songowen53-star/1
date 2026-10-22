@@ -6,6 +6,9 @@
 window.drawScoreChart = function(containerId, type, labels, values, colors) {
     var container = document.getElementById(containerId);
     if (!container) return;
+    // 数据校验：避免 undefined 导致 length 报错
+    if (!Array.isArray(values) || values.length === 0 || !Array.isArray(labels)) return;
+    if (!Array.isArray(colors) || colors.length === 0) colors = ['#3B82F6'];
     container.innerHTML = '';
     var canvas = document.createElement('canvas');
     canvas.width = container.offsetWidth || 300;

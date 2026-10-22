@@ -54,7 +54,7 @@ const server = http.createServer((req, res) => {
             if (!path.extname(filePath)) {
                 fs.readFile(path.join(DIST_DIR, 'index.html'), (e2, d2) => {
                     if (e2) { res.writeHead(404); res.end('Not found'); }
-                    else { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(d2); }
+                    else { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache, no-store, must-revalidate' }); res.end(d2); }
                 });
                 return;
             }
@@ -63,7 +63,14 @@ const server = http.createServer((req, res) => {
             return;
         }
         const ext = path.extname(filePath).toLowerCase();
-        res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
+        // 强制不缓存：避免浏览器使用旧版 JS/CSS 导致页面异常
+        const headers = {
+            'Content-Type': MIME[ext] || 'application/octet-stream',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        };
+        res.writeHead(200, headers);
         res.end(data);
     });
 });

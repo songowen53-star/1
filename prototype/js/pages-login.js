@@ -556,40 +556,82 @@ function doRegister() {
         return;
     }
 
-    // 调用注册API
-    fetch('/api/auth/register', {
+    // 调用注册API（直接用 fetch + API_BASE，绕过 api.request override 的兼容问题）
+    var regBody = JSON.stringify({
+        username: phone, password: password,
+        name: phone.slice(-4) + '同学', grade: grade, province: province,
+        target_score: parseInt(targetScore) || 600, target_school: targetSchool || ''
+    });
+    fetch((typeof API_BASE !== 'undefined' ? API_BASE : '') + '/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            username: phone,
-            password: password,
-            name: phone.slice(-4) + '同学',
-            province: province,
-            grade: grade,
-            subject: subject,
-            target_score: parseInt(targetScore) || 600,
-            target_school: targetSchool || ''
-        })
+        body: regBody
     })
-    .then(r => r.json())
-    .then(data => {
-        if (data.code === 0) {
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data && data.code === 0) {
             openModal('注册成功', `
                 <div style="text-align:center;padding:20px;">
                     <div style="width:64px;height:64px;border-radius:50%;background:#D1FAE5;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
                         <i class="fas fa-check" style="font-size:32px;color:#10B981;"></i>
                     </div>
                     <div style="font-size:18px;font-weight:700;margin-bottom:8px;">恭喜，注册成功！</div>
-                    <div style="font-size:13px;color:#6B7280;margin-bottom:20px;">账号：${phone}<br>欢迎开启AI提分之旅</div>
+                    <div style="font-size:13px;color:#6B7280;margin-bottom:20px;">账号：${phone}<br>目标分数：${parseInt(targetScore) || 600} 分<br>目标院校：${targetSchool || '未填写'}<br>欢迎开启AI提分之旅</div>
                     <button class="proto-btn proto-btn-primary" style="height:44px;border-radius:22px;width:100%;" onclick="closeModal();navigateTo('login');">返回登录</button>
                 </div>
             `);
         } else {
-            openModal('注册失败', '<p style="text-align:center;padding:20px;color:#EF4444;">' + (data.msg || '注册失败，该手机号可能已注册') + '</p>');
+            openModal('注册失败', '<p style="text-align:center;padding:20px;color:#EF4444;">' + ((data && data.msg) || '注册失败，该手机号可能已注册') + '</p>');
         }
     })
-    .catch(err => {
+    .catch(function() {
         openModal('注册失败', '<p style="text-align:center;padding:20px;color:#EF4444;">网络错误，请检查网络连接</p>');
+    });
+}
+
+// ============================================================
+// 执行登录（密码登录页）
+// ============================================================
+function doLogin() {
+    const phone = document.getElementById('login-phone').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    // 表单验证
+    if (!phone || !/^1\d{10}$/.test(phone)) {
+        openModal('提示', '<p style="text-align:center;padding:20px;color:#EF4444;">请输入正确的11位手机号</p>');
+        return;
+    }
+    if (!password) {
+        openModal('提示', '<p style="text-align:center;padding:20px;color:#EF4444;">请输入密码</p>');
+        return;
+    }
+
+    // 检查协议勾选
+    const agreeBox = document.querySelector('#page-content .agree-box');
+    if (agreeBox && !agreeBox.classList.contains('checked')) {
+        openModal('提示', '<p style="text-align:center;padding:20px;color:#EF4444;">请先阅读并同意用户协议和隐私政策</p>');
+        return;
+    }
+
+    // 调用登录API（直接用 fetch + API_BASE，绕过 api.request override 的兼容问题）
+    fetch((typeof API_BASE !== 'undefined' ? API_BASE : '') + '/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: phone, password: password })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data && data.code === 0) {
+            // 保存登录态
+            Auth.setSession(data.data.token, data.data.user_id || '', data.data.user || null);
+            showToast('登录成功，欢迎回来！');
+            setTimeout(function() { navigateTo('home'); }, 600);
+        } else {
+            openModal('登录失败', '<p style="text-align:center;padding:20px;color:#EF4444;">' + ((data && data.msg) || '用户名或密码错误') + '</p>');
+        }
+    })
+    .catch(function() {
+        openModal('登录失败', '<p style="text-align:center;padding:20px;color:#EF4444;">网络错误，请检查网络连接</p>');
     });
 }
 
@@ -615,11 +657,11 @@ registerPage('login', '登录', '登录注册', 'fa-sign-in-alt', () => {
             <div style="margin-bottom:18px;">
                 <div style="display:flex;align-items:center;gap:10px;background:#F9FAFB;border:1.5px solid #E5E7EB;border-radius:8px;padding:0 14px;margin-bottom:14px;">
                     <i class="fas fa-mobile-alt" style="color:#9CA3AF;font-size:16px;flex-shrink:0;"></i>
-                    <input class="proto-input" type="tel" maxlength="11" placeholder="请输入手机号" style="border:none;background:transparent;padding:14px 0;font-size:15px;flex:1;outline:none;">
+                    <input id="login-phone" class="proto-input" type="tel" maxlength="11" placeholder="请输入手机号" style="border:none;background:transparent;padding:14px 0;font-size:15px;flex:1;outline:none;">
                 </div>
                 <div style="display:flex;align-items:center;gap:10px;background:#F9FAFB;border:1.5px solid #E5E7EB;border-radius:8px;padding:0 14px;">
                     <i class="fas fa-lock" style="color:#9CA3AF;font-size:16px;flex-shrink:0;"></i>
-                    <input class="proto-input" type="password" placeholder="请输入密码" style="border:none;background:transparent;padding:14px 0;font-size:15px;flex:1;outline:none;">
+                    <input id="login-password" class="proto-input" type="password" placeholder="请输入密码" style="border:none;background:transparent;padding:14px 0;font-size:15px;flex:1;outline:none;">
                     <i class="fas fa-eye-slash" style="color:#9CA3AF;font-size:16px;flex-shrink:0;cursor:pointer;"></i>
                 </div>
             </div>
@@ -635,7 +677,7 @@ registerPage('login', '登录', '登录注册', 'fa-sign-in-alt', () => {
             </div>
 
             <!-- 登录按钮 -->
-            <button class="proto-btn proto-btn-primary" style="height:48px;font-size:16px;border-radius:24px;" onclick="navigateTo('home')">登 录</button>
+            <button class="proto-btn proto-btn-primary" style="height:48px;font-size:16px;border-radius:24px;" onclick="doLogin()">登 录</button>
 
             <!-- 分隔线 -->
             <div style="display:flex;align-items:center;margin:24px 0 18px;color:#9CA3AF;font-size:12px;">

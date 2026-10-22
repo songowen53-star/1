@@ -25,6 +25,18 @@ registerPage('profile-main', '我的', '个人中心', 'fa-user', function () {
 
     function renderPageContent(container, data) {
         var u = data.user || {};
+        // 优先使用登录用户的实际数据（注册时填写的目标分数/院校等）
+        try {
+            var cachedUser = JSON.parse(localStorage.getItem('aigaokao_user') || 'null');
+            if (cachedUser) {
+                u.name = cachedUser.name || u.name;
+                u.grade = cachedUser.grade || u.grade;
+                u.province = cachedUser.province || u.province;
+                if (cachedUser.target_score) u.target_score = cachedUser.target_score;
+                if (cachedUser.target_school) u.target_school = cachedUser.target_school;
+                if (cachedUser.current_score) u.current_score = cachedUser.current_score;
+            }
+        } catch (e) {}
         // 动态计算高考倒计时（与首页 getNextGaokao 逻辑保持一致）
         var _now = new Date();
         var _gy = _now.getFullYear();

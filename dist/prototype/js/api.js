@@ -1,6 +1,9 @@
 // ========== 前端API封装层 ==========
 // 统一对接后端服务，所有数据走真实接口
-const API_BASE = ''; // API方法URL均以/api/开头，为根相对路径，无需前缀
+// API 基础路径：始终使用相对路径
+// 本地开发：由本地 Express 后端处理 /api/*
+// 云端部署：通过 Cloudflare Pages _redirects 将 /api/* 代理到 Worker
+const API_BASE = '';
 
 // 用户登录态管理
 const Auth = {
@@ -48,16 +51,16 @@ const api = {
             if (data.code !== 0) throw new Error(data.msg || '请求失败');
             return data.data;
         } catch (e) {
-            console.error('[API Error]', url, e);
+            console.error('[API Error]', url, e && e.message ? e.message : e);
             return null;
         }
     },
 
     // ========== 认证 ==========
-    register(username, password, name, grade, province) {
+    register(username, password, name, grade, province, target_score, target_school) {
         return this.request('/api/auth/register', {
             method: 'POST',
-            body: JSON.stringify({ username, password, name, grade, province })
+            body: JSON.stringify({ username, password, name, grade, province, target_score, target_school })
         });
     },
     login(username, password) {
@@ -222,6 +225,63 @@ const api = {
     // AI学情分析 - 成绩趋势预测
     getPredictScoreTrend(days) {
         return this.request(`/api/predict/${getUserId()}/score-trend?days=${days || 60}`);
+    },
+
+    // ========== 学生智能档案（第一阶段联调） ==========
+    // 首页唯一数据源
+    getIntelligenceProfile() {
+        return this.request('/api/student/intelligence-profile');
+    },
+    getStudentProfile() {
+        return this.request('/api/student/profile');
+    },
+    saveStudentProfile(patch) {
+        return this.request('/api/student/profile', {
+            method: 'PUT', body: JSON.stringify(patch)
+        });
+    },
+    getLearningGoal() {
+        return this.request('/api/student/goal');
+    },
+    saveLearningGoal(patch) {
+        return this.request('/api/student/goal', {
+            method: 'PUT', body: JSON.stringify(patch)
+        });
+    },
+    // 诊断
+    startDiagnostic() {
+        return this.request('/api/diagnostic/start', { method: 'POST' });
+    },
+    getLatestDiagnostic() {
+        return this.request('/api/diagnostic/latest');
+    },
+    submitDiagnosticAnswer(sessionId, payload) {
+        return this.request(`/api/diagnostic/${sessionId}/answer`, {
+            method: 'POST', body: JSON.stringify(payload)
+        });
+    },
+    submitDiagnostic(sessionId) {
+        return this.request(`/api/diagnostic/${sessionId}/submit`, { method: 'POST' });
+    },
+    // 学习任务
+    getStudentTodayTasks() {
+        return this.request('/api/student/today-tasks');
+    },
+    startStudyTask(taskId) {
+        return this.request(`/api/student/tasks/${taskId}/start`, { method: 'POST' });
+    },
+    completeStudyTask(taskId, payload) {
+        return this.request(`/api/student/tasks/${taskId}/complete`, {
+            method: 'POST', body: JSON.stringify(payload || {})
+        });
+    },
+    getStudentPortrait() {
+        return this.request('/api/student/portrait');
+    },
+    trackBehavior(type, payload) {
+        return this.request('/api/behavior/events', {
+            method: 'POST', body: JSON.stringify({ type, payload })
+        });
     },
     // 通用页面数据加载（API优先，失败时回退到静态JSON文件，确保离线可用）
     async getPageData(pageKey) {

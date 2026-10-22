@@ -6728,6 +6728,13 @@ window.WEEK_PLAN_MOCK = {
         window.__API_MOCK_INSTALLED__ = true;
         var orig = api.request.bind(api);
         api.request = function (url, opts) {
+            // 首页与今日任务不再使用 Mock 数据作为最终数据源
+            if (/^\/api\/(student\/|diagnostic\/|behavior\/)/.test(url || '') ||
+                /^\/api\/learning\/[^/]+\/(today-tasks|duration-stats)/.test(url || '') ||
+                /^\/api\/recommend\/[^/]+\/week-plan/.test(url || '') ||
+                /^\/api\/page-data\/home/.test(url || '')) {
+                return orig(url, opts);
+            }
             // 匹配各类需要 Mock 回退的接口
             var mockLabel = null, sample = null;
             var m = /^\/api\/page-data\/([^?#]+)/.exec(url || '');

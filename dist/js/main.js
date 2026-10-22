@@ -3725,7 +3725,20 @@ function renderHotTab(container, data) {
 }
 
 async function renderMistakesPage(container) {
-    const answers = await api.request(`/api/answers/${getUserId()}?days=30`);
+    let answers;
+    try {
+        answers = await api.request(`/api/answers/${getUserId()}?days=30`);
+        // 校验返回数据是否有效（静态环境若返回 HTML 会进入 catch）
+        if (!answers || (typeof answers === 'object' && !Array.isArray(answers) && !answers.data)) {
+            throw new Error('empty');
+        }
+    } catch (e) {
+        console.warn('获取答题记录失败，使用静态数据', e);
+        try {
+            const resp = await fetch('/api/answers/list.json');
+            answers = await resp.json();
+        } catch (e2) { answers = { data: [] }; }
+    }
     const all = Array.isArray(answers) ? answers : (answers && answers.data) || [];
     const mistakes = all.filter(a => !a.is_correct);
     // 按学科分组统计
@@ -5133,24 +5146,80 @@ function renderCollegeRankTab(container, data) {
     let html = '';
     if (data.rank_info) {
         const r = data.rank_info;
+        const rankNum = typeof r.rank === 'number' ? r.rank.toLocaleString() : (r.rank || (data.predicted_rank || '--'));
         html += `<div style="background:linear-gradient(135deg,#8B5CF6,#3B82F6);color:white;padding:18px;border-radius:12px;margin-bottom:16px;text-align:center;">
             <div style="font-size:13px;opacity:0.9;margin-bottom:8px;">预估全省排名</div>
-            <div style="font-size:36px;font-weight:700;">${(r.rank||'--').toLocaleString()}</div>
+            <div style="font-size:36px;font-weight:700;">${rankNum}</div>
             <div style="font-size:12px;opacity:0.9;margin-top:6px;">超过 ${r.percentile||'--'}% 考生</div>
+            ${r.province || r.category || r.score ? `<div style="font-size:11px;opacity:0.85;margin-top:8px;">${[r.province, r.category, r.score ? r.score + '分' : ''].filter(Boolean).join(' · ')}</div>` : ''}
         </div>`;
     }
     const schools = data.schools || data.ranks || [];
     if (schools.length) {
-        html += '<div style="font-size:14px;font-weight:600;color:#374151;margin-bottom:10px;">同分考生去向</div>';
+        html += '<div style="font-size:14px;font-weight:600;color:#374151;margin-bottom:10px;"><i class="fas fa-users" style="color:#3B82F6;margin-right:6px;"></i>同分考生去向</div>';
         schools.forEach((s, i) => {
-            html += `<div style="background:white;border:1px solid #E5E7EB;border-radius:12px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                <div><div style="font-size:13px;font-weight:600;">${s.name||s.school}</div><div style="font-size:11px;color:#9CA3AF;">${s.major||''}</div></div>
-                <span style="background:#F3F4F6;color:#374151;padding:3px 10px;border-radius:12px;font-size:11px;">${s.percent||0}%</span>
+            const pct = s.percent || 0;
+            const pctColor = pct >= 15 ? '#3B82F6' : pct >= 8 ? '#10B981' : '#9CA3AF';
+            html += `<div style="background:white;border:1px solid #E5E7EB;border-radius:12px;padding:12px;margin-bottom:8px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <div><div style="font-size:13px;font-weight:600;color:#111827;">${s.name||s.school}${s.level ? '<span style="background:#FEF3C7;color:#92400E;padding:1px 6px;border-radius:8px;font-size:10px;margin-left:6px;">'+s.level+'</span>' : ''}</div><div style="font-size:11px;color:#9CA3AF;margin-top:2px;">${s.major||''}</div></div>
+                    <span style="background:#F3F4F6;color:#374151;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">${pct}%</span>
+                </div>
+                <div style="height:4px;background:#F3F4F6;border-radius:2px;overflow:hidden;"><div style="height:100%;width:${Math.min(pct*5,100)}%;background:${pctColor};border-radius:2px;"></div></div>
             </div>`;
         });
     } else {
-        html += '<div style="text-align:center;padding:30px;color:#9CA3AF;">暂无位次数据</div>';
+        html += '<div style="text-align:center;padding:30px;color:#9CA3AF;"><i class="fas fa-chart-bar" style="font-size:32px;margin-bottom:8px;display:block;"></i>暂无位次数据</div>';
     }
+
+    // 一分一段表
+    const opd = data.one_point_data;
+    if (opd && opd.labels && opd.values) {
+        html += `<div style="margin-top:18px;font-size:14px;font-weight:600;color:#374151;margin-bottom:10px;"><i class="fas fa-chart-line" style="color:#3B82F6;margin-right:6px;"></i>${data.one_point_chart_label || '一分一段表'}</div>`;
+        const max = Math.max.apply(null, opd.values);
+        const bars = opd.labels.map((lab, i) => {
+            const v = opd.values[i];
+            const h = Math.round(v / max * 100);
+            return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+                <div style="font-size:10px;color:#6B7280;">${v}</div>
+                <div style="width:20px;height:${h*1.2}px;background:linear-gradient(to top,#3B82F6,#8B5CF6);border-radius:4px 4px 0 0;"></div>
+                <div style="font-size:10px;color:#9CA3AF;">${lab}</div>
+            </div>`;
+        }).join('');
+        html += `<div style="background:white;border:1px solid #E5E7EB;border-radius:12px;padding:14px;display:flex;align-items:flex-end;gap:6px;height:160px;">${bars}</div>`;
+    }
+
+    // 历年录取院校
+    const hist = data.history_admission;
+    if (hist && hist.length) {
+        html += `<div style="margin-top:18px;font-size:14px;font-weight:600;color:#374151;margin-bottom:10px;"><i class="fas fa-history" style="color:#3B82F6;margin-right:6px;"></i>历年同位次录取院校</div>`;
+        const histHTML = hist.map(h => `
+            <div style="background:white;border:1px solid #E5E7EB;border-radius:12px;padding:10px 14px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+                <div><div style="font-size:13px;font-weight:600;color:#111827;">${h.college||'-'}</div><div style="font-size:11px;color:#9CA3AF;">${h.year||'-'}</div></div>
+                <span style="background:#DBEAFE;color:#1E40AF;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">${h.level||'-'}</span>
+            </div>
+        `).join('');
+        html += histHTML;
+    }
+
+    // AI 建议
+    const advice = data.advice;
+    if (advice) {
+        html += `<div style="margin-top:18px;background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border:1px solid #FDE68A;border-radius:12px;padding:16px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><i class="fas fa-lightbulb" style="color:#F59E0B;"></i><div style="font-size:14px;font-weight:700;color:#92400E;">${advice.title||'AI 志愿填报建议'}</div></div>
+            <div style="font-size:12px;color:#6B7280;margin-bottom:10px;line-height:1.6;">${advice.intro||''}</div>`;
+        if (advice.strategy && advice.strategy.length) {
+            const stratHTML = advice.strategy.map(s => {
+                const color = s.type==='冲刺' ? '#EF4444' : s.type==='稳妥' ? '#F59E0B' : '#10B981';
+                const bg = s.type==='冲刺' ? '#FEE2E2' : s.type==='稳妥' ? '#FEF3C7' : '#D1FAE5';
+                return `<div style="display:flex;gap:8px;margin-bottom:6px;align-items:center;"><span style="background:${bg};color:${color};padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600;flex-shrink:0;">${s.type||''}</span><span style="font-size:12px;color:#374151;">${s.colleges||''}</span></div>`;
+            }).join('');
+            html += stratHTML;
+        }
+        if (advice.tip) html += `<div style="margin-top:10px;padding:10px;background:white;border-radius:8px;font-size:12px;color:#374151;line-height:1.6;"><i class="fas fa-info-circle" style="color:#3B82F6;margin-right:4px;"></i>${advice.tip}</div>`;
+        html += `</div>`;
+    }
+
     container.innerHTML = html;
 }
 

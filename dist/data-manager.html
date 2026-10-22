@@ -86,7 +86,9 @@
         .actions { margin-top: 16px; display: flex; gap: 10px; }
 
         /* 文件列表表格 */
-        .file-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        #file-list { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .file-table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px; }
+        .file-table th, .file-table td { white-space: nowrap; }
         .file-table th { background: #F9FAFB; padding: 10px 14px; text-align: left; font-weight: 600; color: var(--text-2); border-bottom: 1px solid var(--border); }
         .file-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
         .file-table tr:hover td { background: #F9FAFB; }
@@ -115,6 +117,15 @@
 
         .empty { text-align: center; padding: 40px; color: var(--text-2); }
         .empty i { font-size: 40px; margin-bottom: 12px; color: #D1D5DB; }
+
+        /* 窄屏适配 */
+        @media (max-width: 640px) {
+            .header { padding: 16px; }
+            .header h1 { font-size: 18px; }
+            .container { padding: 12px; }
+            .section { padding: 16px; border-radius: 12px; }
+            .upload-zone { padding: 28px 16px; }
+        }
     </style>
 </head>
 <body>
@@ -189,6 +200,17 @@
     <script>
     let selectedFiles = [];
 
+    // 安全解析接口响应：兼容代理/云端返回非 JSON（如 HTML）时的友好提示
+    async function readApiJson(res) {
+        const text = await res.text();
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            const preview = (text || '').trim().replace(/\s+/g, ' ').slice(0, 80);
+            throw new Error(`接口返回非 JSON（HTTP ${res.status}）：${preview || '响应为空'}`);
+        }
+    }
+
     // 文件选择
     document.getElementById('file-input').addEventListener('change', function(e) {
         handleFiles(e.target.files);
@@ -259,7 +281,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ filename: file.name, content })
                 });
-                const data = await res.json();
+                const data = await readApiJson(res);
                 results.push({ name: file.name, success: data.code === 0, msg: data.msg, stats: data.data });
             } catch (e) {
                 results.push({ name: file.name, success: false, msg: e.message });
@@ -299,7 +321,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ format: 'text', data: text })
             });
-            const data = await res.json();
+            const data = await readApiJson(res);
             if (data.code === 0) {
                 resultDiv.innerHTML = `<div class="alert alert-success"><i class="fas fa-check-circle"></i><span>${data.msg}</span></div>`;
             } else {
@@ -340,7 +362,7 @@
         const container = document.getElementById('file-list');
         try {
             const res = await fetch('/api/data-files');
-            const data = await res.json();
+            const data = await readApiJson(res);
             if (data.code !== 0 || !data.data || data.data.length === 0) {
                 container.innerHTML = '<div class="empty"><i class="fas fa-folder"></i><p>目录为空</p></div>';
                 return;
@@ -365,7 +387,7 @@
             html += '</tbody></table>';
             container.innerHTML = html;
         } catch (e) {
-            container.innerHTML = `<div class="empty"><i class="fas fa-exclamation-circle"></i><p>加载失败: ${e.message}</p></div>`;
+            container.innerHTML = `<div class="empty"><i class="fas fa-exclamation-circle"></i><p>加载失败: ${e.message}</p><p style="margin-top:8px;font-size:12px;">请确认使用本地地址 http://localhost:9999/data-manager.html 访问，且后端服务已启动</p></div>`;
         }
     }
 
@@ -373,7 +395,7 @@
     async function viewFile(name) {
         try {
             const res = await fetch(`/api/data-files/${encodeURIComponent(name)}`);
-            const data = await res.json();
+            const data = await readApiJson(res);
             if (data.code === 0) {
                 const content = data.data.content;
                 const w = window.open('', '_blank');
@@ -388,7 +410,7 @@
         if (!confirm(`确认删除 ${name}？`)) return;
         try {
             const res = await fetch(`/api/data-files/${encodeURIComponent(name)}`, { method: 'DELETE' });
-            const data = await res.json();
+            const data = await readApiJson(res);
             if (data.code === 0) { loadFileList(); }
             else { alert(data.msg); }
         } catch (e) { alert('删除失败: ' + e.message); }
