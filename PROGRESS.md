@@ -176,8 +176,8 @@ const target  = moduleConfigs.goal?.target_score  || user.target_score  || 0;
 - [x] ~~端到端闭环验证（数据侧问题）~~ — 已澄清：无 token 的 PUT 只改 `__public__` 桶；带 token 写入后页面正常。联动 bug（源模块不落库 / target 不同步 / score_gap 脏数据）已在 2026-11-06 修复
 - [ ] 确认 `legacy/js/main.js` 与 `dist/js/main.js` 的一致性；`deploy.sh` 是唯一合法同步路径，手工 `cp` 容易漏 `css/style.css`
 - [ ] 决策题库文件（539×3 份）是否纳入 git
-- [ ] `dist/backend/` 下仍有被删除的后端副本残留标记（`git status` 显示 7 个 `D`），需确认是否误提交过后端源码
-- [ ] 本轮改动尚未提交 git（`backend/server.js`、`legacy/js/main.js`、`dist/*`、`PROGRESS.md`），合适时 `git commit`
+- [x] ~~`dist/backend/` 下被删除的后端副本残留标记~~ — 已在 `7bb6ce3` 提交中清理（7 个删除）
+- [x] 本轮改动已提交 git：`7bb6ce3`（联动引擎 3 个修复 + PROGRESS.md + .trae 技能）、`f8b62b7`（补齐 334 个项目资产文件）
 
 ---
 
