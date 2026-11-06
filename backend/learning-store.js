@@ -24,7 +24,9 @@ function emptyDb() {
         ai_diagnosis_reports: {}, // user_id -> report
         learning_plans: {},     // user_id -> plan
         learning_tasks: [],     // 学习任务
-        behavior_events: []     // 行为事件
+        behavior_events: [],    // 行为事件
+        parent_bindings: [],    // 家长-学生绑定关系
+        module_configs: {}      // user_id -> { module_key: config }
     };
 }
 
@@ -41,7 +43,7 @@ function load() {
                 'knowledge_states', 'ability_states', 'ai_diagnosis_reports', 'learning_plans'].forEach(k => {
                 if (!_db[k] || typeof _db[k] !== 'object') _db[k] = {};
             });
-            ['answer_records', 'learning_tasks', 'behavior_events'].forEach(k => {
+            ['answer_records', 'learning_tasks', 'behavior_events', 'parent_bindings'].forEach(k => {
                 if (!Array.isArray(_db[k])) _db[k] = [];
             });
         } else {
@@ -239,6 +241,32 @@ function addBehaviorEvent(userId, type, payload) {
     return ev;
 }
 
+// ---------- 家长绑定 ----------
+function listParentBindings(parentPhone) {
+    const list = load().parent_bindings || [];
+    return parentPhone ? list.filter(b => b.parent_phone === parentPhone) : list.slice();
+}
+
+function findParentBinding(id) {
+    return (load().parent_bindings || []).find(b => b.binding_id === id) || null;
+}
+
+function addParentBinding(rec) {
+    const d = load();
+    if (!Array.isArray(d.parent_bindings)) d.parent_bindings = [];
+    d.parent_bindings.push(rec);
+    persist();
+    return rec;
+}
+
+function updateParentBinding(id, patch) {
+    const rec = findParentBinding(id);
+    if (!rec) return null;
+    Object.assign(rec, patch);
+    persist();
+    return rec;
+}
+
 module.exports = {
     TZ, DB_PATH,
     db, save, load,
@@ -247,5 +275,6 @@ module.exports = {
     findUserByName, findUserById, createUser, issueToken, revokeToken, userByToken,
     verifyPassword, hashPassword, publicUser,
     getProfile, saveProfile, getGoal, saveGoal,
-    addBehaviorEvent
+    addBehaviorEvent,
+    listParentBindings, findParentBinding, addParentBinding, updateParentBinding
 };

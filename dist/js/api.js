@@ -1,6 +1,9 @@
 // ========== 前端API封装层 ==========
 // 统一对接后端服务，所有数据走真实接口
-const API_BASE = ''; // API方法URL均以/api/开头，为根相对路径，无需前缀
+// API 基础路径：始终使用相对路径
+// 本地开发：由本地 Express 后端处理 /api/*
+// 云端部署：通过 Cloudflare Pages _redirects 将 /api/* 代理到 Worker
+const API_BASE = '';
 
 // 用户登录态管理
 const Auth = {
@@ -25,38 +28,60 @@ const Auth = {
     }
 };
 
-// 动态 USER_ID：已登录用登录用户，否则用演示账户
+// 动态 USER_ID：已登录用登录用户；未登录返回空串，接口会自动返回 401（不再 fallback 到演示账户）
 function getUserId() {
-    return Auth.getUserId() || 'u_001';
+    return Auth.getUserId() || '';
 }
 
 const api = {
     // 通用请求（带 token）
     async request(url, options = {}) {
+        // 入口守卫：未登录时 getUserId() 返回空串，URL 会出现以下异常形态 → 直接 return null
+        //   /api/learning//summary         (双斜杠)
+        //   /api/users/  /api/predict//report  (尾斜杠或空段)
+        // 正常 URL 不会出现上述模式；只有带 userId 的方法在未登录时才会触发
+        if (url.indexOf('//') !== -1 && url.indexOf('https://') !== 0 && url.indexOf('http://') !== 0) {
+            return null;
+        }
+        if (/^\/api\/(users|learning|predict|student|answers|recommend|practice|photo|diagnostic|intelligence|plan|goal|profile|weak|knowledge\/stats|questions\/me|paper\/me)\/?$/.test(url)) {
+            return null;
+        }
         try {
-            const headers = { 'Content-Type': 'application/json', ...options.headers };
+            const isFormData = options.body instanceof FormData;
+            const headers = isFormData ? { ...options.headers } : { 'Content-Type': 'application/json', ...options.headers };
+            // 强制浏览器不缓存任何 API 请求（代理已返回 no-cache，但某些浏览器仍会缓存 GET）
+            headers['Cache-Control'] = 'no-store';
             const token = Auth.getToken();
             if (token) headers['Authorization'] = 'Bearer ' + token;
             const res = await fetch(API_BASE + url, { ...options, headers });
             const text = await res.text();
             let data;
             try { data = JSON.parse(text); } catch {
-                console.warn('[API] 非JSON响应:', url, text.slice(0, 100));
+                if (res.status !== 401 || Auth.isLoggedIn()) {
+                    console.warn('[API] 非JSON响应:', url, text.slice(0, 100));
+                }
                 return null;
             }
-            if (data.code !== 0) throw new Error(data.msg || '请求失败');
+            if (data.code !== 0) {
+                if (res.status === 401 && !Auth.isLoggedIn()) {
+                    // 未登录时打鉴权接口属正常流程，静默忽略 401
+                    return null;
+                }
+                throw new Error(data.msg || '请求失败');
+            }
             return data.data;
         } catch (e) {
-            console.error('[API Error]', url, e);
+            if (e && e.message === 'Unauthorized') return null;
+            console.error('[API Error]', url, e && e.message ? e.message : e);
             return null;
         }
     },
 
     // ========== 认证 ==========
-    register(username, password, name, grade, province) {
+    register(username, password, name, grade, province, target_score, target_school) {
         return this.request('/api/auth/register', {
             method: 'POST',
-            body: JSON.stringify({ username, password, name, grade, province })
+            body: JSON.stringify({ username, password, name, grade, province, target_score, target_school })
         });
     },
     login(username, password) {
@@ -84,18 +109,6 @@ const api = {
     wechatQrcodeStatus(sceneId) {
         return this.request(`/api/auth/wechat-qrcode-status?scene_id=${encodeURIComponent(sceneId)}`);
     },
-    // SSE 实时状态推送 URL（供 EventSource 使用）
-    // 本地后端为长连接 SSE；Cloudflare Pages 无状态，单次推送后关闭，前端会自动降级到轮询
-    wechatQrcodeStreamUrl(sceneId) {
-        return `${API_BASE}/api/auth/wechat-qrcode-stream?scene_id=${encodeURIComponent(sceneId)}`;
-    },
-    // 同 scene 刷新二维码（重置状态与过期时间，保留 scene_id）
-    wechatQrcodeRefresh(sceneId) {
-        return this.request('/api/auth/wechat-qrcode-refresh', {
-            method: 'POST',
-            body: JSON.stringify({ scene_id: sceneId })
-        });
-    },
     wechatQrcodeMockScan(sceneId, action, mockOpenid) {
         const body = { scene_id: sceneId, action };
         if (mockOpenid) body.mock_openid = mockOpenid;
@@ -106,6 +119,17 @@ const api = {
     },
     wechatQrcodeCancel(sceneId) {
         return this.request('/api/auth/wechat-qrcode-cancel', {
+            method: 'POST',
+            body: JSON.stringify({ scene_id: sceneId })
+        });
+    },
+    // SSE 流端点 URL（用于 EventSource 实时接收扫码状态）
+    wechatQrcodeStreamUrl(sceneId) {
+        return `/api/auth/wechat-qrcode-stream?scene_id=${encodeURIComponent(sceneId)}`;
+    },
+    // 同 scene_id 刷新二维码
+    wechatQrcodeRefresh(sceneId) {
+        return this.request('/api/auth/wechat-qrcode-refresh', {
             method: 'POST',
             body: JSON.stringify({ scene_id: sceneId })
         });
@@ -192,34 +216,225 @@ const api = {
     getTodayTasks() {
         return this.request(`/api/learning/${getUserId()}/today-tasks`);
     },
+    // 今日任务完成率 + 答题记录（学习进度快照）
+    getTodayProgress() {
+        return this.request('/api/student/today-progress');
+    },
     getDurationStats() {
         return this.request(`/api/learning/${getUserId()}/duration-stats`);
     },
-    // 学习日序列（AI学情分析 → 成绩趋势 tab 柱状图）
-    getLearningDailySeries(days = 7, subject) {
-        const params = [`days=${days}`];
-        if (subject && subject !== '全部') params.push(`subject=${encodeURIComponent(subject)}`);
-        return this.request(`/api/learning/${getUserId()}/daily-series?${params.join('&')}`);
+    // AI学情分析 - 每日学习序列
+    getLearningDailySeries(days, subject) {
+        const p = [];
+        if (days) p.push('days=' + days);
+        if (subject && subject !== '全部') p.push('subject=' + encodeURIComponent(subject));
+        const q = p.length ? '?' + p.join('&') : '';
+        return this.request(`/api/learning/${getUserId()}/daily-series${q}`);
     },
-    // 学科掌握雷达（AI学情分析 → 能力雷达 tab）
-    getSubjectMastery(days = 30) {
-        return this.request(`/api/learning/${getUserId()}/subject-mastery?days=${days}`);
+    // AI学情分析 - 学科掌握（能力雷达）
+    getSubjectMastery(days) {
+        return this.request(`/api/learning/${getUserId()}/subject-mastery?days=${days || 30}`);
     },
-    // 答题趋势（AI学情分析 → 成绩趋势 tab）
-    getAnswerTrend(days = 14) {
-        return this.request(`/api/answers/${getUserId()}/trend-series?days=${days}`);
+    // AI学情分析 - 答题趋势序列
+    getAnswerTrend(days) {
+        return this.request(`/api/answers/${getUserId()}/trend-series?days=${days || 14}`);
     },
-    // 失分归因（AI学情分析 → 失分归因 tab）
-    getLossAnalysis(days = 30, limit = 8) {
-        return this.request(`/api/answers/${getUserId()}/loss-analysis?days=${days}&limit=${limit}`);
+    // AI学情分析 - 失分归因 Top N
+    getLossAnalysis(days, limit) {
+        const p = [];
+        if (days) p.push('days=' + days);
+        if (limit) p.push('limit=' + limit);
+        const q = p.length ? '?' + p.join('&') : '';
+        return this.request(`/api/answers/${getUserId()}/loss-analysis${q}`);
     },
-    // 成绩预测趋势（AI学情分析 → AI报告 tab）
-    getPredictScoreTrend(days = 60) {
-        return this.request(`/api/predict/${getUserId()}/score-trend?days=${days}`);
+    // AI学情分析 - 成绩趋势预测
+    getPredictScoreTrend(days) {
+        return this.request(`/api/predict/${getUserId()}/score-trend?days=${days || 60}`);
     },
-    // 通用页面数据加载
-    getPageData(pageKey) {
-        return this.request(`/api/page-data/${pageKey}`);
+
+    // ========== 学生智能档案（第一阶段联调） ==========
+    // 首页唯一数据源
+    getIntelligenceProfile() {
+        return this.request('/api/student/intelligence-profile');
+    },
+    getStudentProfile() {
+        return this.request('/api/student/profile');
+    },
+    saveStudentProfile(patch) {
+        return this.request('/api/student/profile', {
+            method: 'PUT', body: JSON.stringify(patch)
+        });
+    },
+    getLearningGoal() {
+        return this.request('/api/student/goal');
+    },
+    saveLearningGoal(patch) {
+        return this.request('/api/student/goal', {
+            method: 'PUT', body: JSON.stringify(patch)
+        });
+    },
+    // 诊断
+    startDiagnostic() {
+        return this.request('/api/diagnostic/start', { method: 'POST' });
+    },
+    getLatestDiagnostic() {
+        return this.request('/api/diagnostic/latest');
+    },
+    submitDiagnosticAnswer(sessionId, payload) {
+        return this.request(`/api/diagnostic/${sessionId}/answer`, {
+            method: 'POST', body: JSON.stringify(payload)
+        });
+    },
+    submitDiagnostic(sessionId) {
+        return this.request(`/api/diagnostic/${sessionId}/submit`, { method: 'POST' });
+    },
+    // 学习任务
+    getStudentTodayTasks() {
+        return this.request('/api/student/today-tasks');
+    },
+    startStudyTask(taskId) {
+        return this.request(`/api/student/tasks/${taskId}/start`, { method: 'POST' });
+    },
+    completeStudyTask(taskId, payload) {
+        return this.request(`/api/student/tasks/${taskId}/complete`, {
+            method: 'POST', body: JSON.stringify(payload || {})
+        });
+    },
+    getStudentPortrait() {
+        return this.request('/api/student/portrait');
+    },
+    trackBehavior(type, payload) {
+        return this.request('/api/behavior/events', {
+            method: 'POST', body: JSON.stringify({ type, payload })
+        });
+    },
+    // 页面数据统一解包：本地 API 返回内层数据，云端/静态文件返回含 module 元数据的包装结构
+    unwrapPageData(data) {
+        if (data && typeof data === 'object' && data.module && data.data && typeof data.data === 'object') {
+            return data.data;
+        }
+        return data;
+    },
+    // 通用页面数据加载（API优先，失败时回退到静态JSON文件，确保离线可用）
+    async getPageData(pageKey) {
+        // 优先尝试后端 API
+        try {
+            var data = await this.request(`/api/page-data/${pageKey}`);
+            if (data) return this.unwrapPageData(data);
+        } catch (e) { /* API 不可用，继续回退 */ }
+        // 回退：加载静态 JSON 文件（适用于 Cloudflare Pages 等静态部署，加时间戳防缓存）
+        try {
+            var res = await fetch(`data/pages/${pageKey}.json?t=${Date.now()}`);
+            if (res.ok) return this.unwrapPageData(await res.json());
+        } catch (e) { /* 静态文件也不可用 */ }
+        return null;
+    },
+    // 通用页面数据保存
+    savePageData(pageKey, data) {
+        return this.request(`/api/page-data/${pageKey}`, {
+            method: 'PUT',
+            body: JSON.stringify({ data: data })
+        });
+    },
+
+    // ========== AI模型中心 专用接口 ==========
+    // 获取模型中心数据（含动态运行状态）
+    async getAiModelCenter() {
+        try {
+            const data = await this.request('/api/ai/model-center');
+            if (data) return data;
+        } catch (e) { /* 专用接口不可用，回退 */ }
+        return this.getPageData('ai-model-center');
+    },
+    // 模型连通性/能力测试
+    testAiModel(modelName, testType) {
+        return this.request('/api/ai/model-center/test', {
+            method: 'POST',
+            body: JSON.stringify({ model_name: modelName, test_type: testType || 'connectivity' })
+        });
+    },
+
+    // ========== AI学习中心 专用接口 ==========
+    // AI学习教练（含动态今日日期）
+    async getAiModuleCoach() {
+        try {
+            const data = await this.request('/api/ai-module/coach');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('ai-module-coach');
+    },
+    // AI讲题引擎
+    async getAiModuleExplain() {
+        try {
+            const data = await this.request('/api/ai-module/explain');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('ai-module-explain');
+    },
+    // AI组卷引擎（含动态生成时间）
+    async getAiModulePaper() {
+        try {
+            const data = await this.request('/api/ai-module/paper');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('ai-module-paper');
+    },
+    // AI知识图谱
+    async getAiModuleGraph() {
+        try {
+            const data = await this.request('/api/ai-module/graph');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('ai-module-graph');
+    },
+    // AI预测高考（含动态距高考天数）
+    async getAiModulePredict() {
+        try {
+            const data = await this.request('/api/ai-module/predict');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('ai-module-predict');
+    },
+
+    // ========== 志愿填报 专用接口 ==========
+    // AI院校推荐（含个性化录取概率）
+    async getCollegeRecommend() {
+        try {
+            const data = await this.request(`/api/college/recommend?user_id=${getUserId()}`);
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('college-recommend');
+    },
+    // 专业推荐
+    async getCollegeMajor() {
+        try {
+            const data = await this.request('/api/college/major');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('college-major');
+    },
+    // 位次分析
+    async getCollegeRank() {
+        try {
+            const data = await this.request('/api/college/rank');
+            if (data) return data;
+        } catch (e) { /* 回退 */ }
+        return this.getPageData('college-rank');
+    },
+    // 保存用户调整的推荐条件
+    saveCollegeConditions(conditions) {
+        return this.request('/api/college/recommend/conditions', {
+            method: 'PUT',
+            body: JSON.stringify({ user_id: getUserId(), conditions: conditions })
+        });
+    },
+    // 教师上传试卷
+    uploadPaper(formData) {
+        return this.request('/api/teacher/upload', {
+            method: 'POST',
+            body: formData,
+            headers: {}  // 让浏览器自动设置 multipart Content-Type
+        });
     },
 
     // ========== 答题 ==========
@@ -304,247 +519,5 @@ const api = {
             method: 'POST',
             body: JSON.stringify({ format, data })
         });
-    },
-
-    // ========== 会员权益 ==========
-    getMembership() {
-        return this.request(`/api/users/${getUserId()}/membership`);
-    },
-    updateMembership(vipLevel, vipExpire, orderId) {
-        const body = { vip_level: vipLevel };
-        if (vipExpire) body.vip_expire = vipExpire;
-        if (orderId) body.order_id = orderId;
-        return this.request(`/api/users/${getUserId()}/membership`, {
-            method: 'PUT',
-            body: JSON.stringify(body)
-        });
-    },
-    getMembershipLogs(limit = 20) {
-        return this.request(`/api/users/${getUserId()}/membership/logs?limit=${limit}`);
-    },
-
-    // ========== 收藏 ==========
-    getFavorites(type, subject, page = 1, size = 20) {
-        const params = new URLSearchParams();
-        if (type) params.set('type', type);
-        if (subject) params.set('subject', subject);
-        params.set('page', page);
-        params.set('size', size);
-        return this.request(`/api/favorites/${getUserId()}?${params}`);
-    },
-    addFavorite(type, targetId, subject, note) {
-        const body = { type, target_id: targetId };
-        if (subject) body.subject = subject;
-        if (note) body.note = note;
-        return this.request('/api/favorites', {
-            method: 'POST',
-            body: JSON.stringify(body)
-        });
-    },
-    checkFavorite(type, targetId) {
-        return this.request(`/api/favorites/${getUserId()}/check?type=${type}&target_id=${encodeURIComponent(targetId)}`);
-    },
-    removeFavorite(favoriteId) {
-        return this.request(`/api/favorites/${favoriteId}`, { method: 'DELETE' });
-    },
-    batchRemoveFavorites(favoriteIds) {
-        return this.request('/api/favorites/batch-remove', {
-            method: 'POST',
-            body: JSON.stringify({ favorite_ids: favoriteIds })
-        });
-    },
-    getFavoriteStats() {
-        return this.request(`/api/favorites/${getUserId()}/stats`);
-    }
-};
-
-// ========== APP 本地缓存工具：题目缓存 ==========
-// 会员登录后，部分题目缓存在 APP 本地，加速展示并支持离线浏览
-const Cache = {
-    KEY_PREFIX: 'aigaokao_qcache_',
-    INDEX_KEY: 'aigaokao_qcache_index',
-    MAX_PER_SUBJECT: 50,    // 每科最多缓存 50 道
-    TTL_MS: 24 * 60 * 60 * 1000,  // 24 小时
-
-    _readIndex() {
-        try { return JSON.parse(localStorage.getItem(this.INDEX_KEY) || '[]'); }
-        catch { return []; }
-    },
-    _writeIndex(idx) {
-        localStorage.setItem(this.INDEX_KEY, JSON.stringify(idx));
-    },
-
-    // 写入一道题到缓存
-    putQuestion(question) {
-        if (!question || !question.id || !question.subject) return;
-        const key = this.KEY_PREFIX + question.subject + '_' + question.id;
-        try {
-            localStorage.setItem(key, JSON.stringify({
-                data: question,
-                cached_at: Date.now()
-            }));
-        } catch (e) {
-            // localStorage 空间满，清理最旧的
-            this._evictOldest(10);
-            try { localStorage.setItem(key, JSON.stringify({ data: question, cached_at: Date.now() })); } catch {}
-        }
-        // 维护索引：subject + id
-        const idx = this._readIndex();
-        const sig = question.subject + '|' + question.id;
-        if (!idx.includes(sig)) {
-            idx.push(sig);
-            this._writeIndex(idx);
-        }
-        // 每科上限
-        this._enforceSubjectLimit(question.subject);
-    },
-    putQuestions(list) {
-        if (!Array.isArray(list)) return;
-        list.forEach(q => this.putQuestion(q));
-    },
-    // 读取一道缓存题
-    getQuestion(subject, questionId) {
-        const key = this.KEY_PREFIX + subject + '_' + questionId;
-        try {
-            const raw = localStorage.getItem(key);
-            if (!raw) return null;
-            const obj = JSON.parse(raw);
-            // TTL 过期清理
-            if (Date.now() - obj.cached_at > this.TTL_MS) {
-                localStorage.removeItem(key);
-                return null;
-            }
-            return obj.data;
-        } catch { return null; }
-    },
-    // 取某科所有缓存题
-    getQuestionsBySubject(subject) {
-        const idx = this._readIndex();
-        const list = [];
-        idx.forEach(sig => {
-            const [s, qid] = sig.split('|');
-            if (s === subject) {
-                const q = this.getQuestion(s, qid);
-                if (q) list.push(q);
-            }
-        });
-        return list;
-    },
-    // 是否已缓存
-    hasQuestion(subject, questionId) {
-        return !!this.getQuestion(subject, questionId);
-    },
-    // 清理某科最旧的 N 条
-    _evictOldest(n) {
-        const idx = this._readIndex();
-        const withTime = idx.map(sig => {
-            const [s, qid] = sig.split('|');
-            const key = this.KEY_PREFIX + s + '_' + qid;
-            try {
-                const obj = JSON.parse(localStorage.getItem(key) || '{}');
-                return { sig, t: obj.cached_at || 0 };
-            } catch { return { sig, t: 0 }; }
-        });
-        withTime.sort((a, b) => a.t - b.t);
-        const toRemove = withTime.slice(0, n);
-        toRemove.forEach(item => {
-            const [s, qid] = item.sig.split('|');
-            localStorage.removeItem(this.KEY_PREFIX + s + '_' + qid);
-        });
-        const remaining = idx.filter(sig => !toRemove.find(t => t.sig === sig));
-        this._writeIndex(remaining);
-    },
-    _enforceSubjectLimit(subject) {
-        const idx = this._readIndex();
-        const subjectItems = idx.filter(sig => sig.startsWith(subject + '|'));
-        if (subjectItems.length > this.MAX_PER_SUBJECT) {
-            // 按时间清理超出部分
-            const toEvict = subjectItems.length - this.MAX_PER_SUBJECT;
-            this._evictOldest(toEvict);
-        }
-    },
-    // 清空所有题目缓存
-    clearAll() {
-        const idx = this._readIndex();
-        idx.forEach(sig => {
-            const [s, qid] = sig.split('|');
-            localStorage.removeItem(this.KEY_PREFIX + s + '_' + qid);
-        });
-        localStorage.removeItem(this.INDEX_KEY);
-    },
-    // 缓存统计
-    stats() {
-        const idx = this._readIndex();
-        const bySubject = {};
-        idx.forEach(sig => {
-            const s = sig.split('|')[0];
-            bySubject[s] = (bySubject[s] || 0) + 1;
-        });
-        return { total: idx.length, by_subject: bySubject };
-    }
-};
-
-// ========== APP 本地设置：界面设置 ==========
-// 持久化用户偏好（主题、字号、夜间模式、学习提醒等）
-const Settings = {
-    KEY: 'aigaokao_settings',
-    DEFAULTS: {
-        theme: 'light',           // light | dark | auto
-        font_size: 'medium',      // small | medium | large
-        night_mode: false,        // 夜间模式开关
-        accent_color: 'blue',    // blue | green | purple | orange
-        study_reminder: true,     // 学习提醒开关
-        reminder_time: '20:00',  // 提醒时间
-        auto_play_audio: false,  // 自动播放讲解音频
-        show_answer_immediately: false,  // 做题时立即显示答案
-        language: 'zh-CN'
-    },
-    _load() {
-        try {
-            const raw = localStorage.getItem(this.KEY);
-            if (!raw) return { ...this.DEFAULTS };
-            return { ...this.DEFAULTS, ...JSON.parse(raw) };
-        } catch { return { ...this.DEFAULTS }; }
-    },
-    _save(settings) {
-        localStorage.setItem(this.KEY, JSON.stringify(settings));
-    },
-    get(key) {
-        const s = this._load();
-        return key ? s[key] : s;
-    },
-    set(key, value) {
-        const s = this._load();
-        s[key] = value;
-        this._save(s);
-        // 通知 UI 即时响应
-        try {
-            window.dispatchEvent(new CustomEvent('settings:change', { detail: { key, value, settings: s } }));
-        } catch {}
-        return s;
-    },
-    update(patch) {
-        const s = this._load();
-        const merged = { ...s, ...patch };
-        this._save(merged);
-        try {
-            window.dispatchEvent(new CustomEvent('settings:change', { detail: { settings: merged } }));
-        } catch {}
-        return merged;
-    },
-    reset() {
-        this._save({ ...this.DEFAULTS });
-        try {
-            window.dispatchEvent(new CustomEvent('settings:change', { detail: { settings: this.DEFAULTS } }));
-        } catch {}
-    },
-    // 应用主题到 documentElement（在 HTML 中可直接调用）
-    applyTheme() {
-        const s = this._load();
-        const root = document.documentElement;
-        root.setAttribute('data-theme', s.theme);
-        root.setAttribute('data-font-size', s.font_size);
-        root.classList.toggle('night-mode', s.night_mode || s.theme === 'dark');
-        root.setAttribute('data-accent', s.accent_color);
     }
 };

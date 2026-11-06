@@ -760,17 +760,76 @@ app.put('/api/college/recommend/conditions', (req, res) => {
     res.json(ok({ user_id: user_id || 'u_001', conditions: conditions || [], updated_at: new Date().toISOString() }));
 });
 
-// ========== 模块配置 ==========
+// ========== 模块配置（持久化到 learning-db.json，按 user_id 隔离）==========
+// 无认证版本：给原型页面（无登录态）返回公共默认值
+const _defaultModuleConfigs = {
+    radar: { items: [], desc: '各科掌握度雷达图', btn_text: '编辑各科分数' },
+    goal:  { current_score: 0, target_score: 620, grade: '高三', province: '四川', desc: '你的目标分', btn_text: '编辑目标' },
+    growth:{ correct_rate: 78, duration_hours: 12, questions_count: 50, desc: '最近学习成长数据', btn_text: '编辑成长数据' },
+    'exam-predict': { predicted_score: 568, target_score: 620, confidence: 82, probability: 72, rank: 12580, desc: '模考预测分数与排名', btn_text: '查看预测' },
+    'weak-points': { items: [], desc: 'AI 诊断出的薄弱知识点', btn_text: '查看全部' },
+    plan:  { items: [], desc: 'AI 生成的学习计划', btn_text: '查看计划' },
+    calendar: { task_total: 0, task_done: 0, hours: 0, desc: '学习日历进度', btn_text: '查看日历' },
+    recommend: { items: [], desc: 'AI 推荐训练', btn_text: '查看推荐' },
+    banner:{ title: '距离高考还有 203 天', desc: '每日一题 + 错题智能复习', btn_text: '立即开始' }
+};
+
 app.get('/api/modules', (req, res) => {
-    res.json(ok([]));
+    // 优先从真实 store 读取（已登录用户），否则返回默认值
+    const db = store.db();
+    const user = _authUser(req);
+    const userId = user ? user.id : '__public__';
+    const userMods = (db.module_configs && db.module_configs[userId]) || {};
+    // 合并：默认值 叠加 用户已保存的
+    const merged = {};
+    Object.keys(_defaultModuleConfigs).forEach(k => {
+        merged[k] = { key: k, config: Object.assign({}, _defaultModuleConfigs[k], userMods[k] || {}) };
+    });
+    // 再加用户自定义模块
+    Object.keys(userMods).forEach(k => {
+        if (!merged[k]) merged[k] = { key: k, config: userMods[k] };
+    });
+    res.json(ok(merged));
 });
 
 app.get('/api/modules/:key', (req, res) => {
-    res.status(404).json({ code: 1, msg: 'module not found' });
+    const db = store.db();
+    const user = _authUser(req);
+    const userId = user ? user.id : '__public__';
+    const userMods = (db.module_configs && db.module_configs[userId]) || {};
+    const def = _defaultModuleConfigs[req.params.key] || {};
+    const cfg = Object.assign({}, def, userMods[req.params.key] || {});
+    res.json(ok({ key: req.params.key, config: cfg }));
 });
 
 app.put('/api/modules/:key', (req, res) => {
-    res.json(ok({ ...req.body, key: req.params.key }));
+    const db = store.db();
+    const user = _authUser(req);
+    const userId = user ? user.id : '__public__';
+    if (!db.module_configs) db.module_configs = {};
+    if (!db.module_configs[userId]) db.module_configs[userId] = {};
+    const incoming = (req.body && req.body.config) || req.body || {};
+    // 合并已有配置
+    const existing = db.module_configs[userId][req.params.key] || {};
+    const merged = Object.assign({}, existing, incoming);
+    // goal 模块：score_gap 一律由 current/target 推导，避免客户端漏传导致脏数据
+    if (req.params.key === 'goal' && merged.current_score != null && merged.target_score != null) {
+        merged.score_gap = Math.round(Number(merged.target_score) - Number(merged.current_score));
+    }
+    db.module_configs[userId][req.params.key] = merged;
+    store.save();
+    res.json(ok({ key: req.params.key, config: db.module_configs[userId][req.params.key], saved: true, saved_at: store.nowIso() }));
+});
+
+app.delete('/api/modules/:key', (req, res) => {
+    const db = store.db();
+    const user = _authUser(req);
+    const userId = user ? user.id : '__public__';
+    if (db.module_configs && db.module_configs[userId]) {
+        delete db.module_configs[userId][req.params.key];
+        store.save();
+    }
+    res.json(ok({ key: req.params.key, reset: true }));
 });
 
 // ========== 认证（auth）==========
@@ -790,10 +849,15 @@ function _tokenFromReq(req) {
 }
 
 app.post('/api/auth/register', (req, res) => {
-    const { username, password, name, grade, province, target_score, target_school, exam_year } = (req.body || {});
-    if (!username || !password) return res.status(400).json({ code: 1, msg: '用户名和密码必填' });
-    if (store.findUserByName(username)) return res.status(409).json({ code: 1, msg: '用户名已存在' });
-    const user = store.createUser({ username, password, name, grade, province });
+    let { username, password, name, grade, province, target_score, target_school, exam_year, phone } = (req.body || {});
+    // 前端既可能发 username，也可能只发 phone
+    const identifier = username || phone;
+    if (!identifier || !password) return res.status(400).json({ code: 1, msg: '账号和密码必填' });
+    // 手机号自动作为 username，并写入 phone 字段
+    let finalPhone = phone || (/^1\d{10}$/.test(identifier) ? identifier : '');
+    if (!username && finalPhone) username = finalPhone;
+    if (store.findUserByName(username)) return res.status(409).json({ code: 1, msg: '该账号可能已注册' });
+    const user = store.createUser({ username, password, name, grade, province, phone: finalPhone });
     // 建立学生档案与学习目标
     const profile = store.saveProfile(user.id, {
         name: user.name, grade: user.grade, province: user.province,
@@ -814,8 +878,12 @@ app.post('/api/auth/register', (req, res) => {
 });
 app.post('/api/auth/login', (req, res) => {
     const { username, password } = (req.body || {});
-    const u = store.findUserByName(username);
-    if (!u || !store.verifyPassword(password, u)) return res.status(401).json({ code: 1, msg: '用户名或密码错误' });
+    let u = store.findUserByName(username);
+    // 支持手机号登录：identifier 形如 1\d{10} 时，同时查找 phone 字段匹配的用户
+    if (!u && /^1\d{10}$/.test(String(username || '').trim())) {
+        u = Object.values(store.db().users).find(x => x.phone === String(username).trim());
+    }
+    if (!u || !store.verifyPassword(password, u)) return res.status(401).json({ code: 1, msg: '账号或密码错误' });
     const token = store.issueToken(u.id);
     store.addBehaviorEvent(u.id, 'user_login', {});
     res.json(ok({ token, user_id: u.id, user: _userPublic(u), profile: store.getProfile(u.id) }));
@@ -913,20 +981,44 @@ app.post('/api/auth/sms-login', (req, res) => {
 });
 app.post('/api/auth/parent-bind', (req, res) => {
     const { student_phone, parent_phone, relation, sms_code } = (req.body || {});
-    if (!student_phone || !parent_phone) return res.status(400).json({ code: 1, msg: '学生/家长手机号必填' });
-    if (sms_code && sms_code !== '8888') return res.status(401).json({ code: 1, msg: '短信验证码错误' });
-    res.json(ok({
+    const studentPhone = String(student_phone || '').trim();
+    const parentPhone = String(parent_phone || '').trim();
+    const code = String(sms_code || '').trim();
+
+    if (!studentPhone || !parentPhone) return res.status(400).json({ code: 1, msg: '学生/家长手机号必填' });
+    if (!/^1\d{10}$/.test(studentPhone)) return res.status(400).json({ code: 1, msg: '学生手机号格式不正确' });
+    if (!/^1\d{10}$/.test(parentPhone)) return res.status(400).json({ code: 1, msg: '家长手机号格式不正确' });
+    if (studentPhone === parentPhone) return res.status(400).json({ code: 1, msg: '学生与家长手机号不能相同' });
+    if (code && code !== '8888') return res.status(401).json({ code: 1, msg: '短信验证码错误' });
+
+    const existing = store.listParentBindings(parentPhone);
+    if (existing.length >= 3) return res.status(409).json({ code: 1, msg: '一个家长账号最多绑定3个学生账号' });
+    if (existing.some(b => b.student_phone === studentPhone)) {
+        return res.status(409).json({ code: 1, msg: '该学生已绑定过此家长账号' });
+    }
+
+    const binding = store.addParentBinding({
         binding_id: 'b_' + Math.random().toString(36).slice(2, 10),
-        student_phone, parent_phone, relation: relation || '父',
-        status: sms_code ? 'active' : 'pending',
+        student_phone: studentPhone,
+        parent_phone: parentPhone,
+        relation: relation || '父',
+        status: code ? 'active' : 'pending',
         created_at: new Date().toISOString()
-    }));
+    });
+    res.json(ok(binding));
 });
 app.get('/api/auth/parent-bindings', (req, res) => {
-    res.json(ok([]));
+    const parentPhone = String(req.query.parent_phone || '').trim();
+    const list = store.listParentBindings(parentPhone);
+    res.json(ok(list));
 });
 app.post('/api/auth/parent-bindings/:id/confirm', (req, res) => {
-    res.json(ok({ binding_id: req.params.id, status: 'active', confirmed_at: new Date().toISOString() }));
+    const rec = store.updateParentBinding(req.params.id, {
+        status: 'active',
+        confirmed_at: new Date().toISOString()
+    });
+    if (!rec) return res.status(404).json({ code: 1, msg: '绑定记录不存在' });
+    res.json(ok(rec));
 });
 
 // ========== 题库导入 ==========
@@ -1177,32 +1269,74 @@ app.get('/api/predict/:userId/score-trend', (req, res) => {
 // ========== 推荐扩展（基于真实学习计划） ==========
 app.get('/api/recommend/:userId/week-plan', (req, res) => {
     const userId = req.params.userId;
+    const range = ['this_week', 'next_week', 'this_month'].includes(req.query.range) ? req.query.range : 'this_week';
+    const rangeLabels = { this_week: '本周', next_week: '下周', this_month: '本月' };
     const db = store.db();
     const plan = db.learning_plans[userId] || null;
     const tasks = db.learning_tasks.filter(t => t.user_id === userId);
-    const weekKeys = store.weekDayKeys();
     const dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
-    const days = weekKeys.map((k, i) => ({
-        day: dayNames[i],
-        date: k,
-        is_today: k === store.todayKey(),
-        tasks: tasks.filter(t => t.planned_date === k).map(t => ({
-            id: t.id,
-            subject: t.subject,
-            point: t.point,
-            time: t.time,
-            priority: t.difficulty === '困难' ? '高' : t.difficulty === '简单' ? '低' : '中',
-            color: t.color,
-            status: t.status
-        }))
-    }));
+
+    let weekKeys = [];
+    if (range === 'this_month') {
+        // 覆盖整月：从当月 1 日所在周的周一开始，到当月最后一天所在周的周日结束
+        const todayK = store.todayKey();
+        const y = Number(todayK.split('-')[0]);
+        const m = Number(todayK.split('-')[1]);
+        const lastOfMonthKey = store.todayKey(new Date(y, m, 0));
+        const startParts = store.startOfWeekKey(new Date(y, m - 1, 1)).split('-').map(Number);
+        for (let i = 0; i < 42; i++) {
+            const k = store.todayKey(new Date(startParts[0], startParts[1] - 1, startParts[2] + i));
+            weekKeys.push(k);
+            const dow = new Date(Date.UTC(startParts[0], startParts[1] - 1, startParts[2] + i)).getUTCDay();
+            if (k >= lastOfMonthKey && dow === 0) break;
+        }
+    } else if (range === 'next_week') {
+        weekKeys = store.weekDayKeys(new Date(Date.now() + 7 * 86400000));
+    } else {
+        weekKeys = store.weekDayKeys();
+    }
+
+    const todayKey = store.todayKey();
+    const weekPlan = weekKeys.map((k, i) => {
+        const parts = k.split('-').map(Number);
+        const dow = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2])).getUTCDay();
+        const day = {
+            day: dayNames[(dow + 6) % 7],
+            date: k,
+            is_today: k === todayKey,
+            isToday: k === todayKey,
+            tasks: tasks.filter(t => t.planned_date === k).map(t => ({
+                id: t.id,
+                subject: t.subject,
+                point: t.point,
+                time: t.time,
+                questions_count: t.questions_count || 8,
+                color: t.color,
+                status: t.status,
+                done: t.status === 'done'
+            }))
+        };
+        if (range === 'this_month') {
+            const weekIdx = Math.floor(i / 7);
+            day.week_group = weekIdx;
+            day.week_group_name = '第' + (weekIdx + 1) + '周';
+        }
+        return day;
+    });
+
+    const totalTasks = weekPlan.reduce((s, d) => s + d.tasks.length, 0);
+    const doneTasks = weekPlan.reduce((s, d) => s + d.tasks.filter(t => t.done).length, 0);
     res.json(ok({
-        has_data: !!plan,
-        range: req.query.range || 'this_week',
+        has_data: totalTasks > 0,
+        range,
+        range_label: rangeLabels[range],
         shuffle: false,
         plan_id: plan ? plan.plan_id : null,
-        days,
-        message: plan ? '' : '完成AI学情诊断后自动生成学习计划'
+        week_plan: weekPlan,
+        days: weekPlan,
+        total_tasks: totalTasks,
+        done_tasks: doneTasks,
+        message: totalTasks ? '' : (plan ? '当前时间段暂无学习任务' : '完成AI学情诊断后自动生成学习计划')
     }));
 });
 

@@ -28,14 +28,24 @@ const Auth = {
     }
 };
 
-// 动态 USER_ID：已登录用登录用户，否则用演示账户
+// 动态 USER_ID：已登录用登录用户；未登录返回空串，接口会自动返回 401（不再 fallback 到演示账户）
 function getUserId() {
-    return Auth.getUserId() || 'u_001';
+    return Auth.getUserId() || '';
 }
 
 const api = {
     // 通用请求（带 token）
     async request(url, options = {}) {
+        // 入口守卫：未登录时 getUserId() 返回空串，URL 会出现以下异常形态 → 直接 return null
+        //   /api/learning//summary         (双斜杠)
+        //   /api/users/  /api/predict//report  (尾斜杠或空段)
+        // 正常 URL 不会出现上述模式；只有带 userId 的方法在未登录时才会触发
+        if (url.indexOf('//') !== -1 && url.indexOf('https://') !== 0 && url.indexOf('http://') !== 0) {
+            return null;
+        }
+        if (/^\/api\/(users|learning|predict|student|answers|recommend|practice|photo|diagnostic|intelligence|plan|goal|profile|weak|knowledge\/stats|questions\/me|paper\/me)\/?$/.test(url)) {
+            return null;
+        }
         try {
             const isFormData = options.body instanceof FormData;
             const headers = isFormData ? { ...options.headers } : { 'Content-Type': 'application/json', ...options.headers };
@@ -45,12 +55,21 @@ const api = {
             const text = await res.text();
             let data;
             try { data = JSON.parse(text); } catch {
-                console.warn('[API] 非JSON响应:', url, text.slice(0, 100));
+                if (res.status !== 401 || Auth.isLoggedIn()) {
+                    console.warn('[API] 非JSON响应:', url, text.slice(0, 100));
+                }
                 return null;
             }
-            if (data.code !== 0) throw new Error(data.msg || '请求失败');
+            if (data.code !== 0) {
+                if (res.status === 401 && !Auth.isLoggedIn()) {
+                    // 未登录时打鉴权接口属正常流程，静默忽略 401
+                    return null;
+                }
+                throw new Error(data.msg || '请求失败');
+            }
             return data.data;
         } catch (e) {
+            if (e && e.message === 'Unauthorized') return null;
             console.error('[API Error]', url, e && e.message ? e.message : e);
             return null;
         }
@@ -195,6 +214,10 @@ const api = {
     getTodayTasks() {
         return this.request(`/api/learning/${getUserId()}/today-tasks`);
     },
+    // 今日任务完成率 + 答题记录（学习进度快照）
+    getTodayProgress() {
+        return this.request('/api/student/today-progress');
+    },
     getDurationStats() {
         return this.request(`/api/learning/${getUserId()}/duration-stats`);
     },
@@ -283,17 +306,24 @@ const api = {
             method: 'POST', body: JSON.stringify({ type, payload })
         });
     },
+    // 页面数据统一解包：本地 API 返回内层数据，云端/静态文件返回含 module 元数据的包装结构
+    unwrapPageData(data) {
+        if (data && typeof data === 'object' && data.module && data.data && typeof data.data === 'object') {
+            return data.data;
+        }
+        return data;
+    },
     // 通用页面数据加载（API优先，失败时回退到静态JSON文件，确保离线可用）
     async getPageData(pageKey) {
         // 优先尝试后端 API
         try {
             var data = await this.request(`/api/page-data/${pageKey}`);
-            if (data) return data;
+            if (data) return this.unwrapPageData(data);
         } catch (e) { /* API 不可用，继续回退 */ }
         // 回退：加载静态 JSON 文件（适用于 Cloudflare Pages 等静态部署，加时间戳防缓存）
         try {
             var res = await fetch(`data/pages/${pageKey}.json?t=${Date.now()}`);
-            if (res.ok) return await res.json();
+            if (res.ok) return this.unwrapPageData(await res.json());
         } catch (e) { /* 静态文件也不可用 */ }
         return null;
     },

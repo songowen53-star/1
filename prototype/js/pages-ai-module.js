@@ -68,24 +68,130 @@ function aiPrimaryBtn(text, icon) {
 function registerAIModulePages() {
 
 // ============================================================
+// 通用工具：避免「永久转圈」
+// 原写法 setTimeout(100) + `if (!container) return` + `if (!api.xxx) return`
+// 三处静默 return 会让加载动画永远停在转圈状态，用户看不到任何提示。
+// ============================================================
+function waitForContainer(id, cb, retries) {
+    retries = typeof retries === 'number' ? retries : 20; // 最多等 2s
+    var el = document.getElementById(id);
+    if (el) { cb(el); return; }
+    if (retries <= 0) { return; }
+    setTimeout(function () { waitForContainer(id, cb, retries - 1); }, 100);
+}
+
+function withTimeout(promise, ms, label) {
+    return new Promise(function (resolve, reject) {
+        var done = false;
+        var timer = setTimeout(function () {
+            if (done) return;
+            done = true;
+            reject(new Error(label || '请求超时'));
+        }, ms);
+        promise.then(function (v) {
+            if (done) return; done = true; clearTimeout(timer); resolve(v);
+        }).catch(function (e) {
+            if (done) return; done = true; clearTimeout(timer); reject(e);
+        });
+    });
+}
+
+function loadErrorHTML(msg) {
+    return '<div style="text-align:center;padding:40px;color:#9CA3AF;">' +
+        '<i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i>' +
+        '<div style="font-size:13px;">' + (msg || '数据加载失败') + '</div>' +
+        '<button onclick="location.reload()" style="margin-top:12px;padding:6px 14px;border:1px solid #E2E8F0;border-radius:8px;background:#fff;color:#475569;font-size:12px;cursor:pointer;">重新加载</button>' +
+        '</div>';
+}
+
+// ============================================================
 // 1. AI学习教练
 // ============================================================
 registerPage('ai-module-coach', 'AI学习教练', 'AI核心模块', 'fa-robot', function () {
-    setTimeout(function () {
-        var container = document.getElementById('ai-module-coach-content');
-        if (!container) return;
-        if (typeof api === 'undefined' || !api.getAiModuleCoach) return;
+    waitForContainer('ai-module-coach-content', function (container) {
+        if (typeof api === 'undefined' || !api.getAiModuleCoach) {
+            container.innerHTML = loadErrorHTML('页面脚本未就绪，请刷新后重试');
+            return;
+        }
+        var safe = function (p) { return p.catch(function () { return null; }); };
+        var goalTask = typeof api.getLearningGoal === 'function'
+            ? safe(withTimeout(api.getLearningGoal(), 8000, '目标加载超时'))
+            : Promise.resolve(null);
+        var latestTask = typeof api.getLatestDiagnostic === 'function'
+            ? safe(withTimeout(api.getLatestDiagnostic(), 8000, '诊断加载超时'))
+            : Promise.resolve(null);
 
-        api.getAiModuleCoach().then(function (data) {
+        Promise.all([
+            withTimeout(api.getAiModuleCoach(), 15000, '数据加载超时'),
+            goalTask,
+            latestTask
+        ]).then(function (res) {
+            var data = res[0], goal = res[1], latest = res[2];
             if (!data) {
-                container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
+                container.innerHTML = loadErrorHTML('暂无数据');
                 return;
             }
-            renderPageContent(container, data);
-        }).catch(function () {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">数据加载失败</div></div>';
+            try {
+                applySelectedSubjects(data, goal, latest);
+                renderPageContent(container, data);
+            } catch (e) {
+                console.error('[AI学习教练] 渲染失败', e);
+                container.innerHTML = loadErrorHTML('数据渲染失败，请刷新后重试');
+            }
+        }).catch(function (e) {
+            console.error('[AI学习教练] 加载失败', e);
+            container.innerHTML = loadErrorHTML('数据加载失败，请检查网络后重试');
         });
-    }, 100);
+    });
+
+    var SUBJECT_COLORS = {
+        '语文': 'var(--success)', '数学': 'var(--danger)', '英语': 'var(--success)',
+        '物理': 'var(--warning)', '化学': 'var(--warning)', '生物': 'var(--success)',
+        '政治': 'var(--danger)', '历史': 'var(--warning)', '地理': 'var(--warning)'
+    };
+
+    // 按登录用户的 3+1+2 选科（9 选 6）动态生成诊断科目
+    // 优先使用真实诊断报告中的掌握度，其次沿用该科目的默认值
+    function applySelectedSubjects(data, goal, latest) {
+        var diag = data && data.diagnosis;
+        if (!diag) return;
+        var names = [];
+        if (goal && Array.isArray(goal.subjects)) {
+            names = goal.subjects.map(function (s) {
+                return typeof s === 'string' ? s : (s && s.name) || '';
+            }).filter(Boolean);
+        }
+        if (names.length !== 6) return; // 未选科或不是标准 6 科，保留默认展示
+
+        var prev = {};
+        var sum = 0, cnt = 0;
+        (diag.subjects || []).forEach(function (s) {
+            prev[s.name] = s;
+            var n = parseInt(s.value, 10);
+            if (!isNaN(n)) { sum += n; cnt++; }
+        });
+        var avgValue = cnt ? Math.round(sum / cnt) + '%' : '--';
+
+        var report = latest && latest.report ? latest.report : latest;
+        var mastery = {};
+        if (report && Array.isArray(report.ability_profile)) {
+            report.ability_profile.forEach(function (a) {
+                if (a && a.subject) mastery[a.subject] = Math.round(Number(a.mastery || 0) * 100);
+            });
+        }
+
+        diag.subjects = names.map(function (name) {
+            var value = mastery[name] !== undefined
+                ? mastery[name] + '%'
+                : (prev[name] ? prev[name].value : avgValue);
+            return {
+                name: name,
+                value: value,
+                color: prev[name] ? prev[name].color : (SUBJECT_COLORS[name] || 'var(--warning)')
+            };
+        });
+        diag.chart_label = '📊 六维雷达图：' + diag.subjects.map(function (s) { return s.name + s.value; }).join(' / ');
+    }
 
     function renderPageContent(container, data) {
         var c = '';
@@ -220,21 +326,27 @@ registerPage('ai-module-coach', 'AI学习教练', 'AI核心模块', 'fa-robot', 
 // 2. AI讲题引擎
 // ============================================================
 registerPage('ai-module-explain', 'AI讲题引擎', 'AI核心模块', 'fa-robot', function () {
-    setTimeout(function () {
-        var container = document.getElementById('ai-module-explain-content');
-        if (!container) return;
-        if (typeof api === 'undefined' || !api.getAiModuleExplain) return;
-
-        api.getAiModuleExplain().then(function (data) {
+    waitForContainer('ai-module-explain-content', function (container) {
+        if (typeof api === 'undefined' || !api.getAiModuleExplain) {
+            container.innerHTML = loadErrorHTML('页面脚本未就绪，请刷新后重试');
+            return;
+        }
+        withTimeout(api.getAiModuleExplain(), 15000, '数据加载超时').then(function (data) {
             if (!data) {
-                container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
+                container.innerHTML = loadErrorHTML('暂无数据');
                 return;
             }
-            renderPageContent(container, data);
-        }).catch(function () {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">数据加载失败</div></div>';
+            try {
+                renderPageContent(container, data);
+            } catch (e) {
+                console.error('[AI讲题引擎] 渲染失败', e);
+                container.innerHTML = loadErrorHTML('数据渲染失败，请刷新后重试');
+            }
+        }).catch(function (e) {
+            console.error('[AI讲题引擎] 加载失败', e);
+            container.innerHTML = loadErrorHTML('数据加载失败，请检查网络后重试');
         });
-    }, 100);
+    });
 
     function renderPageContent(container, data) {
         var c = '';
@@ -335,21 +447,27 @@ registerPage('ai-module-explain', 'AI讲题引擎', 'AI核心模块', 'fa-robot'
 // 3. AI组卷引擎
 // ============================================================
 registerPage('ai-module-paper', 'AI组卷引擎', 'AI核心模块', 'fa-robot', function () {
-    setTimeout(function () {
-        var container = document.getElementById('ai-module-paper-content');
-        if (!container) return;
-        if (typeof api === 'undefined' || !api.getAiModulePaper) return;
-
-        api.getAiModulePaper().then(function (data) {
+    waitForContainer('ai-module-paper-content', function (container) {
+        if (typeof api === 'undefined' || !api.getAiModulePaper) {
+            container.innerHTML = loadErrorHTML('页面脚本未就绪，请刷新后重试');
+            return;
+        }
+        withTimeout(api.getAiModulePaper(), 15000, '数据加载超时').then(function (data) {
             if (!data) {
-                container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
+                container.innerHTML = loadErrorHTML('暂无数据');
                 return;
             }
-            renderPageContent(container, data);
-        }).catch(function () {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">数据加载失败</div></div>';
+            try {
+                renderPageContent(container, data);
+            } catch (e) {
+                console.error('[AI组卷引擎] 渲染失败', e);
+                container.innerHTML = loadErrorHTML('数据渲染失败，请刷新后重试');
+            }
+        }).catch(function (e) {
+            console.error('[AI组卷引擎] 加载失败', e);
+            container.innerHTML = loadErrorHTML('数据加载失败，请检查网络后重试');
         });
-    }, 100);
+    });
 
     function renderPageContent(container, data) {
         var c = '';
@@ -462,21 +580,27 @@ registerPage('ai-module-paper', 'AI组卷引擎', 'AI核心模块', 'fa-robot', 
 // 4. AI知识图谱
 // ============================================================
 registerPage('ai-module-graph', 'AI知识图谱', 'AI核心模块', 'fa-robot', function () {
-    setTimeout(function () {
-        var container = document.getElementById('ai-module-graph-content');
-        if (!container) return;
-        if (typeof api === 'undefined' || !api.getAiModuleGraph) return;
-
-        api.getAiModuleGraph().then(function (data) {
+    waitForContainer('ai-module-graph-content', function (container) {
+        if (typeof api === 'undefined' || !api.getAiModuleGraph) {
+            container.innerHTML = loadErrorHTML('页面脚本未就绪，请刷新后重试');
+            return;
+        }
+        withTimeout(api.getAiModuleGraph(), 15000, '数据加载超时').then(function (data) {
             if (!data) {
-                container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
+                container.innerHTML = loadErrorHTML('暂无数据');
                 return;
             }
-            renderPageContent(container, data);
-        }).catch(function () {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">数据加载失败</div></div>';
+            try {
+                renderPageContent(container, data);
+            } catch (e) {
+                console.error('[AI知识图谱] 渲染失败', e);
+                container.innerHTML = loadErrorHTML('数据渲染失败，请刷新后重试');
+            }
+        }).catch(function (e) {
+            console.error('[AI知识图谱] 加载失败', e);
+            container.innerHTML = loadErrorHTML('数据加载失败，请检查网络后重试');
         });
-    }, 100);
+    });
 
     function renderPageContent(container, data) {
         var c = '';
@@ -592,21 +716,27 @@ registerPage('ai-module-graph', 'AI知识图谱', 'AI核心模块', 'fa-robot', 
 // 5. AI预测高考
 // ============================================================
 registerPage('ai-module-predict', 'AI预测高考', 'AI核心模块', 'fa-robot', function () {
-    setTimeout(function () {
-        var container = document.getElementById('ai-module-predict-content');
-        if (!container) return;
-        if (typeof api === 'undefined' || !api.getAiModulePredict) return;
-
-        api.getAiModulePredict().then(function (data) {
+    waitForContainer('ai-module-predict-content', function (container) {
+        if (typeof api === 'undefined' || !api.getAiModulePredict) {
+            container.innerHTML = loadErrorHTML('页面脚本未就绪，请刷新后重试');
+            return;
+        }
+        withTimeout(api.getAiModulePredict(), 15000, '数据加载超时').then(function (data) {
             if (!data) {
-                container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
+                container.innerHTML = loadErrorHTML('暂无数据');
                 return;
             }
-            renderPageContent(container, data);
-        }).catch(function () {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">数据加载失败</div></div>';
+            try {
+                renderPageContent(container, data);
+            } catch (e) {
+                console.error('[AI预测高考] 渲染失败', e);
+                container.innerHTML = loadErrorHTML('数据渲染失败，请刷新后重试');
+            }
+        }).catch(function (e) {
+            console.error('[AI预测高考] 加载失败', e);
+            container.innerHTML = loadErrorHTML('数据加载失败，请检查网络后重试');
         });
-    }, 100);
+    });
 
     function renderPageContent(container, data) {
         var c = '';
@@ -718,9 +848,7 @@ registerPage('ai-module-predict', 'AI预测高考', 'AI核心模块', 'fa-robot'
 // 6. AI自动入库
 // ============================================================
 registerPage('ai-auto-import', 'AI自动入库', 'AI核心模块', 'fa-robot', function () {
-    setTimeout(function () {
-        var container = document.getElementById('ai-auto-import-content');
-        if (!container) return;
+    waitForContainer('ai-auto-import-content', function (container) {
 
         // === 兜底数据：直接从 PAGE_SAMPLE_DATA 获取（即使 api.js 未加载/API超时也能渲染）===
         var sampleData = (typeof window !== 'undefined' && window.PAGE_SAMPLE_DATA && window.PAGE_SAMPLE_DATA['ai-auto-import'])
@@ -728,9 +856,9 @@ registerPage('ai-auto-import', 'AI自动入库', 'AI核心模块', 'fa-robot', f
 
         // === 双保险兜底：3 秒后仍停留在 loading 占位符，强制用 sampleData 渲染（防 API 永久 pending）===
         var safetyTimer = setTimeout(function () {
-            if (container && container.innerHTML && container.innerHTML.indexOf('fa-spinner') >= 0 && sampleData) {
-                console.warn('[AI-AUTO-IMPORT] 数据加载超时(3s)，使用 PAGE_SAMPLE_DATA 兜底渲染');
-                renderPageContent(container, sampleData);
+            if (container && container.innerHTML && container.innerHTML.indexOf('fa-spinner') >= 0) {
+                console.warn('[AI-AUTO-IMPORT] 数据加载超时(3s)，使用兜底数据渲染');
+                renderPageContent(container, sampleData || fallbackAiAutoImportData());
             }
         }, 3000);
 
@@ -761,7 +889,7 @@ registerPage('ai-auto-import', 'AI自动入库', 'AI核心模块', 'fa-robot', f
             if (sampleData) doneRender(sampleData);
             else doneRender(fallbackAiAutoImportData());
         }
-    }, 100);
+    });
 
     // 最后兜底：完全没有任何数据源时的极简数据（保证 7→8→9 推进可见）
     function fallbackAiAutoImportData() {
@@ -1001,21 +1129,27 @@ window.advanceAutoImportFlow = function (steps, totalSteps) {
 // 7. OCR识别详情
 // ============================================================
 registerPage('ai-auto-import-ocr', 'OCR识别详情', 'AI核心模块', 'fa-robot', function () {
-    setTimeout(function () {
-        var container = document.getElementById('ai-auto-import-ocr-content');
-        if (!container) return;
-        if (typeof api === 'undefined' || !api.getPageData) return;
-
-        api.getPageData('ai-auto-import-ocr').then(function (data) {
+    waitForContainer('ai-auto-import-ocr-content', function (container) {
+        if (typeof api === 'undefined' || !api.getPageData) {
+            container.innerHTML = loadErrorHTML('页面脚本未就绪，请刷新后重试');
+            return;
+        }
+        withTimeout(api.getPageData('ai-auto-import-ocr'), 15000, '数据加载超时').then(function (data) {
             if (!data) {
-                container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
+                container.innerHTML = loadErrorHTML('暂无数据');
                 return;
             }
-            renderPageContent(container, data);
-        }).catch(function () {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">数据加载失败</div></div>';
+            try {
+                renderPageContent(container, data);
+            } catch (e) {
+                console.error('[OCR识别详情] 渲染失败', e);
+                container.innerHTML = loadErrorHTML('数据渲染失败，请刷新后重试');
+            }
+        }).catch(function (e) {
+            console.error('[OCR识别详情] 加载失败', e);
+            container.innerHTML = loadErrorHTML('数据加载失败，请检查网络后重试');
         });
-    }, 100);
+    });
 
     function renderPageContent(container, data) {
         var c = '';
@@ -1153,21 +1287,27 @@ registerPage('ai-auto-import-ocr', 'OCR识别详情', 'AI核心模块', 'fa-robo
 // 8. LLM切题详情
 // ============================================================
 registerPage('ai-auto-import-cut', 'LLM切题详情', 'AI核心模块', 'fa-robot', function () {
-    setTimeout(function () {
-        var container = document.getElementById('ai-auto-import-cut-content');
-        if (!container) return;
-        if (typeof api === 'undefined' || !api.getPageData) return;
-
-        api.getPageData('ai-auto-import-cut').then(function (data) {
+    waitForContainer('ai-auto-import-cut-content', function (container) {
+        if (typeof api === 'undefined' || !api.getPageData) {
+            container.innerHTML = loadErrorHTML('页面脚本未就绪，请刷新后重试');
+            return;
+        }
+        withTimeout(api.getPageData('ai-auto-import-cut'), 15000, '数据加载超时').then(function (data) {
             if (!data) {
-                container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
+                container.innerHTML = loadErrorHTML('暂无数据');
                 return;
             }
-            renderPageContent(container, data);
-        }).catch(function () {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">数据加载失败</div></div>';
+            try {
+                renderPageContent(container, data);
+            } catch (e) {
+                console.error('[LLM切题详情] 渲染失败', e);
+                container.innerHTML = loadErrorHTML('数据渲染失败，请刷新后重试');
+            }
+        }).catch(function (e) {
+            console.error('[LLM切题详情] 加载失败', e);
+            container.innerHTML = loadErrorHTML('数据加载失败，请检查网络后重试');
         });
-    }, 100);
+    });
 
     function renderPageContent(container, data) {
         var c = '';
@@ -1270,21 +1410,28 @@ registerPage('ai-auto-import-cut', 'LLM切题详情', 'AI核心模块', 'fa-robo
 // 9. AI模型中心 — 展示集成的全球开源AI能力
 // ============================================================
 registerPage('ai-model-center', 'AI模型中心', 'AI核心模块', 'fa-microchip', function () {
-    setTimeout(function () {
-        var container = document.getElementById('ai-model-center-content');
-        if (!container) return;
-        if (typeof api === 'undefined' || !api.getAiModelCenter) return;
+    waitForContainer('ai-model-center-content', function (container) {
+        if (typeof api === 'undefined' || !api.getAiModelCenter) {
+            container.innerHTML = loadErrorHTML('页面脚本未就绪，请刷新后重试');
+            return;
+        }
 
-        api.getAiModelCenter().then(function (data) {
+        withTimeout(api.getAiModelCenter(), 15000, '模型中心数据加载超时').then(function (data) {
             if (!data) {
-                container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
+                container.innerHTML = loadErrorHTML('暂无数据');
                 return;
             }
-            renderPageContent(container, data);
-        }).catch(function () {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">数据加载失败</div></div>';
+            try {
+                renderPageContent(container, data);
+            } catch (e) {
+                console.error('[AI模型中心] 渲染失败', e);
+                container.innerHTML = loadErrorHTML('数据渲染失败，请刷新后重试');
+            }
+        }).catch(function (e) {
+            console.error('[AI模型中心] 加载失败', e);
+            container.innerHTML = loadErrorHTML('数据加载失败，请检查网络后重试');
         });
-    }, 100);
+    });
 
     function renderPageContent(container, data) {
         var c = '';
@@ -1679,15 +1826,19 @@ window.testModelConnectivity = function (modelName) {
     el.style.color = '#1E40AF';
     el.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在连接 vLLM 推理引擎…';
 
-    setTimeout(function () {
+    var stage1 = setTimeout(function () {
         el.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发送 ping 请求…';
     }, 400);
-    setTimeout(function () {
+    var stage2 = setTimeout(function () {
         el.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 验证模型加载状态…';
     }, 800);
+    // 接口返回后必须取消阶段提示定时器，否则会覆盖最终结果
+    function stopStages() { clearTimeout(stage1); clearTimeout(stage2); }
+
     // 调用真实后端连通性测试接口
     if (typeof api === 'undefined' || !api.testAiModel) {
         setTimeout(function () {
+            stopStages();
             var latency = Math.floor(Math.random() * 80) + 20;
             el.style.color = '#065F46';
             el.innerHTML = '<i class="fas fa-check-circle"></i> 连通正常 · 延迟 ' + latency + 'ms · vLLM 引擎就绪';
@@ -1695,6 +1846,7 @@ window.testModelConnectivity = function (modelName) {
         return;
     }
     api.testAiModel(modelName, 'connectivity').then(function (res) {
+        stopStages();
         if (!res) {
             el.style.color = '#92400E';
             el.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 测试无响应，请稍后重试';
@@ -1729,12 +1881,13 @@ window.testModelCapability = function (modelName) {
 
     el.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 测试能力：' + capability + '…';
 
-    setTimeout(function () {
+    var stageTimer = setTimeout(function () {
         el.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 执行推理任务…';
     }, 500);
     // 调用真实后端能力测试接口
     if (typeof api === 'undefined' || !api.testAiModel) {
         setTimeout(function () {
+            clearTimeout(stageTimer);
             var tokens = Math.floor(Math.random() * 200) + 100;
             el.style.color = '#065F46';
             el.innerHTML = '<i class="fas fa-check-circle"></i> 能力正常 · ' + capability + ' · 吞吐 ' + tokens + ' tokens/s';
@@ -1742,6 +1895,7 @@ window.testModelCapability = function (modelName) {
         return;
     }
     api.testAiModel(modelName, 'capability').then(function (res) {
+        clearTimeout(stageTimer);
         if (!res) {
             el.style.color = '#92400E';
             el.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 测试无响应，请稍后重试';

@@ -460,11 +460,19 @@ window.aiRouter = window.AI_ROUTER;
 function generateAIReply(question) {
     var q = (question || '').toLowerCase();
     var matchedKb = null;
+    // 有诊断记录时，在回复顶部展示真实学情依据（无记录则为空字符串）
+    var personalBlock = buildCoachPersonalBlock(question);
 
     // === 基础算术求解器：拦截 "1+1等于几" / "3*5=" / "10-4是多少" 等算式问题 ===
     var arithResult = solveArithmetic(question);
     if (arithResult) {
         return arithResult; // 返回 deepseek 风格三段式 HTML
+    }
+
+    // === 今日进度问答：直接使用服务端的任务完成率与答题记录 ===
+    var coachCtx = window._aiCoachContext;
+    if (coachCtx && /进度|完成率|完成情况|答题记录|今日任务|今天完成/.test(q)) {
+        return buildTodayProgressReply(question, coachCtx);
     }
     // 依次遍历知识库找匹配
     for (var i = 0; i < AI_KNOWLEDGE_BASE.length; i++) {
@@ -494,6 +502,12 @@ function generateAIReply(question) {
             analysis: '这个问题涉及多个知识层面。核心思路是：① 先识别该问题对应的学科模块；② 回忆相关基本概念、公式、定理；③ 按照解题步骤逐步推导；④ 得出结论并检验。',
             answer: '建议你把问题描述得更具体一些，比如包含具体题目、知识点名称，我能给出更精准的解答。试试这些关键词：导数、椭圆、牛顿运动、化学平衡、遗传基因、英语时态、文言文、哲学矛盾... 我都有详细答案！'
         };
+        // 结合登录用户的真实诊断记录，优先推荐薄弱知识点
+        if (window._aiCoachContext && window._aiCoachContext.weak.length) {
+            matchedKb.answer = '根据你的诊断记录，建议优先攻克：' + window._aiCoachContext.weak.map(function (w) {
+                return w.subject + '·' + w.knowledge_point;
+            }).join('、') + '。' + matchedKb.answer;
+        }
     }
 
     // === deepseek 风格三段式输出：问题 → 分析 → 答案 ===
@@ -521,7 +535,65 @@ function generateAIReply(question) {
         '<div style="font-size:13px;color:#064E3B;line-height:1.7;white-space:normal;">' + answerText + '</div>' +
         '</div>';
 
-    return '<div style="line-height:1.6;">' + subjectTag + questionBlock + analysisBlock + answerBlock + '</div>';
+    return '<div style="line-height:1.6;">' + personalBlock + subjectTag + questionBlock + analysisBlock + answerBlock + '</div>';
+}
+
+// 今日进度回复：任务完成率 + 答题记录（数据来自 /api/student/today-progress）
+function buildTodayProgressReply(question, ctx) {
+    var pending = ctx.todayTaskTotal - ctx.todayTaskDone;
+    var analysis = '今日任务完成 <b>' + ctx.todayTaskDone + '/' + ctx.todayTaskTotal + '</b>（' + ctx.todayTaskRate + '%）';
+    if (ctx.todayTaskTotal) {
+        analysis += pending > 0 ? '，还有 ' + pending + ' 项待完成' : '，已全部完成';
+    }
+    analysis += '。<br>今日答题 <b>' + ctx.answerTotal + '</b> 题（诊断 ' + ctx.answerDiagnostic +
+        ' · 练习 ' + ctx.answerPractice + '），正确率 <b>' + ctx.answerRate + '%</b>。';
+    if (ctx.answerRecent && ctx.answerRecent.length) {
+        analysis += '<br>最近记录：' + ctx.answerRecent.slice(0, 3).map(function (r) {
+            return escapeHtml(r.subject) + '·' + escapeHtml(r.knowledge_point) + (r.is_correct ? ' ✓' : ' ✗');
+        }).join('、') + '。';
+    }
+
+    var first = ctx.weak[0];
+    var advice;
+    if (pending > 0 && first) {
+        advice = '先完成今日剩余 ' + pending + ' 项任务，优先「' + escapeHtml(first.subject) + '·' +
+            escapeHtml(first.knowledge_point) + '」';
+        if (ctx.firstTask) {
+            advice += '（计划 ' + (Number(ctx.firstTask.planned_minutes) || 0) + ' 分钟 / ' +
+                (Number(ctx.firstTask.questions_count) || 0) + ' 题）';
+        }
+        advice += '。';
+    } else if (pending > 0) {
+        advice = '先完成今日剩余 ' + pending + ' 项学习任务，再进入专项练习。';
+    } else if (first && ctx.answerPractice === 0) {
+        advice = '今日任务已完成，建议再做 8-10 道「' + escapeHtml(first.subject) + '·' +
+            escapeHtml(first.knowledge_point) + '」专项练习巩固掌握度。';
+    } else if (first) {
+        advice = '今日进度正常，继续保持；下一轮优先补强「' + escapeHtml(first.subject) + '·' +
+            escapeHtml(first.knowledge_point) + '」。';
+    } else {
+        advice = '今日进度正常，建议以错题复盘和限时训练为主。';
+    }
+
+    var questionBlock = '<div style="background:#F9FAFB;border-left:3px solid #9CA3AF;padding:8px 12px;border-radius:0 6px 6px 0;margin-bottom:12px;font-size:12px;color:#4B5563;">' +
+        '<span style="color:#6B7280;font-weight:600;">📝 问题：</span>' +
+        '<span style="color:#111827;">' + escapeHtml(question) + '</span></div>';
+    var analysisBlock = '<div style="background:#FFFBEB;border-left:3px solid #F59E0B;padding:10px 12px;border-radius:0 6px 6px 0;margin-bottom:12px;">' +
+        '<div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:6px;"><i class="fas fa-brain"></i> 今日进度</div>' +
+        '<div style="font-size:13px;color:#78350F;line-height:1.7;">' + analysis + '</div></div>';
+    var answerBlock = '<div style="background:#ECFDF5;border-left:3px solid #10B981;padding:10px 12px;border-radius:0 6px 6px 0;">' +
+        '<div style="font-size:12px;font-weight:700;color:#065F46;margin-bottom:6px;"><i class="fas fa-check-circle"></i> 建议</div>' +
+        '<div style="font-size:13px;color:#064E3B;line-height:1.7;">' + advice + '</div></div>';
+    return '<div style="line-height:1.6;">' + questionBlock + analysisBlock + answerBlock + '</div>';
+}
+
+// 去除表情符号：部分设备/字体缺少 Emoji 字形时会显示成方框乱码
+function stripEmoji(s) {
+    return String(s == null ? '' : s)
+        .replace(/[\u2713\u2714]/g, '√')
+        .replace(/[\u2717\u2718]/g, '×')
+        .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, '')
+        .replace(/\u00a0/g, ' ');
 }
 
 // HTML 转义：避免用户输入的 < > & 等字符破坏 DOM
@@ -532,6 +604,198 @@ function escapeHtml(s) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+}
+
+// ===== AI学习教练：基于登录用户的真实学情诊断记录生成个性化上下文 =====
+// 仅使用 /api/diagnostic/latest 返回的真实数据；无报告时返回 null，不做任何推测
+function buildAICoachContext(latest, user, progress) {
+    var report = latest && latest.report;
+    var summary = report && report.summary;
+    if (!summary) return null;
+    var weak = (report.weak_points || []).filter(function (w) {
+        return w && w.knowledge_point;
+    });
+    var planTasks = ((latest.plan || {}).tasks || []).filter(function (t) {
+        return t && t.status !== 'done';
+    });
+    var todayKey = coachDateKey(new Date());
+    var todayTasks = ((latest.plan || {}).tasks || []).filter(function (t) {
+        return t && t.planned_date === todayKey;
+    });
+    var firstTask = null;
+    if (weak.length) {
+        firstTask = planTasks.filter(function (t) {
+            return t.point === weak[0].knowledge_point;
+        })[0] || null;
+    }
+
+    // 今日任务完成率：优先取服务端学习进度快照，缺失时退回诊断计划
+    var taskStat = progress && progress.tasks ? progress.tasks : null;
+    var taskTotal = taskStat ? (Number(taskStat.total) || 0) : todayTasks.length;
+    var taskDone = taskStat ? (Number(taskStat.done) || 0) : todayTasks.filter(function (t) {
+        return t.status === 'done';
+    }).length;
+    var taskRate = taskStat ? (Number(taskStat.completion_rate) || 0)
+        : (taskTotal ? Math.round(taskDone / taskTotal * 100) : 0);
+
+    // 今日答题记录
+    var ans = (progress && progress.answers) ? progress.answers : null;
+
+    return {
+        name: (user && user.name) || '',
+        score: Number(summary.estimated_score) || 0,
+        target: Number(summary.target_score) || 0,
+        gap: Number(summary.score_gap) || 0,
+        accuracy: Number(summary.accuracy_pct) || 0,
+        total: Number(summary.total_questions) || 0,
+        weak: weak.slice(0, 3),
+        weakCount: weak.length,
+        pendingTasks: planTasks.length,
+        todayTaskTotal: taskTotal,
+        todayTaskDone: taskDone,
+        todayTaskRate: taskRate,
+        taskPlannedMinutes: taskStat ? (Number(taskStat.planned_minutes) || 0) : 0,
+        answerTotal: ans ? (Number(ans.total) || 0) : 0,
+        answerCorrect: ans ? (Number(ans.correct) || 0) : 0,
+        answerRate: ans ? (Number(ans.correct_rate) || 0) : 0,
+        answerDiagnostic: ans ? (Number(ans.diagnostic) || 0) : 0,
+        answerPractice: ans ? (Number(ans.practice) || 0) : 0,
+        answerRecent: (progress && progress.recent) || [],
+        subjectAnswers: (progress && progress.subjects) || [],
+        planMinutes: planTasks.reduce(function (a, t) {
+            return a + (Number(t.planned_minutes) || 0);
+        }, 0),
+        firstTask: firstTask,
+        dateText: formatCoachDate(report.created_at)
+    };
+}
+
+function formatCoachDate(iso) {
+    var d = new Date(iso || '');
+    if (isNaN(d.getTime())) return '';
+    return (d.getMonth() + 1) + '月' + d.getDate() + '日';
+}
+
+function coachDateKey(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function coachMerge(base, patch) {
+    var out = {};
+    var k;
+    for (k in base) { if (base.hasOwnProperty(k)) out[k] = base[k]; }
+    for (k in patch) { if (patch.hasOwnProperty(k)) out[k] = patch[k]; }
+    return out;
+}
+
+// 诊断记录摘要（回答问题、建议类问题时插入回复顶部）
+function buildCoachPersonalBlock(question) {
+    var ctx = window._aiCoachContext;
+    if (!ctx) return '';
+    var q = String(question || '');
+    var asksOverview = /诊断|记录|薄弱|弱项|提分|计划|建议|怎么学|学什么|提升|成绩|分数|今日|今天|任务|完成|进度|答题|正确率|刷题/.test(q);
+    var hit = null;
+    (ctx.weak || []).forEach(function (w) {
+        var kp = (w.knowledge_point || '').toLowerCase();
+        if ((w.subject && q.indexOf(w.subject) >= 0) || (kp && q.toLowerCase().indexOf(kp) >= 0)) hit = w;
+    });
+    var inner = '';
+    if (asksOverview) {
+        inner = '你的诊断：估分 <b>' + ctx.score + '</b>/750（正确率 ' + ctx.accuracy + '%），目标 ' + ctx.target + ' 分';
+        if (ctx.gap > 0) inner += '，还差 <b>' + ctx.gap + '</b> 分';
+        inner += '。';
+        if (ctx.weak.length) {
+            inner += '<br>薄弱点：' + ctx.weak.map(function (w) {
+                return escapeHtml(w.subject) + '·' + escapeHtml(w.knowledge_point) +
+                    '（掌握度' + Math.round((Number(w.mastery) || 0) * 100) + '%）';
+            }).join('、') + '。';
+        } else {
+            inner += '<br>暂无明显薄弱点。';
+        }
+        if (ctx.todayTaskTotal) {
+            inner += '<br>今日任务完成 <b>' + ctx.todayTaskDone + '/' + ctx.todayTaskTotal +
+                '</b>（' + ctx.todayTaskRate + '%）';
+            if (ctx.todayTaskTotal - ctx.todayTaskDone > 0) {
+                inner += '，还有 ' + (ctx.todayTaskTotal - ctx.todayTaskDone) + ' 项待完成。';
+            } else {
+                inner += '，已全部完成。';
+            }
+        } else if (ctx.pendingTasks) {
+            inner += '<br>今日暂无任务，待完成补弱任务 ' + ctx.pendingTasks + ' 项（约 ' + ctx.planMinutes + ' 分钟）。';
+        }
+        if (ctx.answerTotal) {
+            inner += '<br>今日答题 <b>' + ctx.answerTotal + '</b> 题（诊断 ' + ctx.answerDiagnostic +
+                ' · 练习 ' + ctx.answerPractice + '），正确率 <b>' + ctx.answerRate + '%</b>。';
+            if (ctx.answerRecent && ctx.answerRecent.length) {
+                inner += '<br>最近：' + ctx.answerRecent.slice(0, 3).map(function (r) {
+                    return escapeHtml(r.subject) + '·' + escapeHtml(r.knowledge_point) +
+                        (r.is_correct ? ' ✓' : ' ✗');
+                }).join('、') + '。';
+            }
+        } else {
+            inner += '<br>今日暂无答题记录。';
+        }
+    } else if (hit) {
+        inner = '诊断提醒：你的「' + escapeHtml(hit.subject) + '」薄弱点是 ' + escapeHtml(hit.knowledge_point) +
+            '（掌握度 ' + Math.round((Number(hit.mastery) || 0) * 100) + '%），建议先看知识点讲解，再完成 8-10 道专项题。';
+    } else {
+        return '';
+    }
+    return '<div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:8px 10px;font-size:12px;color:#1E40AF;line-height:1.6;margin-bottom:10px;">' +
+        '<b><i class="fas fa-chart-line"></i> 依据你的学情诊断</b><br>' + inner + '</div>';
+}
+
+function buildCoachMessages(ctx) {
+    if (!ctx) return null;
+    var intro = '你好' + (ctx.name ? '，' + escapeHtml(ctx.name) : '') +
+        '！我已读取你 ' + (ctx.dateText || '最近一次') + ' 的 AI 学情诊断：估分 ' + ctx.score +
+        '/750，正确率 ' + ctx.accuracy + '%。';
+    if (ctx.todayTaskTotal) {
+        intro += '<br>今日任务完成 <b>' + ctx.todayTaskDone + '/' + ctx.todayTaskTotal +
+            '</b>（' + ctx.todayTaskRate + '%）';
+        intro += ctx.todayTaskTotal - ctx.todayTaskDone > 0
+            ? '，还有 ' + (ctx.todayTaskTotal - ctx.todayTaskDone) + ' 项待完成。'
+            : '，今日任务已全部完成。';
+    } else {
+        intro += '<br>今日暂无学习任务。';
+    }
+    if (ctx.answerTotal) {
+        intro += '今日共答题 ' + ctx.answerTotal + ' 题（诊断 ' + ctx.answerDiagnostic +
+            ' · 练习 ' + ctx.answerPractice + '），正确率 ' + ctx.answerRate + '%。';
+    } else {
+        intro += '今日还没有答题记录。';
+    }
+    if (ctx.weak.length) {
+        intro += '<br>你最薄弱的' + ctx.weak.length + '个知识点：' + ctx.weak.map(function (w) {
+            return escapeHtml(w.subject) + '·' + escapeHtml(w.knowledge_point);
+        }).join('、') + '。';
+        if (ctx.weakCount > ctx.weak.length) {
+            intro += '（诊断共识别 ' + ctx.weakCount + ' 个薄弱点）';
+        }
+        var first = ctx.weak[0];
+        intro += '<br>建议今天先攻「' + escapeHtml(first.knowledge_point) + '」';
+        if (ctx.firstTask) {
+            intro += '（计划 ' + (Number(ctx.firstTask.planned_minutes) || 0) + ' 分钟 / ' +
+                (Number(ctx.firstTask.questions_count) || 0) + ' 题）';
+        }
+        intro += '，需要我先讲核心思路吗？';
+    } else {
+        intro += '<br>暂无明显薄弱点，建议今天以错题复盘和限时训练为主。';
+    }
+    return [{ role: 'ai', text: intro }];
+}
+
+function buildCoachQuickQuestions(ctx) {
+    if (!ctx) return null;
+    var qs = [];
+    var first = ctx.weak[0];
+    var second = ctx.weak[1];
+    if (first) qs.push('💡 帮我讲解「' + first.knowledge_point + '」');
+    qs.push('📊 分析我的薄弱点');
+    qs.push('📈 今日进度如何');
+    if (second) qs.push('✍️ 给我 5 道「' + second.knowledge_point + '」练习');
+    qs.push('📅 按诊断记录制定今日计划');
+    return qs;
 }
 
 // === 基础算术求解器 ===
@@ -666,7 +930,7 @@ function sendAIMessage(inputId, messagesContainerId) {
         } else {
             clearInterval(ragTimer);
             // 第二阶段：流式输出答案
-            var aiReplyHTML = generateAIReply(question);
+            var aiReplyHTML = stripEmoji(generateAIReply(question));
             streamText(aiInner, aiReplyHTML, function () {
                 // 输出完成后添加模型归因（动态显示当前路由到的模型）
                 var attr = document.createElement('div');
@@ -962,21 +1226,86 @@ registerPage('ai-coach', 'AI学习教练', 'AI学习中心', '', function () {
         if (!container) return;
         if (typeof api === 'undefined' || !api.getPageData) return;
 
-        api.getPageData('ai-coach').then(function (data) {
+        // 静态页面数据 + 登录用户的真实学情诊断记录 + 今日任务/答题记录（并行加载）
+        var loggedIn = (typeof Auth !== 'undefined' && Auth.isLoggedIn());
+        var diagPromise = (loggedIn && api.getLatestDiagnostic)
+            ? api.getLatestDiagnostic().catch(function () { return null; })
+            : Promise.resolve(null);
+        var progressPromise = (loggedIn && api.getTodayProgress)
+            ? api.getTodayProgress().catch(function () { return null; })
+            : Promise.resolve(null);
+
+        Promise.all([api.getPageData('ai-coach'), diagPromise, progressPromise]).then(function (results) {
+            var data = results[0];
+            var latest = results[1];
+            var progress = results[2];
             if (!data) {
                 container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">暂无数据</div></div>';
                 return;
             }
-            renderPageContent(container, data);
+            var ctx = buildAICoachContext(latest, typeof Auth !== 'undefined' ? Auth.getCachedUser() : null, progress);
+            window._aiCoachContext = ctx;
+            renderPageContent(container, data, ctx);
         }).catch(function () {
             container.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">数据加载失败</div></div>';
         });
     }, 100);
 
-    function renderPageContent(container, data) {
+    function renderPageContent(container, data, ctx) {
         var html = '';
         var header = data.header || {};
         var suggestion = data.suggestion || {};
+        var messages = data.messages || [];
+        var quickQuestions = data.quick_questions || [];
+
+        // 有真实诊断记录：头部、建议卡片、开场白、快捷问题全部按学情替换
+        if (ctx) {
+            header = coachMerge(header, {
+                greeting: (ctx.name ? ctx.name + '，' : '') + '已根据 ' + (ctx.dateText || '最近一次') + ' 的学情诊断更新建议'
+            });
+            var firstWeak = ctx.weak[0];
+            if (firstWeak) {
+                var reason = '诊断正确率 ' + ctx.accuracy + '% · 该知识点掌握度 ' +
+                    Math.round((Number(firstWeak.mastery) || 0) * 100) + '%';
+                if (ctx.todayTaskTotal) {
+                    reason += ' · 今日任务完成 ' + ctx.todayTaskDone + '/' + ctx.todayTaskTotal +
+                        '（' + ctx.todayTaskRate + '%）';
+                } else {
+                    reason += ' · 今日暂无学习任务';
+                }
+                suggestion = coachMerge(suggestion, {
+                    today_topic: firstWeak.subject + ' · ' + firstWeak.knowledge_point,
+                    reason: reason,
+                    improve_label: '待攻克薄弱点',
+                    improve_value: ctx.weakCount + ' 个'
+                });
+            } else {
+                suggestion = coachMerge(suggestion, {
+                    today_topic: '保持优势 · 错题复盘',
+                    reason: '诊断正确率 ' + ctx.accuracy + '% · 暂无明显薄弱点',
+                    improve_label: '诊断结论',
+                    improve_value: '状态良好'
+                });
+            }
+            messages = buildCoachMessages(ctx) || messages;
+            quickQuestions = buildCoachQuickQuestions(ctx) || quickQuestions;
+        } else {
+            // 未登录或尚无诊断报告：统一显示通用引导，避免展示任何伪造的学情数据
+            header = coachMerge(header, {
+                greeting: '完成 AI 学情诊断后，我会按你的真实薄弱点定制建议'
+            });
+            suggestion = coachMerge(suggestion, {
+                today_topic: '先完成 AI 学情诊断',
+                reason: '诊断后按真实薄弱点生成今日任务',
+                improve_label: '诊断状态',
+                improve_value: '待诊断'
+            });
+            messages = [{
+                role: 'ai',
+                text: '你好，我是 AI 学习教练。完成 AI 学情诊断后，我会结合你的真实估分、薄弱知识点和今日学习任务来回答，不再使用通用模板。'
+            }];
+            quickQuestions = ['📊 我的薄弱点在哪？', '💡 今日该怎么学？', '📅 制定一周计划'];
+        }
 
         // AI教练头部卡片
         html += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">' +
@@ -1015,16 +1344,16 @@ registerPage('ai-coach', 'AI学习教练', 'AI学习中心', '', function () {
 
         // 对话气泡容器（可追加新消息）
         html += '<div id="ai-coach-messages">';
-        (data.messages || []).forEach(function (m) {
+        (messages || []).forEach(function (m) {
             if (m.role === 'ai') {
                 html += '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
                     '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#8B5CF6);display:flex;align-items:center;justify-content:center;color:white;font-size:13px;flex-shrink:0;"><i class="fas fa-robot"></i></div>' +
-                    '<div style="background:#F3F4F6;border-radius:14px 14px 14px 4px;padding:10px 14px;font-size:13px;max-width:75%;line-height:1.5;">' + m.text + '</div>' +
+                    '<div style="background:#F3F4F6;border-radius:14px 14px 14px 4px;padding:10px 14px;font-size:13px;max-width:75%;line-height:1.5;">' + stripEmoji(m.text) + '</div>' +
                 '</div>';
             } else {
                 html += '<div style="display:flex;gap:8px;margin-bottom:10px;flex-direction:row-reverse;">' +
                     '<div style="width:32px;height:32px;border-radius:50%;background:#3B82F6;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;flex-shrink:0;"><i class="fas fa-user"></i></div>' +
-                    '<div style="background:#3B82F6;color:white;border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:13px;max-width:75%;line-height:1.5;">' + m.text + '</div>' +
+                    '<div style="background:#3B82F6;color:white;border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:13px;max-width:75%;line-height:1.5;">' + stripEmoji(m.text) + '</div>' +
                 '</div>';
             }
         });
@@ -1032,8 +1361,8 @@ registerPage('ai-coach', 'AI学习教练', 'AI学习中心', '', function () {
 
         // 快捷问题按钮
         html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">';
-        (data.quick_questions || []).forEach(function (q) {
-            html += '<div onclick="quickAskAI(\'ai-coach-input\',\'ai-coach-messages\',\'' + q.replace(/'/g, "\\'") + '\')" style="background:#EFF6FF;border:1px solid #BFDBFE;color:#2563EB;padding:6px 12px;border-radius:16px;font-size:12px;cursor:pointer;">' + q + '</div>';
+        (quickQuestions || []).forEach(function (q) {
+            html += '<div onclick="quickAskAI(\'ai-coach-input\',\'ai-coach-messages\',\'' + stripEmoji(q).replace(/'/g, "\\'") + '\')" style="background:#EFF6FF;border:1px solid #BFDBFE;color:#2563EB;padding:6px 12px;border-radius:16px;font-size:12px;cursor:pointer;">' + stripEmoji(q) + '</div>';
         });
         html += '</div>';
 

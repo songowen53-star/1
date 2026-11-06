@@ -33,7 +33,7 @@
 
 /* ===== Reset ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg-page); color: var(--text-primary); overflow: hidden; height: 100vh; }
+body { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', 'DejaVu Sans', 'Segoe UI Symbol', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; background: var(--bg-page); color: var(--text-primary); overflow: hidden; height: 100vh; }
 
 /* ===== 顶部导航栏 ===== */
 .proto-header {

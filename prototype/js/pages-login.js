@@ -300,6 +300,52 @@ function selectRelation(el) {
     el.style.border = '1.5px solid #3B82F6';
 }
 
+// 提交家长绑定（真实接口）
+function submitParentBind(btn) {
+    const studentEl = document.getElementById('bind-student-phone-input');
+    const parentEl = document.getElementById('bind-parent-phone-input');
+    const codeEl = document.getElementById('parent-code-input');
+    const statusEl = document.getElementById('parent-bind-status');
+    const studentPhone = (studentEl && studentEl.value || '').trim();
+    const parentPhone = (parentEl && parentEl.value || '').trim();
+    const smsCode = (codeEl && codeEl.value || '').trim();
+    const activeChip = document.querySelector('#relation-group .relation-chip.active');
+    const relationMap = { '父亲': '父', '母亲': '母', '其他': '其他' };
+    const relation = relationMap[(activeChip && activeChip.textContent || '').trim()] || '父';
+
+    const show = (msg, color, bg) => {
+        if (!statusEl) { alert(msg.replace(/<[^>]+>/g, '')); return; }
+        statusEl.style.display = 'block';
+        statusEl.style.color = color;
+        statusEl.style.background = bg;
+        statusEl.innerHTML = msg;
+    };
+
+    if (!/^1\d{10}$/.test(studentPhone)) return show('请输入正确的学生手机号', '#B91C1C', '#FEF2F2');
+    if (!/^1\d{10}$/.test(parentPhone)) return show('请输入正确的家长手机号', '#B91C1C', '#FEF2F2');
+    if (studentPhone === parentPhone) return show('学生与家长手机号不能相同', '#B91C1C', '#FEF2F2');
+    if (smsCode && smsCode !== '8888') return show('短信验证码错误（演示码 8888）', '#B91C1C', '#FEF2F2');
+    if (typeof api === 'undefined' || !api.parentBind) return show('接口未就绪，请刷新页面重试', '#B91C1C', '#FEF2F2');
+
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 绑定中…';
+
+    api.parentBind(studentPhone, parentPhone, relation, smsCode || undefined).then(data => {
+        if (data && data.binding_id) {
+            show('绑定提交成功 · ' + (data.status === 'active' ? '已生效' : '等待孩子确认') +
+                 '<br><span style="font-size:11px;opacity:.8;">绑定编号 ' + data.binding_id + '</span>', '#065F46', '#ECFDF5');
+        } else {
+            show('绑定失败：请确认手机号与验证码（演示码 8888），或该学生已被绑定', '#B91C1C', '#FEF2F2');
+        }
+    }).catch(() => {
+        show('绑定失败：网络异常，请稍后重试', '#B91C1C', '#FEF2F2');
+    }).finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = original;
+    });
+}
+
 // 用户协议弹窗
 function showUserAgreement() {
     openModal('用户协议', `
@@ -593,12 +639,12 @@ function doRegister() {
 // 执行登录（密码登录页）
 // ============================================================
 function doLogin() {
-    const phone = document.getElementById('login-phone').value.trim();
+    const account = document.getElementById('login-phone').value.trim();
     const password = document.getElementById('login-password').value;
 
-    // 表单验证
-    if (!phone || !/^1\d{10}$/.test(phone)) {
-        openModal('提示', '<p style="text-align:center;padding:20px;color:#EF4444;">请输入正确的11位手机号</p>');
+    // 表单验证：手机号或用户名均可（演示账户如 u_001 仍可登录）
+    if (!account) {
+        openModal('提示', '<p style="text-align:center;padding:20px;color:#EF4444;">请输入手机号或用户名</p>');
         return;
     }
     if (!password) {
@@ -617,17 +663,16 @@ function doLogin() {
     fetch((typeof API_BASE !== 'undefined' ? API_BASE : '') + '/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: phone, password: password })
+        body: JSON.stringify({ username: account, password: password })
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
         if (data && data.code === 0) {
-            // 保存登录态
             Auth.setSession(data.data.token, data.data.user_id || '', data.data.user || null);
             showToast('登录成功，欢迎回来！');
             setTimeout(function() { navigateTo('home'); }, 600);
         } else {
-            openModal('登录失败', '<p style="text-align:center;padding:20px;color:#EF4444;">' + ((data && data.msg) || '用户名或密码错误') + '</p>');
+            openModal('登录失败', '<p style="text-align:center;padding:20px;color:#EF4444;">' + ((data && data.msg) || '账号或密码错误') + '</p>');
         }
     })
     .catch(function() {
@@ -657,7 +702,7 @@ registerPage('login', '登录', '登录注册', 'fa-sign-in-alt', () => {
             <div style="margin-bottom:18px;">
                 <div style="display:flex;align-items:center;gap:10px;background:#F9FAFB;border:1.5px solid #E5E7EB;border-radius:8px;padding:0 14px;margin-bottom:14px;">
                     <i class="fas fa-mobile-alt" style="color:#9CA3AF;font-size:16px;flex-shrink:0;"></i>
-                    <input id="login-phone" class="proto-input" type="tel" maxlength="11" placeholder="请输入手机号" style="border:none;background:transparent;padding:14px 0;font-size:15px;flex:1;outline:none;">
+                    <input id="login-phone" class="proto-input" type="text" placeholder="请输入手机号或用户名" style="border:none;background:transparent;padding:14px 0;font-size:15px;flex:1;outline:none;">
                 </div>
                 <div style="display:flex;align-items:center;gap:10px;background:#F9FAFB;border:1.5px solid #E5E7EB;border-radius:8px;padding:0 14px;">
                     <i class="fas fa-lock" style="color:#9CA3AF;font-size:16px;flex-shrink:0;"></i>
@@ -693,6 +738,10 @@ registerPage('login', '登录', '登录注册', 'fa-sign-in-alt', () => {
             <!-- 扫码登录 -->
             <button class="proto-btn proto-btn-outline" style="width:100%;height:48px;font-size:16px;border-radius:24px;gap:8px;color:#111827;border-color:#D1D5DB;" onclick="navigateTo('login-wechat-qrcode')">
                 <i class="fas fa-qrcode" style="font-size:20px;color:#07C160;"></i> 扫码登录
+            </button>
+            <!-- 家长绑定 -->
+            <button class="proto-btn proto-btn-outline" style="width:100%;height:48px;font-size:16px;border-radius:24px;gap:8px;color:#111827;border-color:#FCD34D;margin-top:12px;" onclick="navigateTo('login-parent-bind')">
+                <i class="fas fa-users" style="font-size:18px;color:#F59E0B;"></i> 家长绑定
             </button>
 
             <!-- 底部链接 -->
@@ -931,7 +980,7 @@ registerPage('login-parent-bind', '家长绑定', '登录注册', 'fa-sign-in-al
                 <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">学生账号</div>
                 <div style="display:flex;align-items:center;gap:10px;background:#F9FAFB;border:1.5px solid #E5E7EB;border-radius:8px;padding:0 12px;margin-bottom:16px;">
                     <i class="fas fa-user-graduate" style="color:#9CA3AF;font-size:15px;flex-shrink:0;"></i>
-                    <input class="proto-input" placeholder="请输入孩子的手机号 / 学号" style="border:none;background:transparent;padding:14px 0;font-size:14px;flex:1;outline:none;">
+                    <input id="bind-student-phone-input" class="proto-input" placeholder="请输入孩子的手机号 / 学号" style="border:none;background:transparent;padding:14px 0;font-size:14px;flex:1;outline:none;">
                 </div>
 
                 <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">与学生关系</div>
@@ -965,6 +1014,9 @@ registerPage('login-parent-bind', '家长绑定', '登录注册', 'fa-sign-in-al
                 </div>
             </div>
 
+            <!-- 绑定结果 -->
+            <div id="parent-bind-status" style="display:none;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.7;margin-bottom:14px;"></div>
+
             <!-- 提示 -->
             <div style="font-size:11px;color:#9CA3AF;line-height:1.6;margin-bottom:18px;padding:0 4px;">
                 <i class="fas fa-info-circle"></i> 绑定后需孩子端确认同意，方可查看学习数据。<br>
@@ -972,7 +1024,7 @@ registerPage('login-parent-bind', '家长绑定', '登录注册', 'fa-sign-in-al
             </div>
 
             <!-- 绑定按钮 -->
-            <button class="proto-btn proto-btn-primary" style="height:48px;font-size:16px;border-radius:24px;" onclick="navigateTo('home')">
+            <button class="proto-btn proto-btn-primary" style="height:48px;font-size:16px;border-radius:24px;" onclick="submitParentBind(this)">
                 <i class="fas fa-link"></i> 确认绑定
             </button>
 

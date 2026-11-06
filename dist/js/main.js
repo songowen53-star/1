@@ -123,6 +123,7 @@ async function loadAppData() {
     ]);
 
     if (user) updateUserUI(user);
+    if (user) ensureDiagnosisGate(user);
     if (weakPoints) { renderWeakPoints(weakPoints); updateAIAdvice(weakPoints); }
     if (summary) renderGrowthRecord(summary);
     if (predictReport) {
@@ -138,15 +139,54 @@ async function loadAppData() {
 
     // 加载已保存的模块自定义配置（覆盖默认显示）
     await loadModuleConfigs();
-    // 初始化模块联动事件
+    // 初始化模块联动事件（goal/growth/radar 的编辑按钮）
     initLinkageEvents();
+
+    // ===== 🔑 核心：用后端真实数据喂活联动引擎 =====
+    // 每次页面加载，把后端诊断/目标/成长数据同步进 moduleConfigs，
+    // 然后主动触发一次从 radar → goal → exam-predict 的完整联动链。
+    // 🔒 优先级规则：moduleConfigs（loadModuleConfigs 从后端拉的用户保存值）> 后端诊断报告 > 默认值
+    if (predictReport) {
+        // 1) radar —— 只在用户没保存时才用后端诊断数据填充
+        const radarCfg = moduleConfigs['radar'] || {};
+        if (!radarCfg.items || radarCfg.items.length === 0) {
+            radarCfg.items = (predictReport.predicted_subjects || []).map(s => ({ subject: s.subject, score: s.score || 0 }));
+        }
+        moduleConfigs['radar'] = radarCfg;
+
+        // 2) goal —— moduleConfig 已有 target_score 就尊重它，否则用后端 fallback
+        const goalCfg = moduleConfigs['goal'] || {};
+        goalCfg.target_score = goalCfg.target_score || predictReport.target_score || 620;
+        goalCfg.current_score = goalCfg.current_score || predictReport.predicted_score || predictReport.current_score || 0;
+        goalCfg.score_gap = goalCfg.target_score - goalCfg.current_score;
+        moduleConfigs['goal'] = goalCfg;
+
+        // 3) growth —— moduleConfig 已有 correct_rate 就尊重它
+        const growthCfg = moduleConfigs['growth'] || {};
+        growthCfg.correct_rate = growthCfg.correct_rate || predictReport.accuracy_pct || (summary && summary.correct_rate) || 78;
+        if (summary) {
+            growthCfg.duration_hours = growthCfg.duration_hours || summary.duration_hours || 12;
+            growthCfg.questions_count = growthCfg.questions_count || summary.questions_count || 50;
+        }
+        moduleConfigs['growth'] = growthCfg;
+
+        // 4) 手动触发一次完整联动链（级联：radar→goal→exam-predict）
+        setTimeout(async () => {
+            await triggerLinkages('radar', moduleConfigs['radar']);
+        }, 100);
+    }
 }
 
 // 更新用户信息UI
 function updateUserUI(user) {
     if (!user) return;
-    const current = user.current_score || 0;
-    const target = user.target_score || 0;
+    // 🔒 只把 user API 里有的、但 moduleConfigs 还没覆盖的值应用到 DOM
+    // （moduleConfigs 来自 /api/modules，是用户在页面上真正设置过的值，优先级更高）
+    const existingGoal = moduleConfigs['goal'] || {};
+    const existingCurrent = existingGoal.current_score;
+    const existingTarget = existingGoal.target_score;
+    const current = existingCurrent || user.current_score || 0;
+    const target = existingTarget || user.target_score || 0;
     // 首页元素可能不存在（用户在其他页面），统一加 null 检查
     const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
     const setWidth = (id, val) => { const el = document.getElementById(id); if (el) el.style.width = val; };
@@ -372,7 +412,7 @@ function renderExamPredict(report) {
     // 更新排名
     const predictRank = document.querySelector('.predict-rank');
     if (predictRank) {
-        predictRank.innerHTML = `预测排名：全省 <strong>${report.rank.toLocaleString()}</strong> 名`;
+        predictRank.innerHTML = `预测排名：全省 <strong>${(report.rank != null ? report.rank : 0).toLocaleString()}</strong> 名`;
     }
     // 更新置信度
     const confidence = document.querySelector('.confidence');
@@ -380,14 +420,15 @@ function renderExamPredict(report) {
         confidence.innerHTML = `置信度：<strong>${report.confidence}%</strong>`;
     }
     // 更新圆环图（用985概率作为百分比）
+    const p985 = report.probability && report.probability.p985 != null ? report.probability.p985 : 0;
     const ringPercent = document.querySelector('.ring-percent');
     if (ringPercent) {
-        ringPercent.textContent = report.probability.p985 + '%';
+        ringPercent.textContent = p985 + '%';
     }
     const ringFill = document.querySelector('.ring-fill');
     if (ringFill) {
         const circumference = 2 * Math.PI * 50;
-        const offset = circumference - (report.probability.p985 / 100) * circumference;
+        const offset = circumference - (p985 / 100) * circumference;
         ringFill.style.strokeDashoffset = offset;
     }
 }
@@ -642,6 +683,7 @@ async function switchPage(page) {
     try {
         switch (page) {
             case 'analysis': await renderAnalysisPage(scrollArea); break;
+            case 'ai-diagnosis': await renderAIDiagnosisPage(scrollArea); break;
             case 'plan': await renderPlanPage(scrollArea); break;
             case 'home-countdown': renderCountdownPage(scrollArea); break;
             case 'home-task': renderTodayTaskPage(scrollArea); break;
@@ -1251,6 +1293,25 @@ function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+// ========== 轻量数学格式化（纯文本 → 带样式，不依赖 KaTeX）==========
+// 处理 x^2, a_n, √3（真·根号+横线）, 2√3, x^2/4 + y^2/3 = 1, |AB| 等
+// 核心：上标用 position:relative 绕 line-height；根号用 border-top 模拟 vinculum（横线）
+function formatMathPlain(html) {
+    if (!html) return html;
+    // 1. 上标: x^2, y^2, n^2, x^3 —— 用 position 绕开父容器 line-height
+    html = html.replace(/([a-zA-Z0-9])\^([a-zA-Z0-9]+)/g, '$1<sup style="position:relative;top:-0.4em;font-size:0.72em;line-height:0;margin-right:1px;">$2</sup>');
+    // 2. 下标: a_n, S_n
+    html = html.replace(/([a-zA-Z])_([a-zA-Z0-9]+)/g, '$1<sub style="position:relative;top:0.2em;font-size:0.75em;line-height:0;">$2</sub>');
+    // 3. 真·根号: √3, √2, 2√3 —— 给被开方数加 border-top 模拟数学根号的横线(vinculum)
+    //    结构: [√符号(数学字体+放大)] + [被开方数(上面有横线，与√右边微叠)]
+    html = html.replace(/√(\d+)/g, '<span style="display:inline-flex;align-items:flex-end;vertical-align:baseline;"><span style="font-family:STIX Two Math,Cambria Math,Times New Roman,serif;font-size:1.15em;line-height:0.8;padding-bottom:1px;">√</span><span style="border-top:1.5px solid currentColor;padding:0 2px 0 0;margin-left:-2px;line-height:1;font-size:0.95em;">$1</span></span>');
+    // 4. 分式 a/b —— 斜杠两侧小间距
+    html = html.replace(/([0-9a-zA-Z])\/([0-9a-zA-Z])/g, '$1<span style="padding:0 1px;">/</span>$2');
+    // 5. 绝对值 |AB| —— 竖线换数学字体
+    html = html.replace(/\|([a-zA-Z][a-zA-Z0-9\-]*)\|/g, '<span style="font-family:STIX Two Math,Cambria Math,serif;">|</span>$1<span style="font-family:STIX Two Math,Cambria Math,serif;">|</span>');
+    return html;
+}
+
 // ========== 学习计时器 ==========
 let studyTimerInterval = null;
 let studyTimerSeconds = 0;
@@ -1290,114 +1351,6 @@ function stopStudy() {
     const m = Math.floor(studyTimerSeconds / 60);
     showToast(`本次学习结束，时长 ${m} 分钟，继续加油！`, 'success');
     studyTimerSeconds = 0;
-}
-
-// ========== 编辑高考目标分 ==========
-let scoreChartInstance = null;
-
-function editGoalScore() {
-    const currentScore = document.getElementById('current-score-num')?.textContent || '615';
-    const targetScore = document.getElementById('target-score-num')?.textContent || '633';
-
-    const bodyHTML = `
-        <div class="score-input-group">
-            <div class="score-input-row">
-                <label>当前估分</label>
-                <input type="number" id="input-current-score" value="${currentScore}" min="0" max="750" oninput="updateScorePreview()">
-                <span style="color:#9CA3AF;font-size:13px;">/ 750</span>
-            </div>
-            <div class="score-input-hint">输入你最近的模考或统考总分</div>
-            <div class="score-input-row">
-                <label>目标分数</label>
-                <input type="number" id="input-target-score" value="${targetScore}" min="0" max="750" oninput="updateScorePreview()">
-                <span style="color:#9CA3AF;font-size:13px;">/ 750</span>
-            </div>
-            <div class="score-input-hint">输入你期望达到的高考目标分数</div>
-            <div class="score-preview">
-                <div class="sp-item">
-                    <div class="sp-label">当前估分</div>
-                    <div class="sp-value" id="preview-current">${currentScore}</div>
-                </div>
-                <div class="sp-item">
-                    <div class="sp-label">预计提升</div>
-                    <div class="sp-value" id="preview-improvement" style="color:#10B981;">+${parseInt(targetScore) - parseInt(currentScore)}</div>
-                </div>
-                <div class="sp-item">
-                    <div class="sp-label">目标分数</div>
-                    <div class="sp-value" id="preview-target">${targetScore}</div>
-                </div>
-            </div>
-            <div class="modal-footer" style="border:none;padding:20px 0 0;">
-                <button class="modal-btn secondary" onclick="closeModal()">取消</button>
-                <button class="modal-btn primary" onclick="saveGoalScore()">保存</button>
-            </div>
-        </div>
-    `;
-    openModal('编辑高考目标分', bodyHTML);
-}
-
-function updateScorePreview() {
-    const current = parseInt(document.getElementById('input-current-score').value) || 0;
-    const target = parseInt(document.getElementById('input-target-score').value) || 0;
-    const improvement = target - current;
-
-    document.getElementById('preview-current').textContent = current;
-    document.getElementById('preview-target').textContent = target;
-    document.getElementById('preview-improvement').textContent = (improvement >= 0 ? '+' : '') + improvement;
-    document.getElementById('preview-improvement').style.color = improvement >= 0 ? '#10B981' : '#EF4444';
-}
-
-function saveGoalScore() {
-    const current = parseInt(document.getElementById('input-current-score').value) || 0;
-    const target = parseInt(document.getElementById('input-target-score').value) || 0;
-
-    if (current < 0 || current > 750) {
-        showToast('当前估分应在 0-750 之间', 'error');
-        return;
-    }
-    if (target < 0 || target > 750) {
-        showToast('目标分数应在 0-750 之间', 'error');
-        return;
-    }
-    if (target < current) {
-        showToast('目标分数低于当前估分，请确认', 'warning');
-    }
-
-    const improvement = target - current;
-
-    // 更新页面显示
-    document.getElementById('current-score-num').textContent = current;
-    document.getElementById('target-score-num').textContent = target;
-    document.getElementById('improvement-num').textContent = improvement;
-
-    // 更新达成率（简单公式：当前分/目标分 * 100，上限99%）
-    const rate = Math.min(99, Math.round(current / target * 100));
-    document.getElementById('goal-rate').textContent = rate + '%';
-    document.getElementById('goal-progress-fill').style.width = rate + '%';
-
-    // 更新折线图数据
-    const chart = Chart.getChart('scoreChart');
-    if (chart) {
-        const mid1 = Math.round(current + improvement * 0.3);
-        const mid2 = Math.round(current + improvement * 0.6);
-        chart.data.datasets[0].data = [current, mid1, mid2, target];
-        chart.update();
-    }
-
-    closeModal();
-    showToast(`目标分已更新：${current} → ${target}，预计提升 ${improvement} 分`, 'success');
-
-    // 同步到后端
-    api.updateUser({ current_score: current, target_score: target }).then(() => {
-        // 重新加载预测数据
-        api.getPredictReport().then(report => {
-            if (report) {
-                renderExamPredict(report);
-                renderSubjectScores(report.subject_scores);
-                updateRadarChart(report.subject_scores);
-            }
-        });
-    });
 }
 
 // ========== 调整计划（对接AI推荐计划API）==========
@@ -3967,6 +3920,141 @@ async function renderAICoachPage(container) {
     } catch(e) { console.warn('AI教练加载失败', e); }
 }
 
+// ========== AI学情诊断 ==========
+async function renderAIDiagnosisPage(container) {
+    container = container || document.querySelector('.content-scroll');
+    container.innerHTML = `
+    <div class="page-header"><h2><i class="fas fa-stethoscope"></i> AI学情诊断</h2><p>按新高考 3+1+2 的 6 门选科生成专属诊断报告</p></div>
+    <div id="ai-diagnosis-content">
+        <div class="card" style="text-align:center;padding:44px;color:#9CA3AF;">
+            <i class="fas fa-spinner fa-spin" style="font-size:26px;margin-bottom:10px;"></i>
+            <div style="font-size:13px;">加载学情数据中…</div>
+        </div>
+    </div>`;
+
+    const SUBJECT_COLORS = {
+        '语文': '#10B981', '数学': '#EF4444', '英语': '#10B981',
+        '物理': '#F59E0B', '化学': '#F59E0B', '生物': '#10B981',
+        '政治': '#EF4444', '历史': '#F59E0B', '地理': '#F59E0B'
+    };
+
+    let mod = null, goal = null, latest = null;
+    try { mod = await api.getPageData('ai-module-coach'); } catch (e) { console.warn('诊断模块数据加载失败', e); }
+    try { if (api.getLearningGoal) goal = await api.getLearningGoal(); } catch (e) { goal = null; }
+    try { if (api.getLatestDiagnostic) latest = await api.getLatestDiagnostic(); } catch (e) { latest = null; }
+
+    const el = document.getElementById('ai-diagnosis-content');
+    if (!el) return;
+
+    const diag = (mod && mod.diagnosis) || {};
+    const report = latest && latest.report ? latest.report : null;
+    const summary = (report && report.summary) || {};
+    const inProgress = !report && latest && latest.session && latest.session.status === 'in_progress';
+
+    // 3+1+2：从 9 科中选 6 科；优先读取登录用户的 goal.subjects
+    const prevMap = {};
+    let sum = 0, cnt = 0;
+    (diag.subjects || []).forEach(s => {
+        prevMap[s.name] = s;
+        const n = parseInt(s.value, 10);
+        if (!isNaN(n)) { sum += n; cnt++; }
+    });
+    const avg = cnt ? Math.round(sum / cnt) : 0;
+
+    let names = [];
+    if (goal && Array.isArray(goal.subjects)) {
+        names = goal.subjects.map(s => typeof s === 'string' ? s : (s && s.name) || '').filter(Boolean);
+    }
+    if (names.length !== 6) {
+        const fallback = (diag.subjects || []).slice(0, 6).map(s => s.name);
+        names = fallback.length === 6 ? fallback : ['语文', '数学', '英语', '物理', '化学', '生物'];
+    }
+
+    const masteryMap = {};
+    if (report && Array.isArray(report.ability_profile)) {
+        report.ability_profile.forEach(a => {
+            if (a && a.subject) masteryMap[a.subject] = Math.round(Number(a.mastery || 0) * 100);
+        });
+    }
+
+    const subjects = names.map(name => {
+        let pct = masteryMap[name];
+        if (pct === undefined) pct = prevMap[name] ? (parseInt(prevMap[name].value, 10) || 0) : avg;
+        return { name, pct, color: SUBJECT_COLORS[name] || '#3B82F6' };
+    });
+
+    const barsHtml = subjects.map(s => `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px;">
+            <div style="width:44px;font-size:13px;font-weight:600;color:#374151;">${escapeHtml(s.name)}</div>
+            <div style="flex:1;height:8px;background:#F3F4F6;border-radius:4px;overflow:hidden;">
+                <div style="width:${s.pct}%;height:100%;background:${s.color};border-radius:4px;transition:width .4s;"></div>
+            </div>
+            <div style="width:46px;text-align:right;font-size:12px;font-weight:700;color:${s.color};">${s.pct}%</div>
+        </div>`).join('');
+
+    const weakPoints = (report && report.weak_points) || [];
+    const weakHtml = weakPoints.slice(0, 5).map(w => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px dashed #F3F4F6;">
+            <div style="font-size:13px;color:#374151;"><span style="color:#EF4444;font-weight:600;">${escapeHtml(w.subject || '')}</span> · ${escapeHtml(w.knowledge_point || '')}</div>
+            <span style="font-size:12px;color:#9CA3AF;">掌握 ${Math.round(Number(w.mastery || 0) * 100)}%</span>
+        </div>`).join('');
+
+    const paragraphs = (report && report.paragraphs) || [];
+    const paragraphHtml = paragraphs.map(p => `
+        <div style="font-size:13px;line-height:1.9;color:#374151;margin-bottom:8px;">${escapeHtml(p)}</div>`).join('');
+
+    const estimated = summary.estimated_score !== undefined && summary.estimated_score !== null ? summary.estimated_score : '--';
+    const accuracy = summary.accuracy_pct !== undefined && summary.accuracy_pct !== null ? summary.accuracy_pct + '%' : '--';
+
+    const reportBlock = report ? `
+        <div class="card" style="margin-top:14px;">
+            <div style="font-weight:700;font-size:14px;margin-bottom:8px;"><i class="fas fa-triangle-exclamation" style="color:#F59E0B;"></i> 薄弱知识点</div>
+            ${weakHtml || '<div style="font-size:13px;color:#9CA3AF;">暂无薄弱点数据</div>'}
+        </div>
+        <div class="card" style="margin-top:14px;">
+            <div style="font-weight:700;font-size:14px;margin-bottom:8px;"><i class="fas fa-file-lines" style="color:#4F46E5;"></i> 诊断结论</div>
+            ${paragraphHtml || '<div style="font-size:13px;color:#9CA3AF;">暂无诊断结论</div>'}
+        </div>` : `
+        <div class="card" style="margin-top:14px;text-align:center;padding:32px;">
+            <i class="fas fa-clipboard-list" style="font-size:28px;color:#C7D2FE;margin-bottom:10px;"></i>
+            <div style="font-size:14px;font-weight:600;color:#374151;margin-bottom:6px;">尚未完成 AI 学情诊断</div>
+            <div style="font-size:12px;color:#9CA3AF;">完成诊断后可查看估分、各科掌握率与薄弱知识点</div>
+        </div>`;
+
+    el.innerHTML = `
+        <div class="card" style="background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;padding:22px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div>
+                    <div style="font-size:14px;font-weight:700;margin-bottom:4px;">新高考 3+1+2 学情诊断</div>
+                    <div style="font-size:11px;opacity:.85;">必考 3 门 + 首选 1 门 + 再选 2 门</div>
+                </div>
+                <div style="font-size:11px;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:10px;">${report ? '已诊断' : '待诊断'}</div>
+            </div>
+            <div style="display:flex;gap:28px;margin-top:18px;">
+                <div><div style="font-size:24px;font-weight:700;line-height:1.2;">${estimated}</div><div style="font-size:11px;opacity:.85;">预估总分</div></div>
+                <div><div style="font-size:24px;font-weight:700;line-height:1.2;">${accuracy}</div><div style="font-size:11px;opacity:.85;">答题正确率</div></div>
+                <div><div style="font-size:24px;font-weight:700;line-height:1.2;">${subjects.length}</div><div style="font-size:11px;opacity:.85;">诊断科目</div></div>
+            </div>
+        </div>
+        <div class="card" style="margin-top:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                <div style="font-weight:700;font-size:14px;">各科掌握情况</div>
+                <span style="font-size:11px;color:#10B981;background:#ECFDF5;padding:2px 8px;border-radius:8px;">3+1+2</span>
+            </div>
+            ${barsHtml}
+            <div style="margin-top:8px;font-size:11px;color:#9CA3AF;">必考：语文 / 数学 / 英语 · 首选：物理或历史 · 再选：化学 / 生物 / 政治 / 地理 中选 2 门</div>
+        </div>
+        ${reportBlock}
+        <div style="display:flex;gap:10px;margin-top:16px;">
+            <button onclick="goDiagnostic()" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;font-size:14px;font-weight:600;cursor:pointer;">
+                <i class="fas fa-stethoscope"></i> ${report ? '重新诊断' : (inProgress ? '继续作答' : '开始 AI 学情诊断')}
+            </button>
+            <button onclick="switchPage('ai-coach')" style="height:42px;padding:0 20px;border-radius:21px;border:1px solid #E5E7EB;background:#fff;color:#374151;font-size:14px;cursor:pointer;">
+                <i class="fas fa-robot"></i> 问 AI 教练
+            </button>
+        </div>`;
+}
+
 // ========== AI答疑 ==========
 async function renderAIQAPage(container) {
     container.innerHTML = `
@@ -5245,20 +5333,20 @@ function renderAuthPanels() {
             </div>
             <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
                 <div class="auth-field">
-                    <label>用户名</label>
-                    <input type="text" id="login-username" placeholder="输入用户名或演示账户 u_001" required>
+                    <label>手机号 <span style="color:#9CA3AF;font-weight:400;">（或用户名）</span></label>
+                    <input type="text" id="login-username" placeholder="输入11位手机号，或演示账户 u_001" required>
                 </div>
                 <div class="auth-field">
                     <label>密码</label>
                     <input type="password" id="login-password" placeholder="输入密码" required>
                 </div>
                 <button type="submit" class="btn-primary auth-submit"><i class="fas fa-sign-in-alt"></i> 登录</button>
-                <div class="auth-hint"><i class="fas fa-info-circle"></i> 演示账户：<strong>u_001</strong> / 密码：<strong>u_001</strong></div>
+                <div class="auth-hint"><i class="fas fa-info-circle"></i> 手机号注册的账号请直接输入手机号；演示账户：<strong>u_001</strong> / <strong>u_001</strong></div>
             </form>
             <form id="register-form" class="auth-form" style="display:none;" onsubmit="handleRegister(event)">
                 <div class="auth-field">
-                    <label>用户名 <span style="color:#9CA3AF;font-weight:400;">（3-20位）</span></label>
-                    <input type="text" id="reg-username" placeholder="设置登录用户名" minlength="3" maxlength="20" required>
+                    <label>手机号</label>
+                    <input type="tel" id="reg-username" placeholder="请输入11位手机号" maxlength="11" required>
                 </div>
                 <div class="auth-field">
                     <label>密码 <span style="color:#9CA3AF;font-weight:400;">（至少6位）</span></label>
@@ -5394,13 +5482,13 @@ async function renderProfilePage(container) {
         const bindings = await api.getParentBindings();
         const bindingHTML = bindings && bindings.length ? `
             <div class="profile-section">
-                <h3><i class="fas fa-users"></i> 家长绑定（${bindings.length}/3）</h3>
+                <h3><i class="fas fa-users"></i> 家长绑定（${bindings.length}/3）<button class="btn-sm" style="margin-left:8px;" onclick="openParentBindModal()">添加</button></h3>
                 ${bindings.map(b => `
                     <div class="binding-item">
                         <div><strong>${b.relation}</strong> · ${b.parent_phone}</div>
                         <div style="font-size:12px;color:#9CA3AF;">
-                            ${b.status === 'confirmed' ? '<span style="color:#10B981;">已确认</span>' : '<span style="color:#F59E0B;">待确认</span>'}
-                            ${b.status === 'pending' ? `<button class="btn-sm" onclick="confirmBinding('${b.id}')">确认</button>` : ''}
+                            ${(b.status === 'active' || b.status === 'confirmed') ? '<span style="color:#10B981;">已确认</span>' : '<span style="color:#F59E0B;">待确认</span>'}
+                            ${b.status === 'pending' ? `<button class="btn-sm" onclick="confirmBinding('${b.binding_id || b.id}')">确认</button>` : ''}
                         </div>
                     </div>
                 `).join('')}
@@ -5408,7 +5496,8 @@ async function renderProfilePage(container) {
         ` : `
             <div class="profile-section">
                 <h3><i class="fas fa-users"></i> 家长绑定</h3>
-                <p style="color:#9CA3AF;font-size:13px;">暂未绑定家长账号，可在登录页添加</p>
+                <p style="color:#9CA3AF;font-size:13px;">暂未绑定家长账号</p>
+                <button class="btn-primary" style="height:38px;padding:0 18px;border-radius:19px;" onclick="openParentBindModal()"><i class="fas fa-plus"></i> 添加家长绑定</button>
             </div>
         `;
 
@@ -5428,7 +5517,7 @@ async function renderProfilePage(container) {
                     <div class="profile-row"><span>高考日期</span><strong>${user.exam_date||'--'}</strong></div>
                     ${bindingHTML}
                     <div style="margin-top:20px;display:flex;gap:10px;">
-                        <button class="btn-primary" style="flex:1;" onclick="editGoalScore()"><i class="fas fa-edit"></i> 编辑目标分数</button>
+                        <button class="btn-primary" style="flex:1;" onclick="openParentBindModal()"><i class="fas fa-users"></i> 家长绑定</button>
                         <button class="btn-danger" style="flex:1;" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> 退出登录</button>
                     </div>
                 </div>
@@ -6007,6 +6096,43 @@ async function handleSmsLogin(event) {
     }
 }
 
+// 已登录用户：单独打开家长绑定弹窗
+function openParentBindModal() {
+    window._selectedRelation = '父亲';
+    openModal('家长绑定', `
+        <div style="background:linear-gradient(135deg,#FFF7ED,#FFEDD5);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:#92400E;">
+            <i class="fas fa-hand-holding-heart"></i> 绑定孩子账号后，家长可查看学习进度、成绩趋势与提分情况。
+        </div>
+        <form id="parent-bind-form" class="auth-form" onsubmit="handleParentBind(event)">
+            <div class="auth-field">
+                <label>学生手机号</label>
+                <input type="tel" id="bind-student-phone" maxlength="11" placeholder="请输入孩子的手机号" required>
+            </div>
+            <div class="auth-field">
+                <label>与学生关系</label>
+                <div style="display:flex;gap:10px;margin-top:6px;" class="relation-group">
+                    <div onclick="selectRelation(this,'父亲')" class="relation-chip active" style="flex:1;text-align:center;padding:10px;border-radius:10px;background:#EFF6FF;color:#2563EB;font-size:13px;font-weight:600;border:1.5px solid #3B82F6;cursor:pointer;"><i class="fas fa-male"></i> 父亲</div>
+                    <div onclick="selectRelation(this,'母亲')" class="relation-chip" style="flex:1;text-align:center;padding:10px;border-radius:10px;background:#F9FAFB;color:#6B7280;font-size:13px;font-weight:600;border:1.5px solid #E5E7EB;cursor:pointer;"><i class="fas fa-female"></i> 母亲</div>
+                    <div onclick="selectRelation(this,'其他')" class="relation-chip" style="flex:1;text-align:center;padding:10px;border-radius:10px;background:#F9FAFB;color:#6B7280;font-size:13px;font-weight:600;border:1.5px solid #E5E7EB;cursor:pointer;"><i class="fas fa-user"></i> 其他</div>
+                </div>
+            </div>
+            <div class="auth-field">
+                <label>家长手机号</label>
+                <input type="tel" id="bind-parent-phone" maxlength="11" placeholder="请输入家长手机号" required>
+            </div>
+            <div class="auth-field">
+                <label>家长短信验证码</label>
+                <div style="display:flex;gap:10px;">
+                    <input type="text" id="bind-sms-code" maxlength="6" placeholder="请输入6位验证码" style="flex:1;">
+                    <button type="button" onclick="handleSmsSendForParent(event)" style="flex-shrink:0;width:130px;background:white;border:1.5px solid #3B82F6;color:#3B82F6;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">获取验证码</button>
+                </div>
+            </div>
+            <button type="submit" class="btn-primary auth-submit"><i class="fas fa-link"></i> 确认绑定</button>
+            <div class="auth-hint"><i class="fas fa-info-circle"></i> 绑定后需学生端确认同意，一个家长最多绑定3个学生</div>
+        </form>
+    `);
+}
+
 // 家长绑定
 async function handleParentBind(event) {
     event.preventDefault();
@@ -6020,11 +6146,15 @@ async function handleParentBind(event) {
     const smsCode = smsCodeEl ? smsCodeEl.value.trim() : '';
 
     if (!studentPhone || !parentPhone) return showToast('请填写完整信息', 'warning');
+    if (!/^1\d{10}$/.test(studentPhone) || !/^1\d{10}$/.test(parentPhone)) return showToast('请输入正确的11位手机号', 'warning');
 
     const data = await api.parentBind(studentPhone, parentPhone, relation, smsCode || null);
     if (data) {
         showToast('家长绑定申请已提交，等待学生确认', 'success');
+        closeModal();
         setTimeout(() => renderProfilePage(document.querySelector('.content-scroll')), 500);
+    } else {
+        showToast('绑定失败：该家长可能已绑定此学生，请更换手机号', 'warning');
     }
 }
 
@@ -6069,28 +6199,27 @@ async function handleLogin(event) {
     const form = event.target;
     const usernameEl = form.querySelector('#login-username, [id="login-username"]');
     const passwordEl = form.querySelector('#login-password, [id="login-password"]');
-    const username = usernameEl ? usernameEl.value.trim() : '';
+    const identifier = usernameEl ? usernameEl.value.trim() : '';
     const password = passwordEl ? passwordEl.value : '';
-    if (!username || !password) return showToast('请输入用户名和密码', 'warning');
+    if (!identifier || !password) return showToast('请输入账号和密码', 'warning');
 
     const btn = form.querySelector('.auth-submit');
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 登录中...';
     btn.disabled = true;
 
-    const data = await api.login(username, password);
+    const data = await api.login(identifier, password);
     btn.innerHTML = originalText;
     btn.disabled = false;
 
     if (data && data.token) {
         Auth.setSession(data.token, data.user_id, data.user);
-        showToast('登录成功，欢迎回来 ' + (data.user.name || username), 'success');
-        // 更新顶部欢迎语
+        showToast('登录成功，欢迎回来 ' + (data.user.name || identifier), 'success');
         if (typeof updateUserUI === 'function') updateUserUI(data.user);
-        // 重新渲染个人中心
+        ensureDiagnosisGate(data.user);
         setTimeout(() => renderProfilePage(document.querySelector('.content-scroll')), 500);
     } else {
-        showToast('登录失败：用户名或密码错误', 'error');
+        showToast('登录失败：账号或密码错误', 'error');
     }
 }
 
@@ -6103,11 +6232,11 @@ async function handleRegister(event) {
     const password2El = form.querySelector('#reg-password2, [id="reg-password2"]');
     const nameEl = form.querySelector('#reg-name, [id="reg-name"]');
     const agreeBox = form.querySelector('.agree-box');
-    const username = usernameEl ? usernameEl.value.trim() : '';
+    const phone = usernameEl ? usernameEl.value.trim() : '';
     const password = passwordEl ? passwordEl.value : '';
     const password2 = password2El ? password2El.value : '';
     const name = nameEl ? nameEl.value.trim() : '';
-    if (!username || !password) return showToast('请输入用户名和密码', 'warning');
+    if (!phone || !/^1\d{10}$/.test(phone)) return showToast('请输入正确的11位手机号', 'warning');
     if (password.length < 6) return showToast('密码至少6位', 'warning');
     if (password !== password2) return showToast('两次密码不一致', 'warning');
     if (!agreeBox || !agreeBox.classList.contains('checked')) return showToast('请先同意用户协议和隐私政策', 'warning');
@@ -6117,18 +6246,199 @@ async function handleRegister(event) {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 注册中...';
     btn.disabled = true;
 
-    const data = await api.register(username, password, name);
+    const data = await api.register(phone, password, name);
     btn.innerHTML = originalText;
     btn.disabled = false;
 
     if (data && data.token) {
         Auth.setSession(data.token, data.user_id, data.user);
-        showToast('注册成功，欢迎加入 ' + (data.user.name || username), 'success');
+        showToast('注册成功，欢迎加入 ' + (data.user.name || phone), 'success');
         if (typeof updateUserUI === 'function') updateUserUI(data.user);
-        setTimeout(() => renderProfilePage(document.querySelector('.content-scroll')), 500);
+        showDiagnosisGate(data.user);
     } else {
-        showToast('注册失败：用户名可能已被占用', 'error');
+        showToast('注册失败：该手机号可能已被注册', 'error');
     }
+}
+
+// ========== 新手引导：注册/登录后先完成 AI 学情诊断 ==========
+async function ensureDiagnosisGate(user) {
+    try {
+        const latest = await api.getLatestDiagnostic();
+        if (latest && latest.status === 'completed') {
+            localStorage.removeItem('aigaokao_onboarding_diagnosis');
+            return;
+        }
+    } catch (e) {}
+    showDiagnosisGate(user);
+}
+
+function showDiagnosisGate(user) {
+    const name = (user && user.name) ? user.name : '同学';
+    openModal('先完成 AI 学情诊断', `
+        <div style="text-align:center;padding:4px 0 2px;">
+            <div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg,#EEF2FF,#EDE9FE);display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-stethoscope" style="font-size:26px;color:#4F46E5;"></i>
+            </div>
+            <div style="font-size:16px;font-weight:700;color:#111827;">${name}，欢迎加入</div>
+            <div style="font-size:13px;color:#6B7280;margin-top:6px;line-height:1.7;">新会员需先完成 AI 学情诊断，系统才能为你生成专属提分方案。</div>
+        </div>
+        <div style="background:#F8FAFC;border-radius:12px;padding:14px;margin:16px 0;font-size:12.5px;color:#475569;line-height:1.9;">
+            <div><i class="fas fa-check-circle" style="color:#10B981;"></i> 6 门选科 · 34 道诊断题 · 约 10 分钟</div>
+            <div><i class="fas fa-check-circle" style="color:#10B981;"></i> 生成估分、掌握率雷达与薄弱知识点</div>
+            <div><i class="fas fa-check-circle" style="color:#10B981;"></i> 自动生成专属学习计划与今日任务</div>
+        </div>
+        <button class="btn-primary" style="width:100%;height:44px;border-radius:22px;" onclick="goDiagnostic()"><i class="fas fa-stethoscope"></i> 开始 AI 学情诊断</button>
+        <div style="text-align:center;margin-top:10px;"><a href="#" onclick="closeModal();showToast('可稍后在「AI学情诊断」完成','info');return false;" style="font-size:12px;color:#9CA3AF;">稍后再说</a></div>
+    `);
+}
+
+// ========== AI学情诊断：站内答题流程 ==========
+let diagState = null;
+
+async function goDiagnostic() {
+    closeModal();
+    localStorage.setItem('aigaokao_onboarding_diagnosis', 'pending');
+    await switchPage('ai-diagnosis');
+    startInlineDiagnosis();
+}
+
+async function startInlineDiagnosis() {
+    const host = document.getElementById('ai-diagnosis-content');
+    if (!host) return;
+    host.innerHTML = `<div class="card" style="text-align:center;padding:48px 24px;">
+        <i class="fas fa-spinner fa-spin" style="font-size:26px;color:#4F46E5;"></i>
+        <div style="font-size:14px;font-weight:600;color:#374151;margin-top:14px;">正在为你准备诊断题目…</div>
+        <div style="font-size:12px;color:#9CA3AF;margin-top:6px;">6 门选科 · 共 34 题 · 约 10 分钟</div>
+    </div>`;
+    let data = null;
+    try { data = await api.startDiagnostic(); } catch (e) { data = null; }
+    if (!data || !Array.isArray(data.questions) || !data.questions.length) {
+        showToast('诊断启动失败，请先登录后重试', 'warning');
+        renderAIDiagnosisPage();
+        return;
+    }
+    diagState = { sessionId: data.session_id, questions: data.questions, index: 0 };
+    // 复用进行中会话时，定位到第一道未答题
+    const firstUnanswered = data.questions.findIndex(q => q.answer_index === null || q.answer_index === undefined);
+    diagState.index = firstUnanswered >= 0 ? firstUnanswered : data.questions.length - 1;
+    renderInlineQuiz();
+}
+
+function renderInlineQuiz() {
+    const host = document.getElementById('ai-diagnosis-content');
+    if (!host || !diagState) return;
+    const s = diagState;
+    const total = s.questions.length;
+    const idx = s.index;
+    const q = s.questions[idx];
+    const selected = (typeof q.answer_index === 'number') ? q.answer_index : -1;
+    const answeredCount = s.questions.filter(x => typeof x.answer_index === 'number').length;
+    const pct = Math.round(answeredCount / total * 100);
+    const letters = 'ABCDEF';
+
+    const optionHtml = (q.options || []).map((opt, i) => {
+        const on = i === selected;
+        return `<div onclick="selectDiagOption(${i})" style="display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border-radius:12px;cursor:pointer;transition:all .18s;border:1.5px solid ${on ? '#4F46E5' : '#E5E7EB'};background:${on ? '#EEF2FF' : '#FFFFFF'};">
+            <span style="width:24px;height:24px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;${on ? 'background:#4F46E5;color:#fff;' : 'background:#F3F4F6;color:#6B7280;'}">${letters[i] || ''}</span>
+            <span style="font-size:14px;line-height:1.8;color:${on ? '#1E3A8A' : '#374151'};font-weight:${on ? '600' : '400'};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;">${formatMathPlain(escapeHtml(opt))}</span>
+        </div>`;
+    }).join('');
+
+    host.innerHTML = `
+        <div class="card" style="padding:0;overflow:hidden;">
+            <div style="padding:16px 18px;background:linear-gradient(135deg,#EEF2FF,#F5F3FF);">
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#6B7280;">
+                    <span><i class="fas fa-stethoscope" style="color:#4F46E5;"></i> 新高考 3+1+2 学情诊断</span>
+                    <span>已答 <strong style="color:#4F46E5;">${answeredCount}</strong> / ${total}</span>
+                </div>
+                <div style="height:6px;background:#E0E7FF;border-radius:3px;margin-top:10px;overflow:hidden;">
+                    <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#4F46E5,#7C3AED);transition:width .3s;"></div>
+                </div>
+            </div>
+            <div style="padding:18px;">
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+                    <span style="font-size:11px;font-weight:700;color:#4F46E5;background:#EEF2FF;padding:3px 10px;border-radius:9px;">${escapeHtml(q.subject || '综合')}</span>
+                    <span style="font-size:11px;color:#9CA3AF;">第 ${idx + 1} / ${total} 题</span>
+                    <span style="font-size:11px;color:#9CA3AF;margin-left:auto;">${escapeHtml(q.knowledge_point || '')}</span>
+                </div>
+                <div style="font-size:15px;font-weight:600;color:#111827;line-height:1.8;margin-bottom:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;">${formatMathPlain(escapeHtml(q.stem))}</div>
+                <div style="display:flex;flex-direction:column;gap:10px;">${optionHtml}</div>
+            </div>
+            <div style="padding:14px 18px;border-top:1px solid #F3F4F6;display:flex;gap:10px;align-items:center;">
+                <button onclick="diagPrev()" ${idx === 0 ? 'disabled' : ''} style="height:40px;padding:0 16px;border-radius:20px;border:1px solid #E5E7EB;background:${idx === 0 ? '#F9FAFB' : '#FFFFFF'};color:${idx === 0 ? '#C7CBD1' : '#374151'};font-size:13px;cursor:${idx === 0 ? 'not-allowed' : 'pointer'};"><i class="fas fa-arrow-left"></i> 上一题</button>
+                ${idx === total - 1
+                    ? `<button onclick="submitInlineDiag()" style="flex:1;height:40px;border-radius:20px;border:none;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;font-size:14px;font-weight:600;cursor:pointer;"><i class="fas fa-file-medical"></i> 提交并生成报告</button>`
+                    : `<button onclick="diagNext()" style="flex:1;height:40px;border-radius:20px;border:none;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;font-size:14px;font-weight:600;cursor:pointer;">下一题 <i class="fas fa-arrow-right"></i></button>`}
+            </div>
+        </div>
+        <div style="font-size:11px;color:#9CA3AF;margin-top:10px;text-align:center;">选择答案会自动保存；全部作答后生成估分、各科掌握率与薄弱知识点</div>`;
+}
+
+function selectDiagOption(optIdx) {
+    if (!diagState) return;
+    const q = diagState.questions[diagState.index];
+    if (typeof q.answer_index === 'number' && q.answer_index === optIdx) return;
+    q.answer_index = optIdx;
+    renderInlineQuiz();
+    try {
+        api.submitDiagnosticAnswer(diagState.sessionId, {
+            question_id: q.id, answer_index: optIdx, duration_sec: 0
+        }).then(function (res) {
+            if (res && typeof res.is_correct === 'boolean') {
+                q.is_correct = res.is_correct;
+            }
+        }).catch(function () {});
+    } catch (e) {}
+    if (diagState.index < diagState.questions.length - 1) {
+        setTimeout(() => {
+            if (!diagState) return;
+            diagState.index++;
+            renderInlineQuiz();
+        }, 280);
+    }
+}
+
+function diagPrev() {
+    if (!diagState || diagState.index === 0) return;
+    diagState.index--;
+    renderInlineQuiz();
+}
+
+function diagNext() {
+    if (!diagState) return;
+    if (diagState.index >= diagState.questions.length - 1) return;
+    diagState.index++;
+    renderInlineQuiz();
+}
+
+async function submitInlineDiag() {
+    if (!diagState) return;
+    const s = diagState;
+    const firstUnanswered = s.questions.findIndex(q => typeof q.answer_index !== 'number');
+    if (firstUnanswered >= 0) {
+        const left = s.questions.filter(q => typeof q.answer_index !== 'number').length;
+        showToast(`还有 ${left} 题未作答，已跳到第 ${firstUnanswered + 1} 题`, 'warning');
+        s.index = firstUnanswered;
+        renderInlineQuiz();
+        return;
+    }
+    const host = document.getElementById('ai-diagnosis-content');
+    if (host) host.innerHTML = `<div class="card" style="text-align:center;padding:48px 24px;">
+        <i class="fas fa-spinner fa-spin" style="font-size:26px;color:#4F46E5;"></i>
+        <div style="font-size:14px;font-weight:600;color:#374151;margin-top:14px;">正在生成诊断报告…</div>
+        <div style="font-size:12px;color:#9CA3AF;margin-top:6px;">分析答题数据、计算估分与薄弱知识点</div>
+    </div>`;
+    let res = null;
+    try { res = await api.submitDiagnostic(s.sessionId); } catch (e) { res = null; }
+    if (!res) {
+        showToast('提交失败，请稍后重试', 'error');
+        renderInlineQuiz();
+        return;
+    }
+    diagState = null;
+    localStorage.removeItem('aigaokao_onboarding_diagnosis');
+    showToast('诊断完成，报告已生成', 'success');
+    setTimeout(function () { renderAIDiagnosisPage(); }, 400);
 }
 
 // 处理退出登录
@@ -6162,7 +6472,7 @@ async function openAuthModal() {
                 <div style="display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid #F3F4F6;font-size:13px;"><span style="color:#6B7280;">高考日期</span><strong>${user.exam_date||'--'}</strong></div>
             </div>
             <div style="margin-top:18px;display:flex;gap:10px;">
-                <button class="btn-primary" style="flex:1;height:40px;border-radius:20px;" onclick="closeModal();editGoalScore()"><i class="fas fa-edit"></i> 编辑目标分</button>
+                <button class="btn-primary" style="flex:1;height:40px;border-radius:20px;" onclick="openParentBindModal()"><i class="fas fa-users"></i> 家长绑定</button>
                 <button class="btn-danger" style="flex:1;height:40px;border-radius:20px;" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> 退出登录</button>
             </div>
         `);
@@ -6176,627 +6486,8 @@ async function openAuthModal() {
     switchAuthTab('password');
 }
 
-// ============================================================
-// ========== 首页模块编辑模式系统 ==========
-// ============================================================
-
-// 编辑模式状态
-let editMode = false;
-// 模块配置缓存
+// 模块配置缓存（供页面加载与模块联动使用）
 let moduleConfigs = {};
-
-// 各模块定义：key → { name, desc, icon }
-const MODULE_DEFS = {
-    'goal':       { name: '高考目标分',   desc: '当前估分、目标分数、达成率',     icon: 'fa-bullseye' },
-    'plan':       { name: '今日学习计划', desc: '今日学习任务列表',               icon: 'fa-calendar-check' },
-    'weak-points':{ name: '薄弱知识点',   desc: '知识点掌握情况与提分建议',       icon: 'fa-chart-bar' },
-    'radar':      { name: '学科能力雷达图', desc: '各科得分与能力雷达',           icon: 'fa-project-diagram' },
-    'recommend':  { name: 'AI智能推荐',   desc: '智能组卷/错题/考点/真题入口',    icon: 'fa-robot' },
-    'calendar':   { name: '学习日历',     desc: '本周学习情况与打卡',             icon: 'fa-calendar' },
-    'exam-predict':{ name: '模考预测',    desc: '预测分数、排名、置信度',         icon: 'fa-chart-line' },
-    'growth':     { name: '成长记录',     desc: '学习时长、题目、正确率、积分',   icon: 'fa-seedling' },
-    'banner':     { name: '高考冲刺计划', desc: '底部横幅标题与描述',             icon: 'fa-graduation-cap' }
-};
-
-// 切换编辑模式
-function toggleEditMode() {
-    editMode = !editMode;
-    document.body.classList.toggle('edit-mode', editMode);
-
-    const btn = document.getElementById('edit-mode-toggle');
-    if (btn) {
-        btn.innerHTML = editMode
-            ? '<i class="fas fa-check"></i> 完成编辑'
-            : '<i class="fas fa-edit"></i> 编辑模式';
-        btn.classList.toggle('active', editMode);
-    }
-
-    if (editMode) {
-        injectEditOverlays();
-        showToast('编辑模式已开启，点击各模块右上角按钮进行编辑或导入本地资料', 'info');
-    } else {
-        removeEditOverlays();
-        showToast('编辑模式已关闭', 'info');
-    }
-}
-
-// 为每个可编辑卡片注入悬浮编辑按钮
-function injectEditOverlays() {
-    const cards = document.querySelectorAll('[data-module]');
-    cards.forEach(card => {
-        if (card.querySelector('.module-edit-overlay')) return;
-        const key = card.dataset.module;
-        const def = MODULE_DEFS[key];
-        if (!def) return;
-
-        const overlay = document.createElement('div');
-        overlay.className = 'module-edit-overlay';
-        overlay.innerHTML = `
-            <div class="module-edit-badge"><i class="fas fa-pen"></i> 可编辑</div>
-            <div class="module-edit-actions">
-                <button class="module-edit-btn" onclick="event.stopPropagation();editModule('${key}')" title="编辑「${def.name}」">
-                    <i class="fas fa-edit"></i> 编辑
-                </button>
-                <button class="module-import-btn" onclick="event.stopPropagation();importModuleFile('${key}')" title="从本地电脑导入资料">
-                    <i class="fas fa-file-import"></i> 导入
-                </button>
-                <button class="module-reset-btn" onclick="event.stopPropagation();resetModule('${key}')" title="重置为默认">
-                    <i class="fas fa-undo"></i> 重置
-                </button>
-            </div>
-        `;
-        card.style.position = 'relative';
-        card.appendChild(overlay);
-    });
-}
-
-// 移除编辑按钮
-function removeEditOverlays() {
-    document.querySelectorAll('.module-edit-overlay').forEach(el => el.remove());
-}
-
-// ========== 编辑模块通用入口 ==========
-function editModule(key) {
-    const def = MODULE_DEFS[key];
-    if (!def) return;
-    const config = moduleConfigs[key] || {};
-
-    switch (key) {
-        case 'goal':        return editGoalModule(config);
-        case 'plan':        return editPlanModule(config);
-        case 'weak-points': return editWeakPointsModule(config);
-        case 'radar':       return editRadarModule(config);
-        case 'recommend':   return editRecommendModule(config);
-        case 'calendar':    return editCalendarModule(config);
-        case 'exam-predict':return editExamPredictModule(config);
-        case 'growth':      return editGrowthModule(config);
-        case 'banner':      return editBannerModule(config);
-    }
-}
-
-// ========== 通用：编辑弹窗中的"导入本地文件"区域 ==========
-function renderImportSection(key) {
-    return `
-        <div style="background:#F0F9FF;border:1px solid #BAE6FD;border-radius:10px;padding:12px 14px;margin-top:16px;">
-            <div style="font-size:13px;font-weight:600;color:#0369A1;margin-bottom:8px;">
-                <i class="fas fa-file-import"></i> 从本地电脑导入资料
-            </div>
-            <div style="font-size:12px;color:#6B7280;margin-bottom:10px;line-height:1.5;">
-                支持 JSON / CSV / TXT 格式。选择文件后自动解析并填充到编辑表单中。
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <label class="modal-btn secondary" style="padding:6px 12px;font-size:12px;cursor:pointer;">
-                    <i class="fas fa-upload"></i> 选择本地文件
-                    <input type="file" accept=".json,.csv,.txt" style="display:none;" onchange="handleFileSelect(event,'${key}')">
-                </label>
-                <button class="modal-btn secondary" style="padding:6px 12px;font-size:12px;" onclick="pasteImportData('${key}')">
-                    <i class="fas fa-paste"></i> 粘贴文本导入
-                </button>
-            </div>
-            <div id="file-import-result" style="margin-top:8px;"></div>
-        </div>
-    `;
-}
-
-// 处理文件选择（通过 FileReader 读取本地文件）
-function handleFileSelect(event, key) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const resultDiv = document.getElementById('file-import-result');
-    resultDiv.innerHTML = `<div style="font-size:12px;color:#3B82F6;"><i class="fas fa-spinner fa-spin"></i> 正在读取 ${file.name}...</div>`;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const content = e.target.result;
-        const ext = file.name.split('.').pop().toLowerCase();
-        let format = 'text';
-        if (ext === 'json') format = 'json';
-        else if (ext === 'csv') format = 'csv';
-
-        try {
-            let parsed = null;
-            if (format === 'json') {
-                parsed = JSON.parse(content);
-            } else if (format === 'csv') {
-                const lines = content.split('\n').map(l => l.trim()).filter(Boolean);
-                if (lines.length >= 2) {
-                    const headers = lines[0].split(',').map(h => h.trim());
-                    parsed = { items: [] };
-                    for (let i = 1; i < lines.length; i++) {
-                        const values = lines[i].split(',').map(v => v.trim());
-                        const row = {};
-                        headers.forEach((h, j) => { row[h] = values[j] || ''; });
-                        parsed.items.push(row);
-                    }
-                }
-            } else {
-                parsed = {};
-                content.split('\n').forEach(line => {
-                    const idx = line.indexOf(':');
-                    if (idx > 0) {
-                        const k = line.slice(0, idx).trim();
-                        const v = line.slice(idx + 1).trim();
-                        const num = parseFloat(v);
-                        parsed[k] = isNaN(num) ? v : num;
-                    }
-                });
-            }
-
-            resultDiv.innerHTML = `<div style="font-size:12px;color:#10B981;"><i class="fas fa-check-circle"></i> 文件 ${file.name} 解析成功！已自动填充到表单下方。</div>`;
-            // 将解析结果填入编辑表单
-            applyImportToForm(key, parsed);
-            showToast(`文件 ${file.name} 导入成功`, 'success');
-        } catch (err) {
-            resultDiv.innerHTML = `<div style="font-size:12px;color:#EF4444;"><i class="fas fa-exclamation-circle"></i> 解析失败: ${err.message}</div>`;
-            showToast('文件解析失败', 'error');
-        }
-    };
-    reader.readAsText(file);
-}
-
-// 粘贴文本导入
-function pasteImportData(key) {
-    const def = MODULE_DEFS[key];
-    const bodyHTML = `
-        <div style="margin-bottom:12px;">
-            <div style="font-size:13px;color:#374151;margin-bottom:8px;">将本地电脑中的资料内容粘贴到下方文本框，系统会自动解析并导入到「${def.name}」模块。</div>
-            <div style="font-size:12px;color:#6B7280;margin-bottom:8px;">支持格式：<strong>JSON</strong>（对象/数组）| <strong>CSV</strong>（逗号分隔，首行表头）| <strong>文本</strong>（key: value 逐行）</div>
-            <textarea id="paste-textarea" style="width:100%;min-height:200px;border:1px solid #D1D5DB;border-radius:8px;padding:10px;font-size:12px;font-family:monospace;" placeholder='JSON示例: {"current_score":580,"target_score":640}&#10;CSV示例: 科目,分数,满分&#10;数学,120,150&#10;英语,130,150&#10;文本示例:&#10;current_score: 580&#10;target_score: 640'></textarea>
-            <div id="paste-result" style="margin-top:8px;"></div>
-        </div>
-        <div class="modal-footer" style="border:none;padding:10px 0 0;">
-            <button class="modal-btn secondary" onclick="closeModal()">取消</button>
-            <button class="modal-btn primary" onclick="submitPasteImport('${key}')">
-                <i class="fas fa-download"></i> 解析并导入
-            </button>
-        </div>
-    `;
-    openModal('粘贴导入 - ' + def.name, bodyHTML);
-}
-
-async function submitPasteImport(key) {
-    const textarea = document.getElementById('paste-textarea');
-    const resultDiv = document.getElementById('paste-result');
-    const text = textarea.value.trim();
-    if (!text) { showToast('请先粘贴内容', 'warning'); return; }
-
-    let format = 'text';
-    let data = text;
-    if (text.startsWith('{') || text.startsWith('[')) format = 'json';
-    else if (text.split('\n')[0].includes(',')) format = 'csv';
-
-    resultDiv.innerHTML = '<div style="text-align:center;padding:8px;"><i class="fas fa-spinner fa-spin" style="color:#3B82F6;"></i> 正在导入...</div>';
-    const result = await api.importModuleData(key, format, data);
-    if (result) {
-        resultDiv.innerHTML = `<div style="background:#ECFDF5;border:1px solid #6EE7B7;border-radius:8px;padding:10px;color:#065F46;font-size:13px;"><i class="fas fa-check-circle"></i> 导入成功！</div>`;
-        moduleConfigs[key] = result.config;
-        showToast('导入成功，正在刷新模块...', 'success');
-        setTimeout(() => { closeModal(); applyModuleConfig(key, result.config); }, 1000);
-    } else {
-        resultDiv.innerHTML = `<div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px;color:#991B1B;font-size:13px;"><i class="fas fa-exclamation-circle"></i> 导入失败，请检查格式</div>`;
-    }
-}
-
-// 将导入的数据应用到编辑表单
-function applyImportToForm(key, data) {
-    if (!data) return;
-    // 通用逻辑：遍历 data 的 key，如果表单中有对应 id 的 input，则填入
-    const fillForm = (obj, prefix = '') => {
-        Object.keys(obj).forEach(k => {
-            const inputId = prefix ? `${prefix}_${k}` : `edit-${k}`;
-            const input = document.getElementById(inputId);
-            if (input && typeof obj[k] !== 'object') {
-                input.value = obj[k];
-            }
-        });
-    };
-    fillForm(data);
-
-    // 如果是列表数据（items 数组），提示用户
-    if (data.items && Array.isArray(data.items)) {
-        const resultDiv = document.getElementById('file-import-result');
-        if (resultDiv) {
-            resultDiv.innerHTML += `<div style="font-size:12px;color:#8B5CF6;margin-top:6px;">检测到 ${data.items.length} 条记录，保存后将更新模块列表。</div>`;
-        }
-        // 存到临时变量供保存时使用
-        window._importedItems = window._importedItems || {};
-        window._importedItems[key] = data.items;
-    }
-}
-
-// ========== 各模块编辑弹窗 ==========
-
-// 1. 高考目标分
-function editGoalModule(config) {
-    const current = config.current_score || document.getElementById('current-score-num')?.textContent || '615';
-    const target = config.target_score || document.getElementById('target-score-num')?.textContent || '633';
-    const examDate = config.exam_date || '2026-06-07';
-
-    openModal('编辑 - 高考目标分', `
-        <div style="display:flex;flex-direction:column;gap:14px;">
-            <div>
-                <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">当前估分</label>
-                <input type="number" id="edit-current_score" value="${current}" min="0" max="750" style="width:100%;padding:8px 10px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;">
-            </div>
-            <div>
-                <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">目标分数</label>
-                <input type="number" id="edit-target_score" value="${target}" min="0" max="750" style="width:100%;padding:8px 10px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;">
-            </div>
-            <div>
-                <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">高考日期</label>
-                <input type="date" id="edit-exam_date" value="${examDate}" style="width:100%;padding:8px 10px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px;">
-            </div>
-            ${renderImportSection('goal')}
-            <div class="modal-footer" style="border:none;padding:10px 0 0;">
-                <button class="modal-btn secondary" onclick="closeModal()">取消</button>
-                <button class="modal-btn primary" onclick="saveModuleFromForm('goal')">保存修改</button>
-            </div>
-        </div>
-    `);
-}
-
-// 2. 今日学习计划
-function editPlanModule(config) {
-    const items = config.items || [];
-    const itemsHTML = items.length ? items.map((item, i) => `
-        <div class="edit-list-item" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-            <input type="text" placeholder="科目" value="${item.subject || ''}" class="edit-plan-subject" style="width:60px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <input type="text" placeholder="任务名称" value="${item.name || ''}" class="edit-plan-name" style="flex:1;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <input type="text" placeholder="时长" value="${item.time || ''}" class="edit-plan-time" style="width:70px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <button class="modal-btn secondary" style="padding:4px 8px;font-size:12px;" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
-        </div>
-    `).join('') : '<div style="color:#9CA3AF;font-size:13px;padding:8px;">暂无任务，点击下方添加</div>';
-
-    openModal('编辑 - 今日学习计划', `
-        <div id="plan-items-container">${itemsHTML}</div>
-        <button class="modal-btn secondary" style="margin-top:8px;padding:6px 12px;font-size:12px;" onclick="addPlanItem()">
-            <i class="fas fa-plus"></i> 添加任务
-        </button>
-        ${renderImportSection('plan')}
-        <div class="modal-footer" style="border:none;padding:10px 0 0;">
-            <button class="modal-btn secondary" onclick="closeModal()">取消</button>
-            <button class="modal-btn primary" onclick="saveModuleFromForm('plan')">保存修改</button>
-        </div>
-    `);
-}
-
-function addPlanItem() {
-    const container = document.getElementById('plan-items-container');
-    const div = document.createElement('div');
-    div.className = 'edit-list-item';
-    div.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px;';
-    div.innerHTML = `
-        <input type="text" placeholder="科目" class="edit-plan-subject" style="width:60px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-        <input type="text" placeholder="任务名称" class="edit-plan-name" style="flex:1;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-        <input type="text" placeholder="时长" class="edit-plan-time" style="width:70px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-        <button class="modal-btn secondary" style="padding:4px 8px;font-size:12px;" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
-    `;
-    container.appendChild(div);
-}
-
-// 3. 薄弱知识点
-function editWeakPointsModule(config) {
-    const items = config.items || [];
-    const itemsHTML = items.length ? items.map((item, i) => `
-        <div class="edit-list-item" style="display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap;">
-            <input type="text" placeholder="科目" value="${item.subject || ''}" class="edit-wp-subject" style="width:55px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <input type="text" placeholder="知识点" value="${item.name || ''}" class="edit-wp-name" style="flex:1;min-width:100px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <input type="number" placeholder="掌握率%" value="${item.mastery_rate || ''}" class="edit-wp-mastery" style="width:70px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <input type="number" placeholder="提分" value="${item.score_gain || ''}" class="edit-wp-gain" style="width:60px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <input type="text" placeholder="建议" value="${item.advice || ''}" class="edit-wp-advice" style="width:80px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <button class="modal-btn secondary" style="padding:4px 8px;font-size:12px;" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
-        </div>
-    `).join('') : '<div style="color:#9CA3AF;font-size:13px;padding:8px;">暂无数据，点击下方添加或导入</div>';
-
-    openModal('编辑 - 薄弱知识点', `
-        <div style="font-size:12px;color:#6B7280;margin-bottom:8px;">字段：科目 | 知识点 | 掌握率(%) | 预计提分 | 建议</div>
-        <div id="wp-items-container">${itemsHTML}</div>
-        <button class="modal-btn secondary" style="margin-top:8px;padding:6px 12px;font-size:12px;" onclick="addWeakPointItem()">
-            <i class="fas fa-plus"></i> 添加知识点
-        </button>
-        ${renderImportSection('weak-points')}
-        <div class="modal-footer" style="border:none;padding:10px 0 0;">
-            <button class="modal-btn secondary" onclick="closeModal()">取消</button>
-            <button class="modal-btn primary" onclick="saveModuleFromForm('weak-points')">保存修改</button>
-        </div>
-    `);
-}
-
-function addWeakPointItem() {
-    const container = document.getElementById('wp-items-container');
-    const div = document.createElement('div');
-    div.className = 'edit-list-item';
-    div.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap;';
-    div.innerHTML = `
-        <input type="text" placeholder="科目" class="edit-wp-subject" style="width:55px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-        <input type="text" placeholder="知识点" class="edit-wp-name" style="flex:1;min-width:100px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-        <input type="number" placeholder="掌握率%" class="edit-wp-mastery" style="width:70px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-        <input type="number" placeholder="提分" class="edit-wp-gain" style="width:60px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-        <input type="text" placeholder="建议" class="edit-wp-advice" style="width:80px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-        <button class="modal-btn secondary" style="padding:4px 8px;font-size:12px;" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
-    `;
-    container.appendChild(div);
-}
-
-// 4. 学科能力雷达图
-function editRadarModule(config) {
-    const items = config.items || [];
-    const itemsHTML = items.length ? items.map(item => `
-        <div class="edit-list-item" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-            <input type="text" placeholder="科目" value="${item.subject || ''}" class="edit-rd-subject" style="width:70px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <input type="number" placeholder="得分" value="${item.score || ''}" class="edit-rd-score" style="width:70px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <span style="color:#9CA3AF;">/</span>
-            <input type="number" placeholder="满分" value="${item.max_score || ''}" class="edit-rd-max" style="width:70px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <button class="modal-btn secondary" style="padding:4px 8px;font-size:12px;" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
-        </div>
-    `).join('') : '<div style="color:#9CA3AF;font-size:13px;padding:8px;">暂无数据</div>';
-
-    openModal('编辑 - 学科能力雷达图', `
-        <div id="rd-items-container">${itemsHTML}</div>
-        <button class="modal-btn secondary" style="margin-top:8px;padding:6px 12px;font-size:12px;" onclick="addRadarItem()">
-            <i class="fas fa-plus"></i> 添加科目
-        </button>
-        ${renderImportSection('radar')}
-        <div class="modal-footer" style="border:none;padding:10px 0 0;">
-            <button class="modal-btn secondary" onclick="closeModal()">取消</button>
-            <button class="modal-btn primary" onclick="saveModuleFromForm('radar')">保存修改</button>
-        </div>
-    `);
-}
-
-function addRadarItem() {
-    const container = document.getElementById('rd-items-container');
-    const div = document.createElement('div');
-    div.className = 'edit-list-item';
-    div.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px;';
-    div.innerHTML = `
-        <input type="text" placeholder="科目" class="edit-rd-subject" style="width:70px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-        <input type="number" placeholder="得分" class="edit-rd-score" style="width:70px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-        <span style="color:#9CA3AF;">/</span>
-        <input type="number" placeholder="满分" class="edit-rd-max" style="width:70px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-        <button class="modal-btn secondary" style="padding:4px 8px;font-size:12px;" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
-    `;
-    container.appendChild(div);
-}
-
-// 5. AI智能推荐（编辑名称和描述）
-function editRecommendModule(config) {
-    const items = config.items || [
-        { name: '智能组卷', desc: '根据你的薄弱点\n生成专属试卷' },
-        { name: '错题强化', desc: '巩固薄弱知识点\n减少重复错误' },
-        { name: '考点训练', desc: '高频考点专项训练\n精准提分' },
-        { name: '真题演练', desc: '近10年真题精选\n掌握命题趋势' }
-    ];
-    const itemsHTML = items.map(item => `
-        <div class="edit-list-item" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-            <input type="text" placeholder="名称" value="${item.name || ''}" class="edit-rec-name" style="width:100px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <input type="text" placeholder="描述（用\\n换行）" value="${(item.desc || '').replace(/\n/g, '\\n')}" class="edit-rec-desc" style="flex:1;padding:6px;border:1px solid #D1D5DB;border-radius:6px;font-size:13px;">
-            <button class="modal-btn secondary" style="padding:4px 8px;font-size:12px;" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
-        </div>
-    `).join('');
-
-    openModal('编辑 - AI智能推荐', `
-        <div id="rec-items-container">${itemsHTML}</div>
-        ${renderImportSection('recommend')}
-        <div class="modal-footer" style="border:none;padding:10px 0 0;">
-            <button class="modal-btn secondary" onclick="closeModal()">取消</button>
-            <button class="modal-btn primary" onclick="saveModuleFromForm('recommend')">保存修改</button>
-        </div>
-    `);
-}
-
-// 6. 学习日历
-function editCalendarModule(config) {
-    const hours = config.hours || 28;
-    const totalHours = config.total_hours || 42;
-    const taskDone = config.task_done || 3;
-    const taskTotal = config.task_total || 4;
-    const encourage = config.encourage || '继续加油！坚持就是胜利 💪';
-
-    openModal('编辑 - 学习日历', `
-        <div style="display:flex;flex-direction:column;gap:14px;">
-            <div style="display:flex;gap:12px;">
-                <div style="flex:1;"><label style="font-size:13px;display:block;margin-bottom:4px;">本周学习时长</label><input type="number" id="edit-hours" value="${hours}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-                <div style="flex:1;"><label style="font-size:13px;display:block;margin-bottom:4px;">目标时长</label><input type="number" id="edit-total_hours" value="${totalHours}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            </div>
-            <div style="display:flex;gap:12px;">
-                <div style="flex:1;"><label style="font-size:13px;display:block;margin-bottom:4px;">今日完成任务</label><input type="number" id="edit-task_done" value="${taskDone}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-                <div style="flex:1;"><label style="font-size:13px;display:block;margin-bottom:4px;">总任务数</label><input type="number" id="edit-task_total" value="${taskTotal}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            </div>
-            <div><label style="font-size:13px;display:block;margin-bottom:4px;">鼓励语</label><input type="text" id="edit-encourage" value="${encourage}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            ${renderImportSection('calendar')}
-            <div class="modal-footer" style="border:none;padding:10px 0 0;">
-                <button class="modal-btn secondary" onclick="closeModal()">取消</button>
-                <button class="modal-btn primary" onclick="saveModuleFromForm('calendar')">保存修改</button>
-            </div>
-        </div>
-    `);
-}
-
-// 7. 模考预测
-function editExamPredictModule(config) {
-    const score = config.predicted_score || 620;
-    const rank = config.rank || 1286;
-    const confidence = config.confidence || 85;
-    const probability = config.probability || 67;
-
-    openModal('编辑 - 模考预测', `
-        <div style="display:flex;flex-direction:column;gap:14px;">
-            <div><label style="font-size:13px;display:block;margin-bottom:4px;">预测分数</label><input type="number" id="edit-predicted_score" value="${score}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            <div><label style="font-size:13px;display:block;margin-bottom:4px;">预测排名</label><input type="number" id="edit-rank" value="${rank}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            <div><label style="font-size:13px;display:block;margin-bottom:4px;">置信度(%)</label><input type="number" id="edit-confidence" value="${confidence}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            <div><label style="font-size:13px;display:block;margin-bottom:4px;">985概率(%)</label><input type="number" id="edit-probability" value="${probability}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            ${renderImportSection('exam-predict')}
-            <div class="modal-footer" style="border:none;padding:10px 0 0;">
-                <button class="modal-btn secondary" onclick="closeModal()">取消</button>
-                <button class="modal-btn primary" onclick="saveModuleFromForm('exam-predict')">保存修改</button>
-            </div>
-        </div>
-    `);
-}
-
-// 8. 成长记录
-function editGrowthModule(config) {
-    const duration = config.duration_hours || 18.5;
-    const questions = config.questions_count || 326;
-    const correctRate = config.correct_rate || 78;
-    const points = config.points || 1286;
-
-    openModal('编辑 - 成长记录', `
-        <div style="display:flex;flex-direction:column;gap:14px;">
-            <div><label style="font-size:13px;display:block;margin-bottom:4px;">学习时长(小时)</label><input type="number" step="0.1" id="edit-duration_hours" value="${duration}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            <div><label style="font-size:13px;display:block;margin-bottom:4px;">完成题目数</label><input type="number" id="edit-questions_count" value="${questions}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            <div><label style="font-size:13px;display:block;margin-bottom:4px;">正确率(%)</label><input type="number" id="edit-correct_rate" value="${correctRate}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            <div><label style="font-size:13px;display:block;margin-bottom:4px;">获得积分</label><input type="number" id="edit-points" value="${points}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            ${renderImportSection('growth')}
-            <div class="modal-footer" style="border:none;padding:10px 0 0;">
-                <button class="modal-btn secondary" onclick="closeModal()">取消</button>
-                <button class="modal-btn primary" onclick="saveModuleFromForm('growth')">保存修改</button>
-            </div>
-        </div>
-    `);
-}
-
-// 9. 高考冲刺计划横幅
-function editBannerModule(config) {
-    const title = config.title || '高考冲刺计划';
-    const desc = config.desc || '90天冲刺，科学规划，助你实现梦想大学！';
-    const btnText = config.btn_text || '立即查看';
-
-    openModal('编辑 - 高考冲刺计划', `
-        <div style="display:flex;flex-direction:column;gap:14px;">
-            <div><label style="font-size:13px;display:block;margin-bottom:4px;">标题</label><input type="text" id="edit-title" value="${title}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            <div><label style="font-size:13px;display:block;margin-bottom:4px;">描述</label><textarea id="edit-desc" style="width:100%;min-height:60px;padding:8px;border:1px solid #D1D5DB;border-radius:8px;">${desc}</textarea></div>
-            <div><label style="font-size:13px;display:block;margin-bottom:4px;">按钮文字</label><input type="text" id="edit-btn_text" value="${btnText}" style="width:100%;padding:8px;border:1px solid #D1D5DB;border-radius:8px;"></div>
-            ${renderImportSection('banner')}
-            <div class="modal-footer" style="border:none;padding:10px 0 0;">
-                <button class="modal-btn secondary" onclick="closeModal()">取消</button>
-                <button class="modal-btn primary" onclick="saveModuleFromForm('banner')">保存修改</button>
-            </div>
-        </div>
-    `);
-}
-
-// ========== 从表单收集数据并保存 ==========
-async function saveModuleFromForm(key) {
-    let config = {};
-
-    switch (key) {
-        case 'goal':
-            config.current_score = parseInt(document.getElementById('edit-current_score')?.value) || 0;
-            config.target_score = parseInt(document.getElementById('edit-target_score')?.value) || 0;
-            config.exam_date = document.getElementById('edit-exam_date')?.value || '';
-            break;
-        case 'plan':
-            config.items = [];
-            document.querySelectorAll('.edit-plan-subject').forEach((el, i) => {
-                config.items.push({
-                    subject: el.value,
-                    name: document.querySelectorAll('.edit-plan-name')[i].value,
-                    time: document.querySelectorAll('.edit-plan-time')[i].value
-                });
-            });
-            break;
-        case 'weak-points':
-            config.items = [];
-            document.querySelectorAll('.edit-wp-subject').forEach((el, i) => {
-                config.items.push({
-                    subject: el.value,
-                    name: document.querySelectorAll('.edit-wp-name')[i].value,
-                    mastery_rate: parseFloat(document.querySelectorAll('.edit-wp-mastery')[i].value) || 0,
-                    score_gain: parseInt(document.querySelectorAll('.edit-wp-gain')[i].value) || 0,
-                    advice: document.querySelectorAll('.edit-wp-advice')[i].value
-                });
-            });
-            break;
-        case 'radar':
-            config.items = [];
-            document.querySelectorAll('.edit-rd-subject').forEach((el, i) => {
-                config.items.push({
-                    subject: el.value,
-                    score: parseInt(document.querySelectorAll('.edit-rd-score')[i].value) || 0,
-                    max_score: parseInt(document.querySelectorAll('.edit-rd-max')[i].value) || 0
-                });
-            });
-            break;
-        case 'recommend':
-            config.items = [];
-            document.querySelectorAll('.edit-rec-name').forEach((el, i) => {
-                config.items.push({
-                    name: el.value,
-                    desc: document.querySelectorAll('.edit-rec-desc')[i].value.replace(/\\n/g, '\n')
-                });
-            });
-            break;
-        case 'calendar':
-            config.hours = parseFloat(document.getElementById('edit-hours')?.value) || 0;
-            config.total_hours = parseFloat(document.getElementById('edit-total_hours')?.value) || 0;
-            config.task_done = parseInt(document.getElementById('edit-task_done')?.value) || 0;
-            config.task_total = parseInt(document.getElementById('edit-task_total')?.value) || 0;
-            config.encourage = document.getElementById('edit-encourage')?.value || '';
-            break;
-        case 'exam-predict':
-            config.predicted_score = parseInt(document.getElementById('edit-predicted_score')?.value) || 0;
-            config.rank = parseInt(document.getElementById('edit-rank')?.value) || 0;
-            config.confidence = parseInt(document.getElementById('edit-confidence')?.value) || 0;
-            config.probability = parseInt(document.getElementById('edit-probability')?.value) || 0;
-            break;
-        case 'growth':
-            config.duration_hours = parseFloat(document.getElementById('edit-duration_hours')?.value) || 0;
-            config.questions_count = parseInt(document.getElementById('edit-questions_count')?.value) || 0;
-            config.correct_rate = parseInt(document.getElementById('edit-correct_rate')?.value) || 0;
-            config.points = parseInt(document.getElementById('edit-points')?.value) || 0;
-            break;
-        case 'banner':
-            config.title = document.getElementById('edit-title')?.value || '';
-            config.desc = document.getElementById('edit-desc')?.value || '';
-            config.btn_text = document.getElementById('edit-btn_text')?.value || '';
-            break;
-    }
-
-    // 如果有导入的列表数据，合并
-    if (window._importedItems && window._importedItems[key]) {
-        if (!config.items) config.items = window._importedItems[key];
-        delete window._importedItems[key];
-    }
-
-    // 保存到后端
-    showToast('正在保存...', 'info');
-    const result = await api.saveModuleConfig(key, config);
-    if (result !== null) {
-        moduleConfigs[key] = config;
-        applyModuleConfig(key, config);
-        closeModal();
-        showToast(`${MODULE_DEFS[key].name} 已保存并更新`, 'success');
-        // 触发模块联动引擎（自动更新关联模块）
-        await triggerLinkages(key, config);
-        // 联动后重新绑定薄弱知识点点击事件
-        if (key === 'weak-points') setTimeout(() => bindWeakPointClickEvents(), 500);
-    } else {
-        showToast('保存失败，请重试', 'error');
-    }
-}
 
 // ========== 将配置应用到页面 DOM ==========
 function applyModuleConfig(key, config) {
@@ -6972,89 +6663,18 @@ function applyModuleConfig(key, config) {
     }
 }
 
-// ========== 重置模块为默认 ==========
-async function resetModule(key) {
-    if (!confirm(`确定要重置「${MODULE_DEFS[key].name}」为默认值吗？`)) return;
-    showToast('正在重置...', 'info');
-    const result = await api.resetModuleConfig(key);
-    if (result !== null) {
-        delete moduleConfigs[key];
-        closeModal();
-        showToast(`${MODULE_DEFS[key].name} 已重置为默认，刷新页面生效`, 'success');
-        setTimeout(() => location.reload(), 1500);
-    } else {
-        showToast('重置失败', 'error');
-    }
-}
-
-// ========== 直接触发文件选择（不打开编辑弹窗时）==========
-function importModuleFile(key) {
-    const def = MODULE_DEFS[key];
-    openModal('导入本地资料 - ' + def.name, `
-        <div style="background:#F0F9FF;border:1px solid #BAE6FD;border-radius:10px;padding:14px;margin-bottom:14px;">
-            <div style="font-size:13px;font-weight:600;color:#0369A1;margin-bottom:8px;">
-                <i class="fas fa-file-import"></i> 从本地电脑导入资料到「${def.name}」
-            </div>
-            <div style="font-size:12px;color:#6B7280;line-height:1.6;margin-bottom:12px;">
-                选择本地电脑中的文件（JSON / CSV / TXT），系统会自动解析内容并更新模块。<br>
-                导入后会保存到后端，刷新页面后仍然有效。
-            </div>
-            <label class="modal-btn primary" style="display:inline-block;padding:10px 20px;cursor:pointer;text-align:center;">
-                <i class="fas fa-upload"></i> 选择本地文件
-                <input type="file" accept=".json,.csv,.txt" style="display:none;" onchange="handleDirectFileImport(event,'${key}')">
-            </label>
-        </div>
-        <div id="direct-import-result"></div>
-        <div style="margin-top:12px;">
-            <button class="modal-btn secondary" style="padding:6px 12px;font-size:12px;" onclick="pasteImportData('${key}')">
-                <i class="fas fa-paste"></i> 或粘贴文本导入
-            </button>
-        </div>
-        <div class="modal-footer" style="border:none;padding:10px 0 0;">
-            <button class="modal-btn secondary" onclick="closeModal()">关闭</button>
-        </div>
-    `);
-}
-
-async function handleDirectFileImport(event, key) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const resultDiv = document.getElementById('direct-import-result');
-    resultDiv.innerHTML = `<div style="font-size:13px;color:#3B82F6;"><i class="fas fa-spinner fa-spin"></i> 正在读取并导入 ${file.name}...</div>`;
-
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        const content = e.target.result;
-        const ext = file.name.split('.').pop().toLowerCase();
-        let format = 'text';
-        if (ext === 'json') format = 'json';
-        else if (ext === 'csv') format = 'csv';
-
-        const result = await api.importModuleData(key, format, content);
-        if (result) {
-            moduleConfigs[key] = result.config;
-            applyModuleConfig(key, result.config);
-            resultDiv.innerHTML = `
-                <div style="background:#ECFDF5;border:1px solid #6EE7B7;border-radius:8px;padding:12px;color:#065F46;font-size:13px;">
-                    <i class="fas fa-check-circle"></i> 文件 ${file.name} 导入成功！模块已更新。
-                </div>
-            `;
-            showToast(`${file.name} 导入成功`, 'success');
-        } else {
-            resultDiv.innerHTML = `<div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:12px;color:#991B1B;font-size:13px;"><i class="fas fa-exclamation-circle"></i> 导入失败，请检查文件格式</div>`;
-        }
-    };
-    reader.readAsText(file);
-}
-
 // ========== 页面加载时读取已保存的模块配置 ==========
 async function loadModuleConfigs() {
-    const result = await api.getAllModuleConfigs();
-    if (result && typeof result === 'object') {
+    const raw = await api.getAllModuleConfigs();
+    // api.request 返回完整 JSON：{code:0, data:{radar:{key:"radar",config:{...}}, goal:{...}}}
+    // 我们要的是 data 那层的 dict（key→{key,config}）
+    const result = (raw && raw.data) || raw;
+    if (result && typeof result === 'object' && !Array.isArray(result)) {
         Object.keys(result).forEach(key => {
             const item = result[key];
             if (item && item.config) {
                 moduleConfigs[key] = item.config;
+                // 立刻应用到 UI（让用户在联动引擎跑之前就能看到）
                 applyModuleConfig(key, item.config);
             }
         });
@@ -7111,6 +6731,9 @@ async function triggerLinkages(sourceKey, sourceConfig) {
     const linkage = MODULE_LINKAGES[sourceKey];
     if (!linkage) return; // 独立模块，无联动
 
+    // 持久化源模块本身：编辑入口只改了内存，若不落库，刷新后会回退旧值
+    api.saveModuleConfig(sourceKey, sourceConfig).catch(() => {});
+
     const updates = []; // 收集所有需要更新的目标模块
 
     switch (linkage.rule) {
@@ -7138,6 +6761,7 @@ async function triggerLinkages(sourceKey, sourceConfig) {
             const rank = Math.max(100, Math.round(50000 / (predictedScore / 300)));
             const predictConfig = moduleConfigs['exam-predict'] || {};
             predictConfig.predicted_score = predictedScore;
+            predictConfig.target_score = targetScore; // 与 goal 目标分保持同步
             predictConfig.confidence = confidence;
             predictConfig.probability = probability;
             predictConfig.rank = rank;
@@ -7211,6 +6835,7 @@ async function triggerLinkages(sourceKey, sourceConfig) {
                 const rnk = Math.max(100, Math.round(50000 / (predScore / 300)));
                 const predConfig = moduleConfigs['exam-predict'] || {};
                 predConfig.predicted_score = predScore;
+                predConfig.target_score = targetS; // 与 goal 目标分保持同步
                 predConfig.confidence = conf;
                 predConfig.probability = prob;
                 predConfig.rank = rnk;
@@ -7310,6 +6935,54 @@ function bindWeakPointClickEvents() {
 // 初始化联动事件绑定
 function initLinkageEvents() {
     bindWeakPointClickEvents();
+
+    // ===== 绑定编辑按钮：goal（目标分）/ growth（成长数据）=====
+    // 单击卡片弹出 prompt 编辑，保存后触发联动
+    const goalCard = document.querySelector('[data-module="goal"]');
+    if (goalCard) {
+        goalCard.style.cursor = 'pointer';
+        goalCard.title = '点击编辑目标分';
+        goalCard.addEventListener('click', function(e) {
+            // 避免按钮点击事件冒泡
+            if (e.target.closest('.view-report-btn') || e.target.closest('button')) return;
+            const cfg = moduleConfigs['goal'] || {};
+            const input = prompt('🎯 编辑目标分（750 满分）：', cfg.target_score || 620);
+            if (input != null && input.trim() !== '') {
+                const v = parseInt(input, 10);
+                if (!isNaN(v) && v >= 300 && v <= 750) {
+                    cfg.target_score = v;
+                    cfg.score_gap = v - (cfg.current_score || 0);
+                    moduleConfigs['goal'] = cfg;
+                    triggerLinkages('goal', cfg);
+                    showToast('✅ 目标分已更新，正在重新计算预测...');
+                } else {
+                    showToast('目标分需在 300~750 之间', 'error');
+                }
+            }
+        });
+    }
+
+    const growthCard = document.querySelector('[data-module="growth"]');
+    if (growthCard) {
+        growthCard.style.cursor = 'pointer';
+        growthCard.title = '点击编辑正确率';
+        growthCard.addEventListener('click', function(e) {
+            if (e.target.closest('.week-select')) return;
+            const cfg = moduleConfigs['growth'] || {};
+            const input = prompt('📈 编辑最近答题正确率（0~100）：', cfg.correct_rate || 78);
+            if (input != null && input.trim() !== '') {
+                const v = parseFloat(input);
+                if (!isNaN(v) && v >= 0 && v <= 100) {
+                    cfg.correct_rate = v;
+                    moduleConfigs['growth'] = cfg;
+                    triggerLinkages('growth', cfg);
+                    showToast('✅ 正确率已更新，正在重新计算预测...');
+                } else {
+                    showToast('正确率需在 0~100 之间', 'error');
+                }
+            }
+        });
+    }
 }
 
 // ========== 发现页数据：备考干货 & 名师课程（九科覆盖，含解题技巧详情） ==========

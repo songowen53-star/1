@@ -18,81 +18,13 @@ const SUBJECT_META = {
     '地理': { color: 'teal', icon: 'fa-globe-asia', full_score: 100, paper: '地理' }
 };
 
-// ---------- AI学情诊断题库（12题，覆盖4科12个知识点） ----------
-const DIAGNOSTIC_BANK = [
-    {
-        id: 'dg_math_01', subject: '数学', knowledge_point_id: 'kp_math_conic', knowledge_point: '圆锥曲线综合',
-        difficulty: 4, stem: '已知椭圆 x²/4 + y²/3 = 1，过点 P(1,1) 的直线与椭圆交于 A、B 两点，则弦长 |AB| 的取值范围是？',
-        options: ['A. [2, 2√3]', 'B. [√3, 2√3]', 'C. [2, 4]', 'D. [√2, 2√2]'], answer_index: 1,
-        analysis: '设直线斜率 k，联立椭圆方程用韦达定理求 |AB|，再求最值域。'
-    },
-    {
-        id: 'dg_math_02', subject: '数学', knowledge_point_id: 'kp_math_derivative', knowledge_point: '导数应用专题',
-        difficulty: 5, stem: '设 f(x)=x³-3x+1，下列关于其极值与零点个数的说法正确的是？',
-        options: ['A. 极大值 3，极小值 -1，3 个零点', 'B. 极大值 -1，极小值 3，3 个零点', 'C. 极大值 3，极小值 -1，1 个零点', 'D. 无极值，1 个零点'], answer_index: 0,
-        analysis: "f'(x)=3x²-3，驻点 x=±1；f(-1)=3 为极大值，f(1)=-1 为极小值，结合零点定理有 3 个零点。"
-    },
-    {
-        id: 'dg_math_03', subject: '数学', knowledge_point_id: 'kp_math_sequence', knowledge_point: '数列求和方法',
-        difficulty: 3, stem: '数列 {aₙ} 满足 aₙ = 1/[n(n+1)]，则其前 n 项和 Sₙ = ?',
-        options: ['A. n/(n+1)', 'B. (n+1)/(n+2)', 'C. 1-1/n', 'D. n/(2n+1)'], answer_index: 0,
-        analysis: '裂项相消：1/[n(n+1)] = 1/n - 1/(n+1)，求和得 1 - 1/(n+1) = n/(n+1)。'
-    },
-    {
-        id: 'dg_math_04', subject: '数学', knowledge_point_id: 'kp_math_probability', knowledge_point: '概率统计',
-        difficulty: 3, stem: '从 5 男 3 女中任选 3 人，至少有 1 名女生的概率是？',
-        options: ['A. 5/14', 'B. 9/14', 'C. 15/28', 'D. 23/28'], answer_index: 3,
-        analysis: '对立事件为全男：C(5,3)/C(8,3)=10/56，故所求 1-10/56=23/28。'
-    },
-    {
-        id: 'dg_phy_01', subject: '物理', knowledge_point_id: 'kp_phy_induction', knowledge_point: '电磁感应综合题',
-        difficulty: 4, stem: '导体棒在匀强磁场 B 中以速度 v 垂直切割磁感线，回路总电阻为 R，则感应电流大小为？',
-        options: ['A. BLv/R', 'B. Bv/R', 'C. BL/R', 'D. BLvR'], answer_index: 0,
-        analysis: 'ε=BLv，闭合电路欧姆定律 I=ε/R=BLv/R。'
-    },
-    {
-        id: 'dg_phy_02', subject: '物理', knowledge_point_id: 'kp_phy_mechanics', knowledge_point: '力学综合分析',
-        difficulty: 4, stem: '物体自高 h 处自由下落，落地速度为 v，质量为 m，则下落过程中合外力做功为？',
-        options: ['A. mgh', 'B. ½mv²', 'C. mgh - ½mv²', 'D. 0'], answer_index: 1,
-        analysis: '动能定理：合外力做功等于动能变化量 ½mv²。'
-    },
-    {
-        id: 'dg_phy_03', subject: '物理', knowledge_point_id: 'kp_phy_momentum', knowledge_point: '动量与冲量',
-        difficulty: 3, stem: '质量 2kg 的物体速度从 3m/s 增大到 5m/s，动量变化量大小为？',
-        options: ['A. 4 kg·m/s', 'B. 6 kg·m/s', 'C. 8 kg·m/s', 'D. 10 kg·m/s'], answer_index: 0,
-        analysis: 'Δp = m(v₂-v₁) = 2×(5-3) = 4 kg·m/s。'
-    },
-    {
-        id: 'dg_chem_01', subject: '化学', knowledge_point_id: 'kp_chem_equilibrium', knowledge_point: '化学平衡计算',
-        difficulty: 4, stem: '对于反应 aA+bB⇌cC+dD，化学平衡常数 K 的表达式为？',
-        options: ['A. [c(C)·c(D)]/[c(A)·c(B)]', 'B. c(C)^c·c(D)^d /[c(A)^a·c(B)^b]', 'C. c(A)^a·c(B)^b /[c(C)^c·c(D)^d]', 'D. (a+b)/(c+d)'], answer_index: 1,
-        analysis: 'K 为生成物浓度幂之积除以反应物浓度幂之积，固体与纯液体不计入。'
-    },
-    {
-        id: 'dg_chem_02', subject: '化学', knowledge_point_id: 'kp_chem_organic', knowledge_point: '有机推断题型',
-        difficulty: 5, stem: '某链状化合物 A 分子式 C₄H₈O₂，能与 NaHCO₃ 反应放出 CO₂，则 A 的结构简式为？',
-        options: ['A. CH₃CH₂CH₂COOH', 'B. CH₃COOCH₂CH₃', 'C. HOCH₂CH₂CH₂CHO', 'D. CH₃CH₂OCH₂CH₃'], answer_index: 0,
-        analysis: '与 NaHCO₃ 反应说明含羧基，C₄H₈O₂ 不饱和度为 1，故为丁酸。'
-    },
-    {
-        id: 'dg_chem_03', subject: '化学', knowledge_point_id: 'kp_chem_electro', knowledge_point: '电化学原理',
-        difficulty: 3, stem: '关于原电池，下列说法正确的是？',
-        options: ['A. 正极发生氧化反应', 'B. 负极发生还原反应', 'C. 电子由负极经外电路流向正极', 'D. 阳离子向负极迁移'], answer_index: 2,
-        analysis: '负极失电子被氧化，电子经外电路流向正极；阳离子向正极迁移。'
-    },
-    {
-        id: 'dg_eng_01', subject: '英语', knowledge_point_id: 'kp_eng_cloze', knowledge_point: '完形填空技巧',
-        difficulty: 3, stem: 'The students were ___ by the teacher\'s inspiring speech.',
-        options: ['A. bored', 'B. moved', 'C. confused', 'D. scared'], answer_index: 1,
-        analysis: 'inspiring speech 暗示积极情绪，moved（感动）最符合语境。'
-    },
-    {
-        id: 'dg_eng_02', subject: '英语', knowledge_point_id: 'kp_eng_grammar', knowledge_point: '语法填空',
-        difficulty: 4, stem: 'Not only ___ he finished the task, but he also helped others.',
-        options: ['A. did', 'B. has', 'C. had', 'D. does'], answer_index: 0,
-        analysis: 'Not only 置于句首时主句部分倒装，一般过去时用助动词 did。'
-    }
-];
+// 新高考 3+1+2 满分 750：语数外必选(各150) + 物理/历史二选一(100) + 四选二(各100)
+const TOTAL_FULL_SCORE = 750;
+// 默认选科组合（用户未设置时使用）：语数英 + 物理 + 化学 + 生物 = 750
+const DEFAULT_GAOKAO_SUBJECTS = ['语文', '数学', '英语', '物理', '化学', '生物'];
+
+// ---------- AI学情诊断题库（34题/9科，数据源：backend/data/diagnostic-bank.json） ----------
+const DIAGNOSTIC_BANK = require('./data/diagnostic-bank.json').questions;
 
 const KP_META = {};
 DIAGNOSTIC_BANK.forEach(q => {
@@ -104,7 +36,16 @@ DIAGNOSTIC_BANK.forEach(q => {
 function round2(v) { return Math.round(v * 100) / 100; }
 
 // ---------- 诊断结果计算 ----------
-function computeStates(userId, session) {
+// 从 goal.subjects 中提取选科名称数组（兼容字符串数组和 {name,target} 对象数组）
+function extractSubjectNames(subjects) {
+    if (!Array.isArray(subjects) || !subjects.length) return null;
+    const names = subjects.map(s => (typeof s === 'string' ? s : (s && s.name) || '')).filter(Boolean);
+    return names.length ? names : null;
+}
+
+function computeStates(userId, session, subjectNames) {
+    // 限定只统计用户选考的科目，避免 9 科累加超过 750
+    const validSubjects = (subjectNames && subjectNames.length) ? subjectNames : DEFAULT_GAOKAO_SUBJECTS;
     const db = store.db();
     const records = db.answer_records.filter(r => r.user_id === userId && r.session_id === session.session_id);
 
@@ -139,15 +80,16 @@ function computeStates(userId, session) {
 
     db.knowledge_states[userId] = knowledgeStates;
 
-    // 能力状态：按学科聚合
-    const abilityStates = Object.keys(SUBJECT_META).map(subject => {
+    // 能力状态：按学科聚合（仅用户选考科目）
+    const abilityStates = validSubjects.map(subject => {
+        const meta = SUBJECT_META[subject];
+        if (!meta) return null;
         const ks = knowledgeStates.filter(k => k.subject === subject);
         if (!ks.length) return null;
         const total = ks.reduce((s, k) => s + k.attempts, 0);
         const correct = ks.reduce((s, k) => s + k.correct, 0);
         const accuracy = total ? correct / total : 0;
         const mastery = ks.reduce((s, k) => s + k.mastery, 0) / ks.length;
-        const meta = SUBJECT_META[subject];
         const estimated = Math.round(meta.full_score * (0.4 + 0.55 * mastery));
         let level = '基础';
         if (mastery >= 0.8) level = '优势';
@@ -174,18 +116,24 @@ function computeStates(userId, session) {
     const totalQ = records.length;
     const totalCorrect = records.filter(r => r.is_correct).length;
     const accuracy = totalQ ? totalCorrect / totalQ : 0;
-    const estimatedScore = abilityStates.reduce((s, a) => s + a.estimated_score, 0);
+    // 只累加选考科目估分，并硬上限到 750
+    const estimatedScore = Math.min(
+        abilityStates.reduce((s, a) => s + a.estimated_score, 0),
+        TOTAL_FULL_SCORE
+    );
 
     return { knowledgeStates, abilityStates, totalQ, totalCorrect, accuracy, estimatedScore };
 }
 
 function buildReport(userId, session) {
-    const { knowledgeStates, abilityStates, totalQ, totalCorrect, accuracy, estimatedScore } = computeStates(userId, session);
     const goal = store.getGoal(userId) || {};
+    const subjectNames = extractSubjectNames(goal.subjects);
+    const { knowledgeStates, abilityStates, totalQ, totalCorrect, accuracy, estimatedScore } = computeStates(userId, session, subjectNames);
     const targetScore = Number(goal.target_score) || 600;
 
-    const weak = knowledgeStates.filter(k => k.mastery < 0.6).slice(0, 5);
-    const strong = knowledgeStates.filter(k => k.mastery >= 0.75);
+    const selSubjects = subjectNames || DEFAULT_GAOKAO_SUBJECTS;
+    const weak = knowledgeStates.filter(k => k.mastery < 0.6 && selSubjects.indexOf(k.subject) !== -1).slice(0, 5);
+    const strong = knowledgeStates.filter(k => k.mastery >= 0.75 && selSubjects.indexOf(k.subject) !== -1);
 
     const paragraphs = [];
     paragraphs.push('本次AI学情诊断共作答 ' + totalQ + ' 题，答对 ' + totalCorrect + ' 题，整体正确率 ' + Math.round(accuracy * 100) + '%。');
@@ -534,6 +482,61 @@ module.exports = function registerStudentApi(app, ctx) {
         res.json(ok(data));
     });
 
+    // ===== 今日任务 + 答题记录（学习进度快照，供教练等模块使用）=====
+    app.get('/api/student/today-progress', requireUser, (req, res) => {
+        const db = store.db();
+        const dateKey = store.todayKey();
+        const taskData = getTodayTasks(req.user.id);
+
+        const records = db.answer_records.filter(r =>
+            r.user_id === req.user.id && r.date_key === dateKey);
+        const correctList = records.filter(r => r.is_correct);
+        const diagnostic = records.filter(r => String(r.session_id || '').indexOf('ds_') === 0);
+        const practice = records.filter(r => String(r.session_id || '').indexOf('ds_') !== 0);
+
+        const subjectMap = {};
+        records.forEach(r => {
+            const key = r.subject || '未分类';
+            if (!subjectMap[key]) subjectMap[key] = { subject: key, total: 0, correct: 0 };
+            subjectMap[key].total++;
+            if (r.is_correct) subjectMap[key].correct++;
+        });
+
+        const recent = records.slice(-5).reverse().map(r => ({
+            subject: r.subject || '',
+            knowledge_point: r.knowledge_point || '',
+            is_correct: !!r.is_correct,
+            answered_at: r.answered_at || ''
+        }));
+
+        res.json(ok({
+            date: taskData.date,
+            date_key: dateKey,
+            tasks: {
+                total: taskData.total_count,
+                done: taskData.done_count,
+                completion_rate: taskData.completion_rate,
+                planned_minutes: taskData.planned_minutes,
+                spent_minutes: taskData.spent_minutes
+            },
+            answers: {
+                total: records.length,
+                correct: correctList.length,
+                correct_rate: records.length ? Math.round(correctList.length / records.length * 100) : 0,
+                diagnostic: diagnostic.length,
+                practice: practice.length,
+                duration_min: Math.round(records.reduce((s, r) => s + (Number(r.duration_sec) || 0), 0) / 60)
+            },
+            subjects: Object.values(subjectMap).map(s => ({
+                subject: s.subject,
+                total: s.total,
+                correct: s.correct,
+                correct_rate: s.total ? Math.round(s.correct / s.total * 100) : 0
+            })),
+            recent: recent
+        }));
+    });
+
     app.post('/api/student/tasks/:taskId/start', requireUser, (req, res) => {
         const db = store.db();
         const task = db.learning_tasks.find(t => t.id === req.params.taskId && t.user_id === req.user.id);
@@ -645,7 +648,7 @@ module.exports = function registerStudentApi(app, ctx) {
         // 模考预测：仅使用真实已有数据，不生成虚假排名/置信度
         const prediction = report ? {
             available: true,
-            predicted_score: report.summary.estimated_score,
+            predicted_score: Math.min(report.summary.estimated_score, TOTAL_FULL_SCORE),
             target_score: report.summary.target_score,
             score_gap: report.summary.score_gap,
             based_on: 'AI学情诊断（' + report.summary.total_questions + ' 题作答数据）',

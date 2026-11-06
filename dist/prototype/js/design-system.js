@@ -5670,7 +5670,7 @@ window.PAGE_SAMPLE_DATA = {
         "subjects": [
             {
                 "name": "数学",
-                "score": 118,
+                "score": 108,
                 "total": 150,
                 "color": "#3B82F6",
                 "icon": "fa-square-root-variable",
@@ -5678,7 +5678,7 @@ window.PAGE_SAMPLE_DATA = {
             },
             {
                 "name": "英语",
-                "score": 125,
+                "score": 115,
                 "total": 150,
                 "color": "#8B5CF6",
                 "icon": "fa-language",
@@ -5686,7 +5686,7 @@ window.PAGE_SAMPLE_DATA = {
             },
             {
                 "name": "语文",
-                "score": 110,
+                "score": 108,
                 "total": 150,
                 "color": "#EC4899",
                 "icon": "fa-book",
@@ -5694,25 +5694,33 @@ window.PAGE_SAMPLE_DATA = {
             },
             {
                 "name": "物理",
-                "score": 88,
-                "total": 110,
+                "score": 85,
+                "total": 100,
                 "color": "#06B6D4",
                 "icon": "fa-atom",
                 "change": "+8"
             },
             {
                 "name": "化学",
-                "score": 84,
+                "score": 72,
                 "total": 100,
                 "color": "#10B981",
-                "icon": "fa-flask",
+                "icon": "fa-globe",
                 "change": "-2"
+            },
+            {
+                "name": "生物",
+                "score": 77,
+                "total": 100,
+                "color": "#F59E0B",
+                "icon": "fa-dna",
+                "change": "+4"
             }
         ],
         "trend_chart_label": "各科成绩趋势折线图（最近5次月考）",
         "ai_analysis": {
             "title": "综合诊断",
-            "content": "数学提升明显（+15分），导数与函数模块掌握扎实；英语需加强阅读理解，建议每日精读训练；物理稳步上升，化学略有下滑需关注有机推断部分。"
+            "content": "数学提升明显（+15分），导数与函数模块掌握扎实；英语需加强阅读理解，建议每日精读训练；物理稳步上升，地理略有下滑需关注区域地理综合题部分。"
         }
     },
     'score-province-rank': {

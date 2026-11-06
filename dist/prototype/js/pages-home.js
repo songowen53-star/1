@@ -743,11 +743,12 @@ function showNotifications() {
 window._currentPlanRange = window._currentPlanRange || 'this_week';
 // 渲染单日计划卡片（原型端使用 Tag()）
 function protoRenderPlanDayCard(d) {
+    d = d || {};
     d.tasks = d.tasks || [];
-    var totalMin = d.tasks.reduce(function(a, b) { return a + parseInt(b.time); }, 0);
+    var totalMin = d.tasks.reduce(function(a, b) { return a + (parseInt(b.time) || 0); }, 0);
     var taskCards = d.tasks.map(function(t) {
         var qCount = t.questions_count || 8;
-        var detailJson = encodeURIComponent(JSON.stringify({ subject: t.subject || '', point: t.point || '', time: t.time, questions_count: qCount, done: !!t.done }));
+        var detailJson = encodeURIComponent(JSON.stringify({ subject: t.subject || '', point: t.point || '', time: t.time || '', questions_count: qCount, done: !!t.done }));
         return '<div data-task-detail="' + detailJson + '" style="display:flex;align-items:center;gap:10px;padding:10px;background:' + (t.done ? '#F0FDF4' : '#F9FAFB') + ';border-radius:10px;cursor:pointer;" onclick="window.openTaskDetailFromHomePlan(this)">' +
             '<div onclick="event.stopPropagation();toggleTask(this)" class="' + (t.done ? 'done' : '') + '" style="width:18px;height:18px;border-radius:50%;border:2px solid ' + (t.done ? '#10B981' : '#D1D5DB') + ';background:' + (t.done ? '#10B981' : 'transparent') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;">' +
             (t.done ? '<i class="fas fa-check" style="color:white;font-size:10px;"></i>' : '') + '</div>' +
@@ -755,12 +756,18 @@ function protoRenderPlanDayCard(d) {
             Tag(t.subject, t.color) + '<span style="margin-left:6px;font-weight:600;">' + t.point + '</span></div>' +
             '<span style="font-size:11px;color:#6B7280;"><i class="far fa-clock"></i> ' + t.time + ' <i class="fas fa-chevron-right" style="margin-left:2px;font-size:9px;opacity:0.5;"></i></span></div>';
     }).join('');
+    if (!taskCards) {
+        taskCards = '<div style="padding:12px;background:#F9FAFB;border-radius:10px;font-size:12px;color:#9CA3AF;text-align:center;">今日暂无任务</div>';
+    }
+    var dayLabel = d.day || '—';
+    var dateLabel = d.date || '';
+    var dayNum = dateLabel ? String(Number(dateLabel.split('-')[2])) : dayLabel;
     return '<div class="proto-card" style="margin:0 0 12px;' + (d.isToday ? 'border-left:3px solid #3B82F6;' : '') + '">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">' +
         '<div style="display:flex;align-items:center;gap:10px;">' +
-        '<div style="width:36px;height:36px;border-radius:10px;background:' + (d.isToday ? '#3B82F6' : '#F3F4F6') + ';color:' + (d.isToday ? 'white' : '#6B7280') + ';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;line-height:1.1;">' + d.day + '</div>' +
-        '<div><div style="font-size:14px;font-weight:700;">' + d.day + (d.isToday ? ' <span style="font-size:11px;color:#3B82F6;font-weight:400;">（今天）</span>' : '') + '</div>' +
-        '<div style="font-size:11px;color:#9CA3AF;">' + d.date + ' · ' + d.tasks.length + '个任务</div></div></div>' +
+        '<div style="width:36px;height:36px;border-radius:10px;background:' + (d.isToday ? '#3B82F6' : '#F3F4F6') + ';color:' + (d.isToday ? 'white' : '#6B7280') + ';display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;line-height:1.1;">' + dayNum + '</div>' +
+        '<div><div style="font-size:14px;font-weight:700;">' + dayLabel + (d.isToday ? ' <span style="font-size:11px;color:#3B82F6;font-weight:400;">（今天）</span>' : '') + '</div>' +
+        '<div style="font-size:11px;color:#9CA3AF;">' + dateLabel + (dateLabel ? ' · ' : '') + d.tasks.length + '个任务</div></div></div>' +
         '<span style="font-size:11px;color:#6B7280;">共 ' + totalMin + 'min</span></div>' +
         '<div style="display:flex;flex-direction:column;gap:8px;">' + taskCards + '</div></div>';
 }
@@ -788,13 +795,26 @@ function protoRenderPlanGrouped(planDays, range) {
     });
     return html;
 }
+// 统计计划内的任务总数与已完成数（用于接口未返回汇总字段时的兜底计算）
+function protoCountPlanTasks(planDays) {
+    var total = 0, done = 0;
+    (planDays || []).forEach(function(d) {
+        var ts = (d && d.tasks) || [];
+        total += ts.length;
+        done += ts.filter(function(t) { return t && t.done; }).length;
+    });
+    return { total: total, done: done };
+}
 // 填充头部摘要（带 range_label）
-function protoFillWeekPlanSummary(data) {
+function protoFillWeekPlanSummary(data, planDays) {
     var c = document.getElementById('week-plan-summary');
     if (!c) return;
+    var counted = protoCountPlanTasks(planDays);
+    var totalTasks = (data && typeof data.total_tasks === 'number') ? data.total_tasks : counted.total;
+    var doneTasks = (data && typeof data.done_tasks === 'number') ? data.done_tasks : counted.done;
     var rangeLabel = (data && data.range_label) ? data.range_label : '本周';
     c.innerHTML = '<div style="font-size:15px;font-weight:700;">AI智能学习计划</div>' +
-        '<div style="font-size:12px;opacity:0.85;margin-top:2px;">基于薄弱点分析 · ' + rangeLabel + '共' + data.total_tasks + '个任务</div>';
+        '<div style="font-size:12px;opacity:0.85;margin-top:2px;">基于薄弱点分析 · ' + rangeLabel + '共' + totalTasks + '个任务</div>';
     var p = c.parentElement;
     if (!p) return;
     var oldBadge = p.querySelector('.done-badge');
@@ -802,7 +822,7 @@ function protoFillWeekPlanSummary(data) {
     var b = document.createElement('div');
     b.className = 'done-badge';
     b.style.cssText = 'text-align:center;background:rgba(255,255,255,0.18);border-radius:10px;padding:6px 10px;';
-    b.innerHTML = '<div style="font-size:18px;font-weight:800;">' + data.done_tasks + '</div><div style="font-size:9px;">已完成</div>';
+    b.innerHTML = '<div style="font-size:18px;font-weight:800;">' + doneTasks + '</div><div style="font-size:9px;">已完成</div>';
     p.appendChild(b);
 }
 // 加载指定范围计划
@@ -821,12 +841,22 @@ function protoLoadSegmentPlan(range, shuffle) {
     }
     api.getWeekPlan(!!shuffle, range).then(function(data) {
         if (!document.getElementById('week-plan-list')) return;
-        if (data && data.week_plan && data.week_plan.length) {
-            document.getElementById('week-plan-list').innerHTML = protoRenderPlanGrouped(data.week_plan, range);
-            protoFillWeekPlanSummary(data);
+        var planDays = (data && (data.week_plan || data.days)) || [];
+        var counted = protoCountPlanTasks(planDays);
+        var hasPlan = (data && typeof data.has_data === 'boolean') ? data.has_data : counted.total > 0;
+        if (hasPlan) {
+            document.getElementById('week-plan-list').innerHTML = protoRenderPlanGrouped(planDays, range);
+            protoFillWeekPlanSummary(data, planDays);
         } else {
+            var tip = (data && data.message) || '当前时间段暂无学习任务';
             document.getElementById('week-plan-list').innerHTML =
-                '<div class="proto-card" style="margin:0 0 12px;text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">暂无学习数据</div></div>';
+                '<div class="proto-card" style="margin:0 0 12px;text-align:center;padding:32px 20px;">' +
+                '<i class="fas fa-calendar-check" style="font-size:26px;color:#D1D5DB;margin-bottom:10px;"></i>' +
+                '<div style="font-size:13px;color:#6B7280;margin-bottom:14px;">' + tip + '</div>' +
+                '<div onclick="navigateTo(\'home-diagnostic\')" style="display:inline-block;background:#3B82F6;color:#fff;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;">' +
+                '<i class="fas fa-stethoscope"></i> 去完成 AI 学情诊断</div></div>';
+            if (summary) summary.innerHTML = '<div style="font-size:15px;font-weight:700;">AI智能学习计划</div>' +
+                '<div style="font-size:12px;opacity:0.85;margin-top:2px;">暂无计划，完成诊断后自动生成</div>';
         }
         if (shuffle) showToast('AI已为你重新生成学习计划');
     }).catch(function() {
@@ -3415,7 +3445,7 @@ registerPage('home-diagnostic', 'AI学情诊断', '首页', 'fa-stethoscope', ()
             <div class="proto-card" style="padding:20px;">
                 <div style="font-size:18px;font-weight:800;">AI学情诊断</div>
                 <div style="font-size:12px;color:#6B7280;line-height:1.8;margin-top:8px;">
-                    共 12 道题，覆盖数学、物理、化学、英语四个学科。<br>
+                    共 34 道题，覆盖语文、数学、英语、物理、化学、生物、政治、历史、地理 9 个学科。<br>
                     系统会记录你的每题作答，计算知识掌握度与能力状态，并生成 AI 诊断报告和第一套学习计划。
                 </div>
                 <div onclick="window.__DIAG_START__()" id="diag-start-btn" style="margin-top:18px;background:linear-gradient(135deg,#3B82F6,#1D4ED8);color:#fff;border-radius:12px;padding:13px;text-align:center;font-size:15px;font-weight:700;cursor:pointer;">
@@ -3596,7 +3626,8 @@ registerPage('home-diagnostic', 'AI学情诊断', '首页', 'fa-stethoscope', ()
         const st = window.__DIAG_STATE__;
         if (!st) return;
         const done = Object.keys(st.answers).length;
-        const total = (st.questions || []).length || 12;
+        const total = (st.questions || []).length;
+        if (!total) return;
         const t = document.getElementById('diag-progress-text');
         if (t) t.textContent = '已作答 ' + done + '/' + total;
         const bar = document.getElementById('diag-progress-bar');
@@ -3628,6 +3659,12 @@ registerPage('home-diagnostic', 'AI学情诊断', '首页', 'fa-stethoscope', ()
     setTimeout(function() {
         if (typeof api === 'undefined' || !api.getLatestDiagnostic) return;
         if (typeof Auth !== 'undefined' && !Auth.isLoggedIn()) { renderLogin(); return; }
+        var autoMode = null;
+        try {
+            autoMode = sessionStorage.getItem('aigaokao_autostart_diagnosis');
+            if (autoMode) sessionStorage.removeItem('aigaokao_autostart_diagnosis');
+        } catch (e) {}
+        if (autoMode === 'force') { renderIntro(); window.__DIAG_START__(); return; }
         api.getLatestDiagnostic().then(function(d) {
             if (d && d.status === 'completed' && d.report) {
                 renderReport(d.report, d.plan);
@@ -3637,8 +3674,12 @@ registerPage('home-diagnostic', 'AI学情诊断', '首页', 'fa-stethoscope', ()
                     const old = document.getElementById('diag-old-report');
                     if (old) old.style.display = 'block';
                 }
+                if (autoMode) window.__DIAG_START__();
             }
-        }).catch(function() { renderIntro(); });
+        }).catch(function() {
+            renderIntro();
+            if (autoMode) window.__DIAG_START__();
+        });
     }, 120);
 
     return Page({ title: 'AI学情诊断', navbar: false, tabbar: 'learn', content: pageContent() });

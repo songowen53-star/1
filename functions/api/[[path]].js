@@ -19,85 +19,21 @@ const SUBJECT_META = {
     '地理': { color: 'teal', icon: 'fa-globe-asia', full_score: 100 }
 };
 
-const DIAGNOSTIC_BANK = [
-    {
-        id: 'dg_math_01', subject: '数学', knowledge_point_id: 'kp_math_conic', knowledge_point: '圆锥曲线综合',
-        difficulty: 4, stem: '已知椭圆 x²/4 + y²/3 = 1，过点 P(1,1) 的直线与椭圆交于 A、B 两点，则弦长 |AB| 的取值范围是？',
-        options: ['A. [2, 2√3]', 'B. [√3, 2√3]', 'C. [2, 4]', 'D. [√2, 2√2]'], answer_index: 1,
-        analysis: '设直线斜率 k，联立椭圆方程用韦达定理求 |AB|，再求最值域。'
-    },
-    {
-        id: 'dg_math_02', subject: '数学', knowledge_point_id: 'kp_math_derivative', knowledge_point: '导数应用专题',
-        difficulty: 5, stem: '设 f(x)=x³-3x+1，下列关于其极值与零点个数的说法正确的是？',
-        options: ['A. 极大值 3，极小值 -1，3 个零点', 'B. 极大值 -1，极小值 3，3 个零点', 'C. 极大值 3，极小值 -1，1 个零点', 'D. 无极值，1 个零点'], answer_index: 0,
-        analysis: "f'(x)=3x²-3，驻点 x=±1；f(-1)=3 为极大值，f(1)=-1 为极小值，结合零点定理有 3 个零点。"
-    },
-    {
-        id: 'dg_math_03', subject: '数学', knowledge_point_id: 'kp_math_sequence', knowledge_point: '数列求和方法',
-        difficulty: 3, stem: '数列 {aₙ} 满足 aₙ = 1/[n(n+1)]，则其前 n 项和 Sₙ = ?',
-        options: ['A. n/(n+1)', 'B. (n+1)/(n+2)', 'C. 1-1/n', 'D. n/(2n+1)'], answer_index: 0,
-        analysis: '裂项相消：1/[n(n+1)] = 1/n - 1/(n+1)，求和得 1 - 1/(n+1) = n/(n+1)。'
-    },
-    {
-        id: 'dg_math_04', subject: '数学', knowledge_point_id: 'kp_math_probability', knowledge_point: '概率统计',
-        difficulty: 3, stem: '从 5 男 3 女中任选 3 人，至少有 1 名女生的概率是？',
-        options: ['A. 5/14', 'B. 9/14', 'C. 15/28', 'D. 23/28'], answer_index: 3,
-        analysis: '对立事件为全男：C(5,3)/C(8,3)=10/56，故所求 1-10/56=23/28。'
-    },
-    {
-        id: 'dg_phy_01', subject: '物理', knowledge_point_id: 'kp_phy_induction', knowledge_point: '电磁感应综合题',
-        difficulty: 4, stem: '导体棒在匀强磁场 B 中以速度 v 垂直切割磁感线，回路总电阻为 R，则感应电流大小为？',
-        options: ['A. BLv/R', 'B. Bv/R', 'C. BL/R', 'D. BLvR'], answer_index: 0,
-        analysis: 'ε=BLv，闭合电路欧姆定律 I=ε/R=BLv/R。'
-    },
-    {
-        id: 'dg_phy_02', subject: '物理', knowledge_point_id: 'kp_phy_mechanics', knowledge_point: '力学综合分析',
-        difficulty: 4, stem: '物体自高 h 处自由下落，落地速度为 v，质量为 m，则下落过程中合外力做功为？',
-        options: ['A. mgh', 'B. ½mv²', 'C. mgh - ½mv²', 'D. 0'], answer_index: 1,
-        analysis: '动能定理：合外力做功等于动能变化量 ½mv²。'
-    },
-    {
-        id: 'dg_phy_03', subject: '物理', knowledge_point_id: 'kp_phy_momentum', knowledge_point: '动量与冲量',
-        difficulty: 3, stem: '质量 2kg 的物体速度从 3m/s 增大到 5m/s，动量变化量大小为？',
-        options: ['A. 4 kg·m/s', 'B. 6 kg·m/s', 'C. 8 kg·m/s', 'D. 10 kg·m/s'], answer_index: 0,
-        analysis: 'Δp = m(v₂-v₁) = 2×(5-3) = 4 kg·m/s。'
-    },
-    {
-        id: 'dg_chem_01', subject: '化学', knowledge_point_id: 'kp_chem_equilibrium', knowledge_point: '化学平衡计算',
-        difficulty: 4, stem: '对于反应 aA+bB⇌cC+dD，化学平衡常数 K 的表达式为？',
-        options: ['A. [c(C)·c(D)]/[c(A)·c(B)]', 'B. c(C)^c·c(D)^d /[c(A)^a·c(B)^b]', 'C. c(A)^a·c(B)^b /[c(C)^c·c(D)^d]', 'D. (a+b)/(c+d)'], answer_index: 1,
-        analysis: 'K 为生成物浓度幂之积除以反应物浓度幂之积，固体与纯液体不计入。'
-    },
-    {
-        id: 'dg_chem_02', subject: '化学', knowledge_point_id: 'kp_chem_organic', knowledge_point: '有机推断题型',
-        difficulty: 5, stem: '某链状化合物 A 分子式 C₄H₈O₂，能与 NaHCO₃ 反应放出 CO₂，则 A 的结构简式为？',
-        options: ['A. CH₃CH₂CH₂COOH', 'B. CH₃COOCH₂CH₃', 'C. HOCH₂CH₂CH₂CHO', 'D. CH₃CH₂OCH₂CH₃'], answer_index: 0,
-        analysis: '与 NaHCO₃ 反应说明含羧基，C₄H₈O₂ 不饱和度为 1，故为丁酸。'
-    },
-    {
-        id: 'dg_chem_03', subject: '化学', knowledge_point_id: 'kp_chem_electro', knowledge_point: '电化学原理',
-        difficulty: 3, stem: '关于原电池，下列说法正确的是？',
-        options: ['A. 正极发生氧化反应', 'B. 负极发生还原反应', 'C. 电子由负极经外电路流向正极', 'D. 阳离子向负极迁移'], answer_index: 2,
-        analysis: '负极失电子被氧化，电子经外电路流向正极；阳离子向正极迁移。'
-    },
-    {
-        id: 'dg_eng_01', subject: '英语', knowledge_point_id: 'kp_eng_cloze', knowledge_point: '完形填空技巧',
-        difficulty: 3, stem: "The students were ___ by the teacher's inspiring speech.",
-        options: ['A. bored', 'B. moved', 'C. confused', 'D. scared'], answer_index: 1,
-        analysis: 'inspiring speech 暗示积极情绪，moved（感动）最符合语境。'
-    },
-    {
-        id: 'dg_eng_02', subject: '英语', knowledge_point_id: 'kp_eng_grammar', knowledge_point: '语法填空',
-        difficulty: 4, stem: 'Not only ___ he finished the task, but he also helped others.',
-        options: ['A. did', 'B. has', 'C. had', 'D. does'], answer_index: 0,
-        analysis: 'Not only 置于句首时主句部分倒装，一般过去时用助动词 did。'
-    }
-];
+// 新高考 3+1+2 满分 750：语数外必选(各150) + 物理/历史二选一(100) + 四选二(各100)
+const TOTAL_FULL_SCORE = 750;
+// 默认选科组合（用户未设置时使用）：语数英 + 物理 + 化学 + 生物 = 750
+const DEFAULT_GAOKAO_SUBJECTS = ['语文', '数学', '英语', '物理', '化学', '生物'];
+
+import DIAGNOSTIC_BANK from './_diagnostic-bank.js';
+import PAGE_DATA from './_page-data.js';
+
 
 const KP_META = {};
 DIAGNOSTIC_BANK.forEach(q => {
     KP_META[q.knowledge_point_id] = { id: q.knowledge_point_id, subject: q.subject, name: q.knowledge_point, difficulty: q.difficulty };
 });
+const QUESTION_MAP = {};
+DIAGNOSTIC_BANK.forEach(q => { QUESTION_MAP[q.id] = q; });
 
 // ---------- 基础工具 ----------
 const ok = (data) => ({ code: 0, data });
@@ -159,7 +95,9 @@ const K = {
     plan: (uid) => 's:plan:' + uid,
     tasks: (uid) => 's:tasks:' + uid,
     events: (uid) => 's:events:' + uid,
-    userById: (uid) => 's:userid:' + uid
+    userById: (uid) => 's:userid:' + uid,
+    parentBinding: (id) => 'pb:id:' + id,
+    parentBindingIds: (phone) => 'pb:phone:' + phone
 };
 
 async function getJson(env, key, def) {
@@ -229,12 +167,24 @@ async function createUser(env, input) {
     };
     await env.DATA_STORE.put('user:' + username, JSON.stringify(user));
     await putJson(env, K.userById(user.id), user);
+    if (user.phone) await env.DATA_STORE.put('phone:' + user.phone, username);
     return user;
 }
 async function findUserByName(env, username) {
     const raw = await env.DATA_STORE.get('user:' + String(username || '').trim());
     if (!raw) return null;
     try { return JSON.parse(raw); } catch (e) { return null; }
+}
+async function findUserByIdentifier(env, identifier) {
+    const name = String(identifier || '').trim();
+    let u = await findUserByName(env, name);
+    if (u) return u;
+    // 手机号作为 identifier 时，同时查找 phone 映射
+    if (/^1\d{10}$/.test(name)) {
+        const mapped = await env.DATA_STORE.get('phone:' + name);
+        if (mapped) return findUserByName(env, mapped);
+    }
+    return null;
 }
 
 // ---------- 档案与目标 ----------
@@ -254,7 +204,16 @@ async function saveGoal(env, userId, patch) {
 }
 
 // ---------- 计算逻辑 ----------
-function computeStates(records) {
+// 从 goal.subjects 中提取选科名称数组（兼容字符串数组和 {name,target} 对象数组）
+function extractSubjectNames(subjects) {
+    if (!Array.isArray(subjects) || !subjects.length) return null;
+    const names = subjects.map(s => (typeof s === 'string' ? s : (s && s.name) || '')).filter(Boolean);
+    return names.length ? names : null;
+}
+
+function computeStates(records, subjectNames) {
+    // 限定只统计用户选考的科目，避免 9 科累加超过 750
+    const validSubjects = (subjectNames && subjectNames.length) ? subjectNames : DEFAULT_GAOKAO_SUBJECTS;
     const kpAgg = {};
     records.forEach(r => {
         const id = r.knowledge_point_id || 'unknown';
@@ -280,14 +239,15 @@ function computeStates(records) {
         };
     }).sort((a, b) => a.mastery - b.mastery);
 
-    const abilityStates = Object.keys(SUBJECT_META).map(subject => {
+    const abilityStates = validSubjects.map(subject => {
+        const meta = SUBJECT_META[subject];
+        if (!meta) return null;
         const ks = knowledgeStates.filter(k => k.subject === subject);
         if (!ks.length) return null;
         const total = ks.reduce((s, k) => s + k.attempts, 0);
         const correct = ks.reduce((s, k) => s + k.correct, 0);
         const accuracy = total ? correct / total : 0;
         const mastery = ks.reduce((s, k) => s + k.mastery, 0) / ks.length;
-        const meta = SUBJECT_META[subject];
         let level = '基础';
         if (mastery >= 0.8) level = '优势';
         else if (mastery >= 0.6) level = '进阶';
@@ -309,18 +269,24 @@ function computeStates(records) {
     const totalQ = records.length;
     const totalCorrect = records.filter(r => r.is_correct).length;
     const accuracy = totalQ ? totalCorrect / totalQ : 0;
-    const estimatedScore = abilityStates.reduce((s, a) => s + a.estimated_score, 0);
+    // 只累加选考科目估分，并硬上限到 750
+    const estimatedScore = Math.min(
+        abilityStates.reduce((s, a) => s + a.estimated_score, 0),
+        TOTAL_FULL_SCORE
+    );
 
     return { knowledgeStates, abilityStates, totalQ, totalCorrect, accuracy, estimatedScore };
 }
 
 async function buildReport(env, userId, session, records) {
-    const { knowledgeStates, abilityStates, totalQ, totalCorrect, accuracy, estimatedScore } = computeStates(records);
     const goal = (await getGoal(env, userId)) || {};
+    const subjectNames = extractSubjectNames(goal.subjects);
+    const { knowledgeStates, abilityStates, totalQ, totalCorrect, accuracy, estimatedScore } = computeStates(records, subjectNames);
     const targetScore = Number(goal.target_score) || 600;
 
-    const weak = knowledgeStates.filter(k => k.mastery < 0.6).slice(0, 5);
-    const strong = knowledgeStates.filter(k => k.mastery >= 0.75);
+    const selSubjects = subjectNames || DEFAULT_GAOKAO_SUBJECTS;
+    const weak = knowledgeStates.filter(k => k.mastery < 0.6 && selSubjects.indexOf(k.subject) !== -1).slice(0, 5);
+    const strong = knowledgeStates.filter(k => k.mastery >= 0.75 && selSubjects.indexOf(k.subject) !== -1);
 
     const paragraphs = [];
     paragraphs.push('本次AI学情诊断共作答 ' + totalQ + ' 题，答对 ' + totalCorrect + ' 题，整体正确率 ' + Math.round(accuracy * 100) + '%。');
@@ -481,12 +447,46 @@ export async function onRequest(context) {
         });
     }
 
+    // ---- 页面模块数据（数据源 backend/data/pages，部署时生成）----
+    // 必须在旧 Worker 转发之前处理，否则会读到旧模块的过期内容
+    if (method === 'GET') {
+        const pdMatch = path.match(/^\/api\/page-data\/([^/]+)$/);
+        if (pdMatch) {
+            const mod = PAGE_DATA[pdMatch[1]];
+            if (!mod) return fail(404, '模块不存在: ' + pdMatch[1]);
+            return json(ok(JSON.parse(JSON.stringify(mod))));
+        }
+        const amMatch = path.match(/^\/api\/ai-module\/([^/]+)$/);
+        if (amMatch) {
+            const mod = PAGE_DATA['ai-module-' + amMatch[1]];
+            if (!mod) return fail(404, '模块不存在: ' + amMatch[1]);
+            const copy = JSON.parse(JSON.stringify(mod));
+            if (amMatch[1] === 'coach' && copy.today_analysis) {
+                copy.today_analysis.date = new Date().toLocaleDateString('zh-CN');
+            }
+            if (amMatch[1] === 'paper' && copy.header_card) {
+                copy.header_card.generated_at = new Date().toLocaleString('zh-CN');
+            }
+            if (amMatch[1] === 'predict' && copy.header_card && copy.header_card.stats) {
+                const exam = new Date(2027, 5, 7);
+                const days = Math.max(0, Math.ceil((exam - new Date()) / 86400000));
+                copy.header_card.stats = copy.header_card.stats.map(s =>
+                    s.label && s.label.includes('高考') ? { ...s, value: String(days) + '天' } : s
+                );
+            }
+            return json(ok(copy));
+        }
+    }
+
     const isNewRoute =
         path.startsWith('/api/student/') ||
         path.startsWith('/api/diagnostic/') ||
         path.startsWith('/api/behavior/') ||
+        /^\/api\/recommend\/[^/]+\/week-plan$/.test(path) ||
         path === '/api/auth/register' || path === '/api/auth/login' ||
-        path === '/api/auth/logout' || path === '/api/auth/me';
+        path === '/api/auth/logout' || path === '/api/auth/me' ||
+        path === '/api/auth/parent-bind' || path === '/api/auth/parent-bindings' ||
+        /^\/api\/auth\/parent-bindings\/[^/]+\/confirm$/.test(path);
 
     if (!isNewRoute) {
         // 旧模块接口继续由原 Worker 提供服务
@@ -498,14 +498,89 @@ export async function onRequest(context) {
         });
     }
 
+    // ---- AI学习计划（周/月视图，数据源与今日任务一致，按 path 中的 userId 读取）----
+    const weekPlanMatch = path.match(/^\/api\/recommend\/([^/]+)\/week-plan$/);
+    if (weekPlanMatch && method === 'GET') {
+        const targetUserId = weekPlanMatch[1];
+        const range = url.searchParams.get('range') || 'this_week';
+        const rangeLabels = { this_week: '本周', next_week: '下周', this_month: '本月' };
+        const dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+        const allTasks = await getJson(env, K.tasks(targetUserId), []);
+        const plan = await getJson(env, K.plan(targetUserId), null);
+
+        const keys = [];
+        if (range === 'this_month') {
+            // 覆盖整月：从当月 1 日所在周的周一开始，到当月最后一天所在周的周日结束
+            const nowParts = tzParts(new Date());
+            const y = Number(nowParts.year), m = Number(nowParts.month);
+            const lastOfMonthKey = todayKey(new Date(y, m, 0));
+            const startParts = startOfWeekKey(new Date(y, m - 1, 1)).split('-').map(Number);
+            for (let i = 0; i < 42; i++) {
+                const dayKey = todayKey(new Date(startParts[0], startParts[1] - 1, startParts[2] + i));
+                keys.push(dayKey);
+                const dow = new Date(Date.UTC(startParts[0], startParts[1] - 1, startParts[2] + i)).getUTCDay();
+                if (dayKey >= lastOfMonthKey && dow === 0) break;
+            }
+        } else if (range === 'next_week') {
+            weekDayKeys(new Date(Date.now() + 7 * 86400000)).forEach(k => keys.push(k));
+        } else {
+            weekDayKeys().forEach(k => keys.push(k));
+        }
+
+        const todayK = todayKey();
+        const weekPlan = keys.map((k, i) => {
+            const parts = k.split('-').map(Number);
+            const dow = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2])).getUTCDay();
+            const tasks = allTasks.filter(t => t.planned_date === k).map(t => ({
+                id: t.id,
+                subject: t.subject,
+                point: t.point,
+                time: t.time || ((t.planned_minutes || 30) + 'min'),
+                color: t.color,
+                questions_count: t.questions_count || 8,
+                status: t.status,
+                done: t.status === 'done'
+            }));
+            const day = {
+                day: dayNames[(dow + 6) % 7],
+                date: k,
+                is_today: k === todayK,
+                isToday: k === todayK,
+                tasks
+            };
+            if (range === 'this_month') {
+                const weekIdx = Math.floor(i / 7);
+                day.week_group = weekIdx;
+                day.week_group_name = '第' + (weekIdx + 1) + '周';
+            }
+            return day;
+        });
+
+        const totalTasks = weekPlan.reduce((s, d) => s + d.tasks.length, 0);
+        const doneTasks = weekPlan.reduce((s, d) => s + d.tasks.filter(t => t.done).length, 0);
+        return json(ok({
+            has_data: totalTasks > 0,
+            range,
+            range_label: rangeLabels[range] || '本周',
+            plan_id: plan ? plan.plan_id : null,
+            week_plan: weekPlan,
+            days: weekPlan,
+            total_tasks: totalTasks,
+            done_tasks: doneTasks,
+            message: totalTasks ? '' : (plan ? '当前时间段暂无学习任务' : '完成AI学情诊断后自动生成学习计划')
+        }));
+    }
+
     // ---- 认证 ----
     if (method === 'POST' && path === '/api/auth/register') {
         const b = await readBody(request);
-        const username = String(b.username || '').trim();
+        let username = String(b.username || '').trim();
+        const phone = String(b.phone || '').trim();
+        if (!username && phone && /^1\d{10}$/.test(phone)) username = phone;
         const password = String(b.password || '');
-        if (!username || !password) return fail(400, '用户名和密码必填');
-        if (await findUserByName(env, username)) return fail(409, '用户名已存在');
-        const user = await createUser(env, { ...b, username, password });
+        if (!username || !password) return fail(400, '账号和密码必填');
+        if (await findUserByName(env, username)) return fail(409, '该账号可能已注册');
+        const user = await createUser(env, { ...b, username, password, phone: phone || (/^1\d{10}$/.test(username) ? username : '') });
         const profile = await saveProfile(env, user.id, {
             name: user.name, grade: user.grade, province: user.province,
             exam_year: parseInt(b.exam_year) || 2027,
@@ -526,8 +601,8 @@ export async function onRequest(context) {
 
     if (method === 'POST' && path === '/api/auth/login') {
         const b = await readBody(request);
-        const u = await findUserByName(env, b.username);
-        if (!u || !(await verifyPassword(b.password, u))) return fail(401, '用户名或密码错误');
+        const u = await findUserByIdentifier(env, b.username);
+        if (!u || !(await verifyPassword(b.password, u))) return fail(401, '账号或密码错误');
         const token = await issueToken(env, u);
         await addBehaviorEvent(env, u.id, 'user_login', {});
         return json(ok({ token, user_id: u.id, user: publicUser(u), profile: await getProfile(env, u.id) }));
@@ -542,6 +617,63 @@ export async function onRequest(context) {
             await env.DATA_STORE.delete('token:exp:' + m[1]);
         }
         return json(ok({ success: true }));
+    }
+
+    // ---- 家长绑定（登录前即可使用）----
+    if (method === 'POST' && path === '/api/auth/parent-bind') {
+        const b = await readBody(request);
+        const studentPhone = String(b.student_phone || '').trim();
+        const parentPhone = String(b.parent_phone || '').trim();
+        const relation = String(b.relation || '父');
+        const smsCode = String(b.sms_code || '').trim();
+
+        if (!studentPhone || !parentPhone) return fail(400, '学生/家长手机号必填');
+        if (!/^1\d{10}$/.test(studentPhone)) return fail(400, '学生手机号格式不正确');
+        if (!/^1\d{10}$/.test(parentPhone)) return fail(400, '家长手机号格式不正确');
+        if (studentPhone === parentPhone) return fail(400, '学生与家长手机号不能相同');
+        if (smsCode && smsCode !== '8888') return fail(401, '短信验证码错误');
+
+        const ids = await getJson(env, K.parentBindingIds(parentPhone), []);
+        if (ids.length >= 3) return fail(409, '一个家长账号最多绑定3个学生账号');
+        const existing = (await Promise.all(ids.map(id => getJson(env, K.parentBinding(id), null)))).filter(Boolean);
+        if (existing.some(r => r.student_phone === studentPhone)) return fail(409, '该学生已绑定过此家长账号');
+
+        const rec = {
+            binding_id: 'b_' + uid('').slice(1, 9),
+            student_phone: studentPhone,
+            parent_phone: parentPhone,
+            relation,
+            status: smsCode ? 'active' : 'pending',
+            created_at: nowIso()
+        };
+        await putJson(env, K.parentBinding(rec.binding_id), rec);
+        ids.push(rec.binding_id);
+        await putJson(env, K.parentBindingIds(parentPhone), ids);
+        return json(ok(rec));
+    }
+
+    if (method === 'GET' && path === '/api/auth/parent-bindings') {
+        const parentPhone = String(url.searchParams.get('parent_phone') || '').trim();
+        let ids;
+        if (parentPhone) {
+            ids = await getJson(env, K.parentBindingIds(parentPhone), []);
+        } else {
+            const listed = await env.DATA_STORE.list({ prefix: 'pb:id:' });
+            ids = (listed.keys || []).map(k => k.name.slice('pb:id:'.length));
+        }
+        const records = (await Promise.all(ids.map(id => getJson(env, K.parentBinding(id), null)))).filter(Boolean);
+        records.sort((a, b2) => String(b2.created_at).localeCompare(String(a.created_at)));
+        return json(ok(records));
+    }
+
+    const confirmMatch = path.match(/^\/api\/auth\/parent-bindings\/([^/]+)\/confirm$/);
+    if (confirmMatch && method === 'POST') {
+        const rec = await getJson(env, K.parentBinding(confirmMatch[1]), null);
+        if (!rec) return fail(404, '绑定记录不存在');
+        rec.status = 'active';
+        rec.confirmed_at = nowIso();
+        await putJson(env, K.parentBinding(rec.binding_id), rec);
+        return json(ok(rec));
     }
 
     const user = await currentUser(request, env);
@@ -646,6 +778,84 @@ export async function onRequest(context) {
         }));
     }
 
+    // ---- 诊断答题 / 提交 ----
+    const diagAction = path.match(/^\/api\/diagnostic\/([^/]+)\/(answer|submit)$/);
+    if (method === 'POST' && diagAction) {
+        const sessionId = decodeURIComponent(diagAction[1]);
+        const action = diagAction[2];
+        const session = await getJson(env, K.session(sessionId), null);
+        if (!session || session.user_id !== userId) return fail(404, '诊断会话不存在');
+
+        if (action === 'answer') {
+            if (session.status !== 'in_progress') return fail(400, '诊断已提交，不能继续作答');
+            const b = await readBody(request);
+            const q = DIAGNOSTIC_BANK.find(x => x.id === b.question_id);
+            if (!q) return fail(400, '题目不存在');
+            const idx = Number(b.answer_index);
+            if (!(idx >= 0 && idx < q.options.length)) return fail(400, '答案无效');
+
+            const isCorrect = idx === q.answer_index;
+            const answers = await getJson(env, K.answers(sessionId), []);
+            const existing = answers.find(r => r.question_id === q.id);
+            const rec = existing || {
+                id: uid('ans'),
+                user_id: userId,
+                session_id: sessionId,
+                question_id: q.id,
+                answered_at: nowIso(),
+                date_key: todayKey()
+            };
+            rec.subject = q.subject;
+            rec.knowledge_point_id = q.knowledge_point_id;
+            rec.knowledge_point = q.knowledge_point;
+            rec.difficulty = q.difficulty;
+            rec.answer_index = idx;
+            rec.is_correct = isCorrect;
+            rec.duration_sec = parseInt(b.duration_sec) || 0;
+            rec.updated_at = nowIso();
+            if (!existing) answers.push(rec);
+            await putJson(env, K.answers(sessionId), answers);
+            await addBehaviorEvent(env, userId, 'diagnostic_answered', {
+                session_id: sessionId, question_id: q.id, is_correct: isCorrect
+            });
+            return json(ok({
+                question_id: q.id,
+                is_correct: isCorrect,
+                answer_index: q.answer_index,
+                analysis: q.analysis,
+                saved: true
+            }));
+        }
+
+        // submit
+        const answers = await getJson(env, K.answers(sessionId), []);
+        if (!answers.length) return fail(400, '请至少完成 1 道诊断题后再提交');
+
+        session.status = 'completed';
+        session.submitted_at = nowIso();
+        await putJson(env, K.session(sessionId), session);
+
+        const report = await buildReport(env, userId, session, answers);
+        const plan = await buildPlan(env, userId, report);
+        await saveProfile(env, userId, {
+            current_level: report.summary.estimated_score,
+            diagnosis_completed_at: session.submitted_at,
+            portrait_updated_at: nowIso()
+        });
+        await addBehaviorEvent(env, userId, 'diagnostic_completed', {
+            session_id: sessionId, report_id: report.report_id, plan_id: plan.plan_id
+        });
+
+        return json(ok({
+            session_id: sessionId,
+            status: 'completed',
+            report,
+            plan,
+            knowledge_states: await getJson(env, K.knowledge(userId), []),
+            ability_states: await getJson(env, K.ability(userId), [])
+        }));
+    }
+
     if (path === '/api/student/intelligence-profile' && method === 'GET') {
         const profile = await getProfile(env, userId);
         const goal = await getGoal(env, userId);
@@ -681,7 +891,7 @@ export async function onRequest(context) {
 
         const prediction = report ? {
             available: true,
-            predicted_score: report.summary.estimated_score,
+            predicted_score: Math.min(report.summary.estimated_score, TOTAL_FULL_SCORE),
             target_score: report.summary.target_score,
             score_gap: report.summary.score_gap,
             based_on: 'AI学情诊断（' + report.summary.total_questions + ' 题作答数据）',
@@ -769,6 +979,95 @@ export async function onRequest(context) {
             data.message = done ? '今日暂无学习任务' : '完成AI学情诊断后自动生成学习计划';
         }
         return json(ok(data));
+    }
+
+    // 今日任务 + 答题记录（学习进度快照，供教练等模块使用）
+    if (path === '/api/student/today-progress' && method === 'GET') {
+        const dateKey = todayKey();
+        const taskData = await getTodayTasks(env, userId);
+
+        const diagRecords = [];
+        const sessionIds = await getJson(env, K.sessionIds(userId), []);
+        for (const sid of sessionIds) {
+            const session = await getJson(env, K.session(sid), null);
+            if (!session) continue;
+            const sKey = session.date_key ||
+                (session.started_at ? todayKey(new Date(session.started_at)) : '');
+            if (sKey !== dateKey) continue;
+            const answers = await getJson(env, K.answers(sid), []);
+            answers.forEach(a => diagRecords.push(a));
+        }
+
+        const subjectMap = {};
+        diagRecords.forEach(a => {
+            const q = QUESTION_MAP[a.question_id] || {};
+            const key = q.subject || '未分类';
+            if (!subjectMap[key]) subjectMap[key] = { subject: key, total: 0, correct: 0 };
+            subjectMap[key].total++;
+            if (a.is_correct) subjectMap[key].correct++;
+        });
+
+        let practiceTotal = 0;
+        let practiceCorrect = 0;
+        const taskRecent = [];
+        taskData.tasks.filter(t => t.status === 'done').forEach(t => {
+            const answered = Number(t.answered) || 0;
+            practiceTotal += answered;
+            const rate = Number(t.correct_rate);
+            practiceCorrect += Number.isFinite(rate) ? Math.round(answered * rate / 100) : 0;
+            if (answered) {
+                taskRecent.push({
+                    subject: t.subject || '',
+                    knowledge_point: t.point || '',
+                    is_correct: Number.isFinite(rate) ? rate >= 60 : true,
+                    answered_at: t.completed_at || ''
+                });
+            }
+        });
+
+        const diagCorrect = diagRecords.filter(a => a.is_correct).length;
+        const totalAnswers = diagRecords.length + practiceTotal;
+        const totalCorrect = diagCorrect + practiceCorrect;
+
+        const recentDiag = diagRecords.slice().sort((a, b) =>
+            String(b.answered_at || '').localeCompare(String(a.answered_at || ''))
+        ).slice(0, 5).map(a => {
+            const q = QUESTION_MAP[a.question_id] || {};
+            return {
+                subject: q.subject || '',
+                knowledge_point: q.knowledge_point || '',
+                is_correct: !!a.is_correct,
+                answered_at: a.answered_at || ''
+            };
+        });
+        const recent = recentDiag.concat(taskRecent).slice(0, 5);
+
+        return json(ok({
+            date: taskData.date,
+            date_key: dateKey,
+            tasks: {
+                total: taskData.total_count,
+                done: taskData.done_count,
+                completion_rate: taskData.completion_rate,
+                planned_minutes: taskData.planned_minutes,
+                spent_minutes: taskData.spent_minutes
+            },
+            answers: {
+                total: totalAnswers,
+                correct: totalCorrect,
+                correct_rate: totalAnswers ? Math.round(totalCorrect / totalAnswers * 100) : 0,
+                diagnostic: diagRecords.length,
+                practice: practiceTotal,
+                duration_min: Math.round(diagRecords.reduce((s, a) => s + (Number(a.duration_sec) || 0), 0) / 60)
+            },
+            subjects: Object.values(subjectMap).map(s => ({
+                subject: s.subject,
+                total: s.total,
+                correct: s.correct,
+                correct_rate: s.total ? Math.round(s.correct / s.total * 100) : 0
+            })),
+            recent
+        }));
     }
 
     // 诊断详情 / 答题 / 提交

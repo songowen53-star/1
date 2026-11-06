@@ -37,37 +37,43 @@
       "name": "数学",
       "score": 118,
       "percent": 88,
-      "color": "#3B82F6"
+      "color": "#3B82F6",
+      "category": "required"
     },
     {
       "name": "英语",
       "score": 125,
       "percent": 82,
-      "color": "#10B981"
+      "color": "#10B981",
+      "category": "required"
     },
     {
       "name": "物理",
       "score": 88,
       "percent": 80,
-      "color": "#8B5CF6"
+      "color": "#F59E0B",
+      "category": "plus1"
     },
     {
       "name": "化学",
       "score": 84,
-      "percent": 84,
-      "color": "#F59E0B"
+      "percent": 78,
+      "color": "#8B5CF6",
+      "category": "plus2"
     },
     {
       "name": "语文",
       "score": 110,
       "percent": 73,
-      "color": "#EC4899"
+      "color": "#EC4899",
+      "category": "required"
     },
     {
       "name": "生物",
       "score": 75,
-      "percent": 83,
-      "color": "#06B6D4"
+      "percent": 75,
+      "color": "#06B6D4",
+      "category": "plus2"
     }
   ],
   "heatmap_label": "知识点掌握热力图（按学科·模块）",
