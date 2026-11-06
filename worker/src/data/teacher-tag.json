@@ -1,0 +1,32 @@
+{
+  "question": {
+    "subject": "数学",
+    "topic": "导数",
+    "no": 4,
+    "difficulty": "★★★★☆",
+    "score": 12,
+    "content": "已知函数 f(x)=x³-3ax²+2bx 在 x=1 处取得极值，且 f(x) 在区间 [0,2] 上的最大值为 2，求 a、b 的值。"
+  },
+  "recommended": [
+    {
+      "name": "导数的极值",
+      "confidence": 96
+    },
+    {
+      "name": "利用导数研究函数",
+      "confidence": 92
+    },
+    {
+      "name": "分类讨论思想",
+      "confidence": 85
+    },
+    {
+      "name": "函数的单调性",
+      "confidence": 78
+    }
+  ],
+  "confirmed": [
+    "导数的极值",
+    "分类讨论思想"
+  ]
+}

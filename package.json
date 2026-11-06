@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "canvas": "^3.2.3",
+    "qrcode-generator": "^2.0.4",
+    "qrcode-reader": "^1.0.4"
+  }
+}

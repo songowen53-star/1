@@ -1,0 +1,50 @@
+{
+  "original_image": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22280%22%20viewBox%3D%220%200%20400%20280%22%3E%3Crect%20width%3D%22400%22%20height%3D%22280%22%20fill%3D%22%23ffffff%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22400%22%20height%3D%2236%22%20fill%3D%22%23EFF6FF%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2224%22%20font-family%3D%22serif%22%20font-size%3D%2215%22%20font-weight%3D%22700%22%20fill%3D%22%231E40AF%22%3E%E6%95%B0%E5%AD%A6%20%C2%B7%20%E5%AF%BC%E6%95%B0%E4%B8%8E%E5%87%BD%E6%95%B0%E5%8D%95%E8%B0%83%E6%80%A7%3C%2Ftext%3E%3Ctext%20x%3D%2216%22%20y%3D%2268%22%20font-family%3D%22serif%22%20font-size%3D%2216%22%20fill%3D%22%23111827%22%3E%E5%B7%B2%E7%9F%A5%E5%87%BD%E6%95%B0%20f(x)%20%3D%20ln%20x%20%E2%88%92%20ax%EF%BC%88a%20%E2%88%88%20R%EF%BC%89%E3%80%82%3C%2Ftext%3E%3Ctext%20x%3D%2216%22%20y%3D%22100%22%20font-family%3D%22serif%22%20font-size%3D%2216%22%20fill%3D%22%23111827%22%3E%EF%BC%881%EF%BC%89%E8%AE%A8%E8%AE%BA%20f(x)%20%E7%9A%84%E5%8D%95%E8%B0%83%E6%80%A7%EF%BC%9B%3C%2Ftext%3E%3Ctext%20x%3D%2216%22%20y%3D%22132%22%20font-family%3D%22serif%22%20font-size%3D%2216%22%20fill%3D%22%23111827%22%3E%EF%BC%882%EF%BC%89%E8%8B%A5%20f(x)%20%E2%89%A4%200%20%E6%81%92%E6%88%90%E7%AB%8B%EF%BC%8C%E6%B1%82%20a%20%E7%9A%84%E5%8F%96%E5%80%BC%E8%8C%83%E5%9B%B4%E3%80%82%3C%2Ftext%3E%3Cline%20x1%3D%2216%22%20y1%3D%22160%22%20x2%3D%22384%22%20y2%3D%22160%22%20stroke%3D%22%23E5E7EB%22%20stroke-width%3D%221%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%22188%22%20font-family%3D%22serif%22%20font-size%3D%2213%22%20fill%3D%22%236B7280%22%3E%E3%80%90%E8%A7%A3%E3%80%91%3C%2Ftext%3E%3Ctext%20x%3D%2240%22%20y%3D%22212%22%20font-family%3D%22serif%22%20font-size%3D%2213%22%20fill%3D%22%23374151%22%3Ef%E2%80%B2(x)%20%3D%201%2Fx%20%E2%88%92%20a%20%EF%BC%88x%20%3E%200%EF%BC%89%3C%2Ftext%3E%3Ctext%20x%3D%2240%22%20y%3D%22236%22%20font-family%3D%22serif%22%20font-size%3D%2213%22%20fill%3D%22%23374151%22%3E%E4%BB%A4%20f%E2%80%B2(x)%20%3D%200%EF%BC%8C%E5%BE%97%20x%20%3D%201%2Fa%EF%BC%88a%20%3E%200%EF%BC%89%3C%2Ftext%3E%3Ctext%20x%3D%2240%22%20y%3D%22260%22%20font-family%3D%22serif%22%20font-size%3D%2213%22%20fill%3D%22%23374151%22%3E%E5%BD%93%20a%20%E2%89%A4%200%20%E6%97%B6%EF%BC%8Cf%E2%80%B2(x)%20%3E%200%EF%BC%8Cf(x)%20%E5%8D%95%E8%B0%83%E9%80%92%E5%A2%9E%E2%80%A6%3C%2Ftext%3E%3C%2Fsvg%3E",
+  "ocr_status": "识别成功",
+  "ocr_text": "已知函数 f(x) = ln x - ax (a ∈ R)<br>(1) 讨论 f(x) 的单调性；<br>(2) 若 f(x) ≤ 0 恒成立，求 a 的取值范围。",
+  "confidence": 98,
+  "confidence_desc": "AI识别准确度极高",
+  "steps": [
+    {
+      "no": 1,
+      "title": "分析题意",
+      "border_color": "var(--primary)",
+      "bg": "var(--primary)",
+      "content": "本题考查导数与函数单调性。对 f(x) = ln x - ax 求导得 f'(x) = 1/x - a，需对参数 a 分类讨论。"
+    },
+    {
+      "no": 2,
+      "title": "解题过程",
+      "border_color": "var(--warning)",
+      "bg": "var(--warning)",
+      "content": "① 当 a ≤ 0 时，f'(x) = 1/x - a > 0 恒成立，f(x) 在 (0,+∞) 单调递增；<br>② 当 a > 0 时，令 f'(x) = 0 得 x = 1/a，f(x) 在 (0,1/a) 递增，在 (1/a,+∞) 递减；<br>③ 由 f(x) ≤ 0 恒成立，结合最大值分析得 a ≥ 1。"
+    },
+    {
+      "no": 3,
+      "title": "最终答案",
+      "border_color": "var(--success)",
+      "bg": "var(--success)",
+      "content": "(1) a ≤ 0 时单调递增；a > 0 时在 (0,1/a) 递增，(1/a,+∞) 递减。<br>(2) a 的取值范围为 [1, +∞)。"
+    }
+  ],
+  "actions": [
+    {
+      "type": "outline",
+      "icon": "fa-copy",
+      "label": "相似题",
+      "page": "photo-similar"
+    },
+    {
+      "type": "primary",
+      "icon": "fa-robot",
+      "label": "问AI老师",
+      "page": "photo-video"
+    }
+  ],
+  "detail_action": {
+    "type": "outline",
+    "icon": "fa-list-ul",
+    "label": "查看详细解析",
+    "page": "photo-similar"
+  }
+}

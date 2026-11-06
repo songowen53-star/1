@@ -1,0 +1,6 @@
+{"code":0,"data":[
+{"id":"n1","type":"info","title":"学习周报已生成","content":"本周学习时长 12.5h，正确率提升 5%，继续加油！","created_at":"2026-09-21T09:58:00.000Z","is_read":false},
+{"id":"n2","type":"warning","title":"错题本更新","content":"今日新增 3 道错题，建议尽快复习巩固","created_at":"2026-09-21T09:00:00.000Z","is_read":false},
+{"id":"n3","type":"success","title":"AI推荐试卷","content":"AI已为你生成专属冲刺试卷，点击查看","created_at":"2026-09-20T10:00:00.000Z","is_read":false},
+{"id":"n4","type":"info","title":"高考报名提醒","content":"2027 年高考报名即将开始，请关注通知","created_at":"2026-09-18T10:00:00.000Z","is_read":true}
+]}

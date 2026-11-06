@@ -1,0 +1,32 @@
+{
+  "header": {
+    "name": "AI学习教练",
+    "status": "在线",
+    "greeting": "完成 AI 学情诊断后，我会按你的真实薄弱点定制建议",
+    "avatar_icon": "fa-robot",
+    "avatar_gradient": "linear-gradient(135deg,#3B82F6,#8B5CF6)"
+  },
+  "suggestion": {
+    "title": "今日AI建议",
+    "icon": "fa-lightbulb",
+    "today_topic": "先完成 AI 学情诊断",
+    "today_topic_label": "今天学什么",
+    "reason_label": "为什么学",
+    "reason": "诊断后按真实薄弱点生成今日任务",
+    "improve_label": "诊断状态",
+    "improve_value": "待诊断"
+  },
+  "chat_section_title": "AI对话",
+  "messages": [
+    {
+      "role": "ai",
+      "text": "你好，我是 AI 学习教练。完成 AI 学情诊断后，我会结合你的真实估分、薄弱知识点和今日学习任务来回答，不再使用通用模板。"
+    }
+  ],
+  "quick_questions": [
+    "📊 我的薄弱点在哪？",
+    "💡 今日该怎么学？",
+    "📅 制定一周计划"
+  ],
+  "input_placeholder": "问我任何学习问题..."
+}

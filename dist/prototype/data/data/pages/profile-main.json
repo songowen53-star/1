@@ -1,0 +1,80 @@
+{
+  "user": {
+    "name": "李同学",
+    "avatar": "",
+    "is_vip": true,
+    "grade": "高三",
+    "province": "浙江",
+    "days_to_gaokao": 0,
+    "target_score": 620,
+    "current_score": 580
+  },
+  "stats": [
+    {
+      "label": "累计学习",
+      "value": "186h",
+      "change": 12,
+      "color": "blue"
+    },
+    {
+      "label": "做题量",
+      "value": "3267",
+      "change": 8,
+      "color": "green"
+    },
+    {
+      "label": "正确率",
+      "value": "78%",
+      "change": 5,
+      "color": "orange"
+    }
+  ],
+  "menu_items": [
+    {
+      "icon": "fa-crown",
+      "bg": "linear-gradient(135deg,#F59E0B,#D97706)",
+      "title": "VIP会员",
+      "desc": "畅享全部AI特权",
+      "page": "profile-vip"
+    },
+    {
+      "icon": "fa-file-alt",
+      "bg": "linear-gradient(135deg,#3B82F6,#1D4ED8)",
+      "title": "学习报告",
+      "desc": "本月学情深度分析",
+      "page": "profile-report"
+    },
+    {
+      "icon": "fa-user-friends",
+      "bg": "linear-gradient(135deg,#10B981,#059669)",
+      "title": "家长中心",
+      "desc": "查看孩子学习动态",
+      "page": "profile-parent"
+    },
+    {
+      "icon": "fa-cog",
+      "bg": "linear-gradient(135deg,#6B7280,#4B5563)",
+      "title": "设置",
+      "desc": "账号与学习偏好",
+      "page": "profile-settings"
+    },
+    {
+      "icon": "fa-question-circle",
+      "bg": "linear-gradient(135deg,#8B5CF6,#6D28D9)",
+      "title": "帮助与反馈",
+      "desc": "常见问题与意见反馈",
+      "page": ""
+    },
+    {
+      "icon": "fa-info-circle",
+      "bg": "linear-gradient(135deg,#06B6D4,#0891B2)",
+      "title": "关于我们",
+      "desc": "版本 v1.2.0",
+      "page": ""
+    }
+  ],
+  "today_summary": {
+    "hours": "3.5",
+    "tip": "AI提醒：数学导数专项还未完成，加油！"
+  }
+}

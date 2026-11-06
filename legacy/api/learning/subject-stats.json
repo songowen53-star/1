@@ -1,0 +1,8 @@
+{"code":0,"data":[
+{"subject":"数学","score":105,"max_score":150,"mastery_rate":0.70,"trend":"up"},
+{"subject":"语文","score":112,"max_score":150,"mastery_rate":0.75,"trend":"stable"},
+{"subject":"英语","score":118,"max_score":150,"mastery_rate":0.79,"trend":"up"},
+{"subject":"物理","score":78,"max_score":100,"mastery_rate":0.78,"trend":"up"},
+{"subject":"化学","score":85,"max_score":100,"mastery_rate":0.85,"trend":"stable"},
+{"subject":"生物","score":70,"max_score":100,"mastery_rate":0.70,"trend":"down"}
+]}

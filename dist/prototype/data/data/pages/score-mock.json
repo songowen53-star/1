@@ -1,0 +1,26 @@
+{
+  "exam_name": "高三第二次模考",
+  "total_score": 550,
+  "total_max": 750,
+  "change": "-30",
+  "grade_rank": 68,
+  "grade_total": 1200,
+  "rank_change": 5,
+  "subjects": [
+    { "name": "语文", "score": 98, "total": 150, "change": "-7", "color": "#3B82F6", "icon": "fa-book" },
+    { "name": "数学", "score": 85, "total": 150, "change": "-10", "color": "#EF4444", "icon": "fa-calculator" },
+    { "name": "英语", "score": 112, "total": 150, "change": "-6", "color": "#10B981", "icon": "fa-language" },
+    { "name": "物理", "score": 82, "total": 100, "change": "-3", "color": "#F59E0B", "icon": "fa-atom" },
+    { "name": "化学", "score": 78, "total": 100, "change": "-4", "color": "#8B5CF6", "icon": "fa-flask" },
+    { "name": "生物", "score": 95, "total": 100, "change": "+0", "color": "#EC4899", "icon": "fa-dna" }
+  ],
+  "compare_data": {
+    "labels": ["语文", "数学", "英语", "物理", "化学", "生物"],
+    "current": [98, 85, 112, 82, 78, 95],
+    "last": [105, 95, 118, 85, 82, 95]
+  },
+  "ai_analysis": {
+    "title": "模考成绩对比分析",
+    "content": "本次模考总分550分，较1月月考（580分）下降30分。数学下降最明显（-10分），语文与英语亦有下滑。年级排名68/1200，前进5名，说明全校整体难度提升。建议重点复盘数学解析几何与英语完形填空，预计下次月考可回升至570分以上。"
+  }
+}

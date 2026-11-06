@@ -1,0 +1,12 @@
+{"code":0,"data":[
+{"id":"math","name":"数学","icon":"fa-square-root-variable","color":"#3B82F6"},
+{"id":"chinese","name":"语文","icon":"fa-book","color":"#EF4444"},
+{"id":"english","name":"英语","icon":"fa-language","color":"#8B5CF6"},
+{"id":"physics","name":"物理","icon":"fa-atom","color":"#F59E0B"},
+{"id":"chemistry","name":"化学","icon":"fa-flask","color":"#10B981"},
+{"id":"biology","name":"生物","icon":"fa-dna","color":"#EC4899"},
+{"id":"politics","name":"政治","icon":"fa-landmark","color":"#EF4444"},
+{"id":"history","name":"历史","icon":"fa-ribbon","color":"#D97706"},
+{"id":"geography","name":"地理","icon":"fa-globe-asia","color":"#059669"},
+{"id":"science","name":"理综","icon":"fa-vials","color":"#6B7280"}
+]}

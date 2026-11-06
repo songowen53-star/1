@@ -1,0 +1,68 @@
+{
+  "title": "AI高考 VIP",
+  "subtitle": "解锁全部AI能力 · 助力高考冲刺",
+  "users_count": "12.5万",
+  "privileges": [
+    {
+      "icon": "fa-robot",
+      "bg": "linear-gradient(135deg,#3B82F6,#1D4ED8)",
+      "title": "AI无限讲题",
+      "desc": "不限次数使用AI分步讲题"
+    },
+    {
+      "icon": "fa-file-alt",
+      "bg": "linear-gradient(135deg,#10B981,#059669)",
+      "title": "真题全库",
+      "desc": "全国近10年高考真题无限刷"
+    },
+    {
+      "icon": "fa-magic",
+      "bg": "linear-gradient(135deg,#8B5CF6,#6D28D9)",
+      "title": "专属学习计划",
+      "desc": "AI定制个性化提分方案"
+    },
+    {
+      "icon": "fa-ban",
+      "bg": "linear-gradient(135deg,#06B6D4,#0891B2)",
+      "title": "无广告",
+      "desc": "纯净学习体验，告别打扰"
+    },
+    {
+      "icon": "fa-headset",
+      "bg": "linear-gradient(135deg,#F59E0B,#D97706)",
+      "title": "优先客服",
+      "desc": "VIP专属通道，秒回响应"
+    },
+    {
+      "icon": "fa-file-signature",
+      "bg": "linear-gradient(135deg,#EC4899,#BE185D)",
+      "title": "专属报告",
+      "desc": "深度学情报告每月一份"
+    }
+  ],
+  "plans": [
+    {
+      "name": "月卡",
+      "price": "28",
+      "unit": "/月",
+      "desc": "灵活开通",
+      "popular": false
+    },
+    {
+      "name": "季卡",
+      "price": "68",
+      "unit": "/季",
+      "desc": "月均￥22.7",
+      "popular": true
+    },
+    {
+      "name": "年卡",
+      "price": "198",
+      "unit": "/年",
+      "desc": "月均￥16.5 最划算",
+      "popular": false
+    }
+  ],
+  "cta_name": "年卡",
+  "cta_price": "198"
+}

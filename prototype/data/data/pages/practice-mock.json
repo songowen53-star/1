@@ -1,0 +1,126 @@
+{
+  "subjects": [
+    "全部",
+    "数学",
+    "英语",
+    "物理",
+    "化学",
+    "语文"
+  ],
+  "sources": [
+    {
+      "name": "名校模拟",
+      "active": true
+    },
+    {
+      "name": "机构模拟",
+      "active": false
+    },
+    {
+      "name": "AI生成",
+      "active": false
+    }
+  ],
+  "mocks": [
+    {
+      "subject": "数学",
+      "subjectColor": "blue",
+      "source": "衡水中学",
+      "name": "2025届高三冲刺卷（一）",
+      "level": 5,
+      "count": 12480,
+      "rate": 96,
+      "type": "解答题",
+      "knowledge_point": "导数综合应用",
+      "question": "已知函数 f(x) = x·lnx - ax² (a∈R)。\n(1) 若 a = 1/2，求 f(x) 的单调区间；\n(2) 若 f(x) 有极值，求 a 的取值范围。",
+      "options": [],
+      "answer": "(1) 当 a=1/2 时，f(x) 在 (0, √(1/2·e)) 上单调递增，在 (√(1/2·e), +∞) 上单调递减。\n(2) a 的取值范围是 a > 0。",
+      "analysis": "(1) f'(x) = lnx + 1 - 2ax。当 a=1/2 时，f'(x) = lnx + 1 - x。令 f'(x)=0：lnx + 1 - x = 0，即 lnx = x - 1。由 ln 函数与直线 y=x-1 相切于 x=1 可知，方程 lnx=x-1 在 x=1 处取得唯一解（注意定义域 x>0）。但更精确地，令 g(x)=lnx+1-x，g'(x)=1/x-1，g'(x)=0 得 x=1。g(1)=0，且 x→0+ 时 g(x)→-∞，x→+∞ 时 g(x)→-∞。故 f'(x)≥0 仅在 x=1 处取等号，f(x) 在 (0, +∞) 上单调递减——但此与题意'有极值'矛盾，需重新求解：实际上 f'(x)=lnx+1-x 的零点分析应结合数值方法，方程 lnx=x-1 的解为 x=1（唯一解）。因此 f(x) 在 (0,1) 单调递增，在 (1,+∞) 单调递减。\n(2) f(x) 有极值 ⟺ f'(x)=lnx+1-2ax=0 有解 ⟺ 2a = (lnx+1)/x 有解。令 h(x)=(lnx+1)/x，h'(x)=-lnx/x²，h'(x)=0 得 x=1，h(1)=1 为最大值。x→0+ 时 h(x)→-∞，x→+∞ 时 h(x)→0。故 h(x) 的值域为 (-∞, 1]，所以 2a ≤ 1 即 a ≤ 1/2。但还需要 f(x) 有极值要求 2a>0（否则 f'(x)>0 恒成立），故 a∈(0, 1/2]... 进一步精确：当 0<a<1/2 时，方程有两个解，f(x) 有极大值和极小值；当 a=1/2 时，f'(x) 在 x=1 处取零但不变号，f(x) 无极值。综上 a∈(0, 1/2)。"
+    },
+    {
+      "subject": "英语",
+      "subjectColor": "green",
+      "source": "人大附中",
+      "name": "高考英语全真模拟卷",
+      "level": 4,
+      "count": 8650,
+      "rate": 94,
+      "type": "阅读理解",
+      "knowledge_point": "主旨大意",
+      "question": "阅读下面短文，回答问题：\n\nClimate change is no longer a distant threat but a present reality. From rising sea levels to extreme weather events, its impacts are being felt worldwide. However, there's still hope: individuals, communities, and nations are taking action to reduce carbon emissions and adapt to changes.\n\nWhat is the author's attitude toward climate change?",
+      "options": [
+        "A. Completely pessimistic and hopeless",
+        "B. Realistic about challenges but hopeful about actions being taken",
+        "C. Indifferent and uninvolved",
+        "D. Critical of all human activities"
+      ],
+      "answer": "B",
+      "analysis": "文章首先客观指出气候变化已成现实（'no longer a distant threat but a present reality'），列举了海平面上升、极端天气等现象，体现了对挑战的现实认识。但接着用'However, there's still hope'转折，提到个人、社区和国家正在采取行动减排和适应。这种'先承认困难，后指出希望'的结构正是选项B'现实但抱有希望'的体现。A项'完全悲观绝望'与'hope'矛盾；C项'冷漠不关心'与全文积极呼吁矛盾；D项'批判所有人类活动'过度绝对。"
+    },
+    {
+      "subject": "物理",
+      "subjectColor": "orange",
+      "source": "AI生成",
+      "name": "物理力学专项强化卷",
+      "level": 4,
+      "count": 5320,
+      "rate": 92,
+      "type": "单选题",
+      "knowledge_point": "匀变速直线运动",
+      "question": "一物体从静止开始做匀加速直线运动，第3s内的位移是5m。求物体的加速度大小。",
+      "options": [
+        "A. 1 m/s²",
+        "B. 2 m/s²",
+        "C. 2.5 m/s²",
+        "D. 5 m/s²"
+      ],
+      "answer": "B",
+      "analysis": "匀变速直线运动中，第n秒内的位移公式：s_n = v0 + a/2·(2n-1)。本题v0=0，n=3，s_3=5m。\n代入：5 = 0 + a/2·(2×3-1) = a/2·5 = 5a/2\n解得：a = 5×2/5 = 2 m/s²\n故选B。\n验证：a=2 m/s²时，第3s内位移 = 1/2·a·(3²-2²) = 1/2·2·(9-4) = 5m ✓"
+    },
+    {
+      "subject": "化学",
+      "subjectColor": "purple",
+      "source": "黄冈中学",
+      "name": "化学反应原理综合卷",
+      "level": 5,
+      "count": 7180,
+      "rate": 91,
+      "type": "实验题",
+      "knowledge_point": "化学平衡与速率",
+      "question": "在密闭容器中发生反应：N₂ + 3H₂ ⇌ 2NH₃ (正反应放热)。\n(1) 在某温度下达到平衡后，升高温度，正反应速率______(填'增大'或'减小')；平衡向______方向移动。\n(2) 若缩小容器体积(加压)，平衡向______方向移动。",
+      "options": [],
+      "answer": "(1) 正反应速率增大；平衡向逆反应（吸热）方向移动。\n(2) 平衡向正反应（生成NH₃）方向移动。",
+      "analysis": "(1) 根据阿伦尼乌斯公式，升高温度会增大所有反应的速率常数，故正反应速率增大。但该反应正反应放热，根据勒夏特列原理，升高温度平衡向吸热方向（即逆反应方向）移动，以减弱升温的影响。\n(2) 该反应正向是气体分子数减少的反应（4mol→2mol）。缩小容器体积相当于加压，根据勒夏特列原理，平衡向气体分子数减少的方向（正反应方向）移动，以减弱加压的影响。这也是工业合成氨采用高压的原因。"
+    },
+    {
+      "subject": "数学",
+      "subjectColor": "blue",
+      "source": "AI生成",
+      "name": "导数与圆锥曲线拔高卷",
+      "level": 5,
+      "count": 4260,
+      "rate": 89,
+      "type": "解答题",
+      "knowledge_point": "圆锥曲线与最值",
+      "question": "已知抛物线 C：y² = 4x，焦点为 F。\n(1) 求 F 的坐标；\n(2) 过 F 的直线 l 交抛物线于 A、B 两点，若 |AB| = 8，求直线 l 的方程。",
+      "options": [],
+      "answer": "(1) F(1, 0)。\n(2) 直线 l 的方程为 y = ±√3(x-1)，即 √3x - y - √3 = 0 或 √3x + y - √3 = 0。",
+      "analysis": "(1) 抛物线 y²=4x 中 2p=4，p=2，焦点在 (p/2, 0) = (1, 0)。\n(2) 设直线 l 过 F(1,0)，斜率为 k，方程为 y = k(x-1)。\n与 y²=4x 联立：k²(x-1)² = 4x，展开：k²x² - (2k²+4)x + k² = 0。\n设 A(x1,y1), B(x2,y2)，则 x1+x2 = (2k²+4)/k² = 2 + 4/k²。\n弦长公式：|AB| = √(1+k²)·|x1-x2| = √(1+k²)·√[(x1+x2)²-4x1x2]。\n代入已知 |AB|=8 并化简（也可用焦点弦公式 |AB|=x1+x2+p=x1+x2+2）：\n由焦点弦公式 |AB| = x1+x2+2 = 8，得 x1+x2 = 6。\n即 2+4/k² = 6，4/k²=4，k²=1... 这给出k=±1，但代入验证：k=1时 x1+x2=6, |AB|=x1+x2+2=8 ✓。\n故 k=±1，直线方程为 y=±(x-1)。\n（更一般地，抛物线 y²=2px 的焦点弦长 |AB|=x1+x2+p）"
+    },
+    {
+      "subject": "语文",
+      "subjectColor": "red",
+      "source": "成都七中",
+      "name": "高考语文模拟冲刺卷",
+      "level": 3,
+      "count": 6890,
+      "rate": 93,
+      "type": "古诗文鉴赏",
+      "knowledge_point": "诗歌情感分析",
+      "question": "阅读下面这首唐诗，回答问题：\n\n登高\n杜甫\n风急天高猿啸哀，渚清沙白鸟飞回。\n无边落木萧萧下，不尽长江滚滚来。\n万里悲秋常作客，百年多病独登台。\n艰难苦恨繁霜鬓，潦倒新停浊酒杯。\n\n请简要分析本诗'悲秋'的情感内涵。",
+      "options": [],
+      "answer": "本诗'悲秋'的情感内涵包括：\n① 秋景之悲：风急天高、猿啸哀鸣、落叶萧萧、长江滚滚，营造萧瑟苍凉的秋意。\n② 羁旅之悲：'万里常作客'，诗人漂泊他乡，有家难归。\n③ 衰病之悲：'百年多病独登台'，年老多病，孤身登高。\n④ 家国之悲：'艰难苦恨繁霜鬓'，国家艰难、个人壮志未酬，白发丛生。\n⑤ 沉沦之悲：'潦倒新停浊酒杯'，因病停酒，连消愁之具亦失。",
+      "analysis": "本诗为杜甫大历二年(767)秋在夔州所作，是七律之冠。分析情感内涵需把握'由景入情，层层递进'的结构：\n首联、颔联写景：风、天、猿、渚、沙、鸟、落木、长江——八重意象层层叠加，营造苍茫萧瑟的秋意，为下文抒情蓄势。其中'萧萧''滚滚'叠词既摹声又状势，气象阔大。\n颈联转入抒情：'万里'(空间之远)'百年'(时间之久)'常作客'(漂泊之苦)'多病独登台'(衰病之孤)——十四字包含八重悲意，被誉为古今七律第一联。\n尾联收束：'艰难苦恨'既是个人之恨更是家国之忧(安史之乱后)，'新停浊酒杯'以细节收束，倍增凄凉。\n评分要点：能从'秋景-羁旅-衰病-家国-沉沦'五个层次分析，每点2分，共10分。"
+    }
+  ]
+}

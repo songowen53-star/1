@@ -1,0 +1,17 @@
+{
+  "total_gain": 58,
+  "from_score": 580,
+  "to_score": 638,
+  "improvements": [
+    { "subject": "数学", "gain": 20, "points": "解析几何、函数与导数综合题", "color": "#EF4444", "icon": "fa-calculator" },
+    { "subject": "语文", "gain": 10, "points": "现代文阅读理解、作文立意深度", "color": "#3B82F6", "icon": "fa-book" },
+    { "subject": "物理", "gain": 10, "points": "电磁学综合、实验题规范", "color": "#F59E0B", "icon": "fa-atom" },
+    { "subject": "英语", "gain": 8, "points": "完形填空、七选五逻辑", "color": "#10B981", "icon": "fa-language" },
+    { "subject": "化学", "gain": 7, "points": "有机化学、反应原理综合", "color": "#8B5CF6", "icon": "fa-flask" },
+    { "subject": "生物", "gain": 3, "points": "遗传综合、实验设计规范", "color": "#EC4899", "icon": "fa-dna" }
+  ],
+  "ai_advice": {
+    "title": "AI提分优先级建议",
+    "content": "总提分空间58分，正好匹配目标浙江大学638分录取线。优先突破数学（+20分），其次物理（+10分）与语文（+10分）。按当前校内排名68名与省排名预测8231名，提分至638分后省排名预计提升至5000名以内，可冲刺多所985院校。建议结合「针对性刷题」与「学习计划」模块执行。"
+  }
+}

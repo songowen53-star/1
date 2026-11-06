@@ -1,0 +1,16 @@
+{"code":0,"data":{
+"plan":[
+{"subject":"数学","knowledge_point_name":"导数应用专题","mastery_rate":0.45,"score_gain":15,"allocated_minutes":35,"strategy":"专项突破"},
+{"subject":"数学","knowledge_point_name":"圆锥曲线综合","mastery_rate":0.41,"score_gain":18,"allocated_minutes":40,"strategy":"优先突破"},
+{"subject":"物理","knowledge_point_name":"电磁感应综合题","mastery_rate":0.48,"score_gain":12,"allocated_minutes":30,"strategy":"重点突破"},
+{"subject":"化学","knowledge_point_name":"化学平衡计算","mastery_rate":0.49,"score_gain":13,"allocated_minutes":25,"strategy":"重点突破"},
+{"subject":"英语","knowledge_point_name":"书面表达高级句式","mastery_rate":0.52,"score_gain":10,"allocated_minutes":20,"strategy":"加强训练"},
+{"subject":"化学","knowledge_point_name":"电化学原理","mastery_rate":0.51,"score_gain":11,"allocated_minutes":25,"strategy":"专项突破"},
+{"subject":"数学","knowledge_point_name":"数列求和方法","mastery_rate":0.54,"score_gain":11,"allocated_minutes":25,"strategy":"加强训练"},
+{"subject":"物理","knowledge_point_name":"力学综合分析","mastery_rate":0.55,"score_gain":10,"allocated_minutes":20,"strategy":"加强训练"},
+{"subject":"英语","knowledge_point_name":"完形填空技巧","mastery_rate":0.53,"score_gain":9,"allocated_minutes":20,"strategy":"加强训练"}
+],
+"total_minutes":240,
+"task_count":9,
+"estimated_score_gain":109
+}}

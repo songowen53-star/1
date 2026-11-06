@@ -1,0 +1,42 @@
+{
+  "header_title": "拍照搜题",
+  "header_subtitle": "对准题目拍照，AI自动识别并解答",
+  "camera_target_page": "photo-parse",
+  "support_text": "支持数学/物理/化学/英语等全科识别",
+  "records_title": "最近搜题",
+  "records": [
+    {
+      "subject": "数学",
+      "time": "10分钟前",
+      "icon": "fa-square-root-variable",
+      "bg": "#3B82F6",
+      "q": "已知函数 f(x)=ln x - ax..."
+    },
+    {
+      "subject": "物理",
+      "time": "2小时前",
+      "icon": "fa-atom",
+      "bg": "#8B5CF6",
+      "q": "一质量为m的物体在光滑水平面..."
+    },
+    {
+      "subject": "化学",
+      "time": "昨天 19:24",
+      "icon": "fa-flask",
+      "bg": "#10B981",
+      "q": "常温下将0.1mol/L醋酸溶液..."
+    }
+  ],
+  "actions": [
+    {
+      "icon": "fa-images",
+      "color": "var(--primary)",
+      "label": "相册选择"
+    },
+    {
+      "icon": "fa-bolt",
+      "color": "var(--warning)",
+      "label": "闪光灯"
+    }
+  ]
+}

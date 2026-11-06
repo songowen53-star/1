@@ -1,0 +1,113 @@
+{
+  "module": "home-task-learn",
+  "name": "首页-学习会话",
+  "version": "20260921A",
+  "updated_at": "2026-09-21T00:00:00.000Z",
+  "source": "prototype/js/pages-home.js (FALLBACK_BANK 兜底题库，9学科×8题，已提取真实题目)",
+  "browser_url": "http://localhost:8788/prototype/index.html",
+  "cloud_url": "https://ai-gaokao-static.pages.dev/prototype/index.html",
+  "interactions": [
+    {
+      "id": "enter-learn-session",
+      "type": "navigation",
+      "desc": "从 home-task 点击「开始学习」进入 home-task-learn 学习会话"
+    },
+    {
+      "id": "show-question",
+      "type": "display",
+      "desc": "异步加载题目（优先 API，失败时降级到 FALLBACK_BANK 9学科题库）"
+    },
+    {
+      "id": "click-answer",
+      "type": "click",
+      "desc": "选择/填写答案，点击「提交答案」"
+    },
+    {
+      "id": "click-reveal",
+      "type": "click",
+      "desc": "点击「查看解析」显示答案与分析"
+    },
+    {
+      "id": "click-next",
+      "type": "click",
+      "desc": "点击「下一题」推进进度条"
+    },
+    {
+      "id": "click-prev",
+      "type": "click",
+      "desc": "点击「上一题」回看"
+    },
+    {
+      "id": "finish-session",
+      "type": "click",
+      "desc": "最后一题完成「提交本节学习」回到 home-task"
+    }
+  ],
+  "interaction_count": 7,
+  "data": {
+    "session_default": {
+      "subject": "数学",
+      "point": "",
+      "action": "开始",
+      "qCount": 8
+    },
+    "subjects_count": 9,
+    "questions_per_subject": 8,
+    "total_questions": 72,
+    "subjects": ["数学", "英语", "语文", "物理", "化学", "生物", "政治", "历史", "地理"],
+    "sample_questions": [
+      {
+        "id": "fb_数学_1",
+        "subject": "数学",
+        "type": "解答题",
+        "difficulty": 5,
+        "score": 12,
+        "content": "已知椭圆C: x²/4 + y² = 1，过右焦点F(1,0)的直线l交椭圆于A、B两点，M为AB的中点。(1)当直线l的斜率为1时，求|AB|；(2)若直线l斜率存在且不为0，证明：直线OM与直线l的斜率之积为定值。",
+        "answer": "(1)|AB|=16/5；(2)k_OM·k_l=-1/4（定值）",
+        "analysis": "联立直线与椭圆方程，利用韦达定理和中点坐标公式证明斜率乘积为定值。核心：圆锥曲线焦点弦问题的经典解法。"
+      },
+      {
+        "id": "fb_数学_6",
+        "subject": "数学",
+        "type": "解答题",
+        "difficulty": 5,
+        "score": 12,
+        "content": "【五层架构·L1考点定位→L2方法选择→L3步骤规范】已知双曲线C: x²/a² - y²/b² = 1 (a>0,b>0)的离心率为√3，右焦点为F(√3,0)。(1)求双曲线C的方程；(2)过点F的直线l与双曲线C交于A、B两点，点M在x轴上，且满足MA=MB，求点M的横坐标的取值范围。",
+        "answer": "(1)x² - y²/2 = 1；(2)M横坐标∈(-∞, -√3/3]∪[√3/3, +∞)",
+        "analysis": "五层架构解题路径：L1定位→双曲线标准方程+中点轨迹；L2方法→待定系数法+联立方程韦达定理；L3步骤→先求a,b,c，再设直线联立消元得判别式>0，最后用中点坐标+垂直平分线求范围；L4检验→斜率不存在时单独验证；L5反思→易错点：忽略判别式致范围扩大。"
+      },
+      {
+        "id": "fb_英语_4",
+        "subject": "英语",
+        "type": "语法填空",
+        "difficulty": 2,
+        "score": 1.5,
+        "content": "【五层架构·L1词性→L2句法→L3语境】阅读下面短文，在空白处填入1个适当的单词或括号内单词的正确形式。The Forbidden City, ____ (locate) in the heart of Beijing, is one of the world's ____ (large) and most well-preserved wooden structures. It ____ (build) from 1406 to 1420 and served ____ the imperial palace for 24 emperors. Today it attracts millions of ____ (visit) every year.",
+        "answer": "1. located（过去分词作定语）；2. largest（最高级）；3. was built（被动过去时）；4. as（serve as固定搭配）；5. visitors（名词复数）",
+        "analysis": "五层架构语法填空解题法：L1词性预判→括号给动词考虑时态/语态/非谓；给形容词考虑比较级；L2句法分析→句子缺谓语还是非谓；L3语境验证→被动/主动/搭配；L4检查拼写（-ed,-est复数）；L5总结：无提示词空常考介词/冠词/连词/代词。"
+      },
+      {
+        "id": "fb_语文_3",
+        "subject": "语文",
+        "type": "解答题",
+        "difficulty": 4,
+        "score": 20,
+        "content": "【五层架构·文言翻译六字法】阅读下面的文言文，完成各题。（文本节选《史记·屈原贾生列传》片段：屈原者，名平，楚之同姓也。为楚怀王左徒。博闻强志，明于治乱，娴于辞令。入则与王图议国事，以出号令；出则接遇宾客，应对诸侯。王甚任之。……屈平正道直行，竭忠尽智以事其君，谗人间之，可谓穷矣。信而见疑，忠而被谤，能无怨乎？屈平之作《离骚》，盖自怨生也。）(1)把文中画横线的句子翻译成现代汉语：①博闻强志，明于治乱，娴于辞令。②信而见疑，忠而被谤，能无怨乎？(2)请简要概括屈原写作《离骚》的原因。",
+        "answer": "(1)①见闻广博，记忆力强，明晓国家治乱的道理，擅长外交辞令。②诚信却被怀疑，忠心却被诽谤，能没有怨恨吗？(2)屈原正道直行、竭忠尽智，却遭谗人离间、君主猜疑，处境困窘，心生幽怨，故作《离骚》以抒发情志。",
+        "analysis": "五层架构文言翻译六字法：L1留（专有名词）、L2补（省略成分）、L3删（无义虚词）、L4换（古今异义/单音换双音）、L5调（倒装句语序）、L6贯（意译使通顺）。被动句标志\"见\"\"被\"必译出。原因概括题要回到原文找因果关联词（\"盖\"\"故\"\"以\"）。"
+      },
+      {
+        "id": "fb_物理_3",
+        "subject": "物理",
+        "type": "解答题",
+        "difficulty": 5,
+        "score": 19,
+        "content": "【五层架构·L2受力分析→L3运动分解】如图所示，在直角坐标系xOy平面的第一象限内，存在沿y轴正方向的匀强电场（场强E）和垂直纸面向外的匀强磁场（磁感应强度B）。一质量为m、电荷量为+q的带电粒子从原点O以速度v0沿x轴正方向射入。(1)若粒子恰好沿x轴做直线运动，求E与B的关系；(2)若撤去电场，粒子从( L, 0 )处飞出磁场，求B的大小和粒子在磁场中运动的时间。",
+        "answer": "(1)E = Bv0（洛伦兹力与电场力平衡）；(2)B = 2mv0/(qL)；运动时间 t = πL/(3v0)",
+        "analysis": "五层架构物理解题：L1→带电粒子在复合场中的运动；L2方法→①受力平衡条件②洛伦兹力提供向心力+几何关系求半径；L3步骤规范：画轨迹→找圆心→求半径→列方程；L4检验：量纲检查[T]与mv/(qB)一致；L5归纳：复合场先判重力是否考虑（带电粒子一般不计重力，带电液滴/小球需考虑）。"
+      }
+    ],
+    "sample_questions_count": 5,
+    "note": "完整题库含9学科×8题共72道真实题目，存储于 prototype/js/pages-home.js 的 FALLBACK_BANK 变量"
+  }
+}

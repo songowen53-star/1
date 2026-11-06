@@ -1,0 +1,38 @@
+{
+  "current_rank": 68,
+  "total_students": 1200,
+  "beat_percent": 94.3,
+  "rank_change": 5,
+  "rank_trend": {
+    "labels": ["9月", "10月", "11月", "12月", "1月"],
+    "values": [120, 95, 88, 72, 68]
+  },
+  "rank_subjects": [
+    { "name": "语文", "rank": 85, "color": "#3B82F6" },
+    { "name": "数学", "rank": 145, "color": "#EF4444" },
+    { "name": "英语", "rank": 42, "color": "#10B981" },
+    { "name": "物理", "rank": 75, "color": "#F59E0B" },
+    { "name": "化学", "rank": 92, "color": "#8B5CF6" },
+    { "name": "生物", "rank": 28, "color": "#EC4899" }
+  ],
+  "target_college": {
+    "name": "浙江大学",
+    "score_year": 2025,
+    "score_line": 638,
+    "gap": 58,
+    "progress": 91
+  },
+  "competition": {
+    "range": "550-580",
+    "total": 86,
+    "tags": [
+      { "text": "理科倾向", "color": "blue" },
+      { "text": "目标985", "color": "purple" },
+      { "text": "冲刺阶段", "color": "orange" }
+    ]
+  },
+  "advice": {
+    "title": "排名提升建议",
+    "content": "当前年级第68名，超过94.3%同学。数学排名145（较弱）是主要拖后腿科目，提升数学可前进至前50名。距目标浙江大学638分尚差58分，按提分空间分析可达638分。"
+  }
+}

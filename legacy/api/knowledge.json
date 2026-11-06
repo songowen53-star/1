@@ -1,0 +1,12 @@
+{"code":0,"data":[
+{"id":"kp_001","subject":"数学","name":"圆锥曲线综合","mastery_rate":0.41,"score_gain":18},
+{"id":"kp_002","subject":"物理","name":"电磁感应综合题","mastery_rate":0.48,"score_gain":12},
+{"id":"kp_003","subject":"英语","name":"完形填空技巧","mastery_rate":0.53,"score_gain":9},
+{"id":"kp_004","subject":"化学","name":"有机推断题型","mastery_rate":0.58,"score_gain":7},
+{"id":"kp_005","subject":"数学","name":"概率统计","mastery_rate":0.62,"score_gain":5},
+{"id":"kp_006","subject":"物理","name":"力学综合分析","mastery_rate":0.55,"score_gain":10},
+{"id":"kp_007","subject":"英语","name":"阅读理解推理题","mastery_rate":0.59,"score_gain":8},
+{"id":"kp_008","subject":"化学","name":"电化学原理","mastery_rate":0.51,"score_gain":11},
+{"id":"kp_009","subject":"数学","name":"导数应用专题","mastery_rate":0.45,"score_gain":15},
+{"id":"kp_010","subject":"物理","name":"动量与冲量","mastery_rate":0.57,"score_gain":8}
+]}

@@ -1,0 +1,103 @@
+{
+  "module": "home-task",
+  "name": "首页-今日任务",
+  "version": "20260921A",
+  "updated_at": "2026-09-21T00:00:00.000Z",
+  "source": "prototype/js/design-system.js (TODAY_TASKS_MOCK，已提取真实数据)",
+  "browser_url": "http://localhost:8788/prototype/index.html",
+  "cloud_url": "https://ai-gaokao-static.pages.dev/prototype/index.html",
+  "interactions": [
+    {
+      "id": "enter-home-task",
+      "type": "navigation",
+      "desc": "从首页点击「今日任务」卡片进入 home-task 页面"
+    },
+    {
+      "id": "show-task-list",
+      "type": "display",
+      "desc": "异步加载并显示今日 4 个学习任务（语文/物理/数学×2）"
+    },
+    {
+      "id": "show-date-header",
+      "type": "display",
+      "desc": "显示实时日期（格式 X月X日 周X）+ 完成率环形图"
+    },
+    {
+      "id": "click-start-task",
+      "type": "click",
+      "desc": "点击「开始学习」按钮调用 startTask() 进入学习会话"
+    },
+    {
+      "id": "click-replay",
+      "type": "click",
+      "desc": "已完成任务点击「再练一次」重练"
+    },
+    {
+      "id": "click-analysis",
+      "type": "click",
+      "desc": "已完成任务点击「查看解析」"
+    },
+    {
+      "id": "api-fallback",
+      "type": "fallback",
+      "desc": "API 不可用时显示 showFallback()，保留实时日期并提示用户"
+    }
+  ],
+  "interaction_count": 7,
+  "data": {
+    "date": "动态生成（实时日期）",
+    "date_format": "X月X日 周X",
+    "total_count": 4,
+    "done_count": 0,
+    "completion_rate": 0,
+    "tasks": [
+      {
+        "subject": "语文",
+        "color": "red",
+        "icon": "fa-book",
+        "knowledge_point_id": "kp_chn_01",
+        "point": "古诗文鉴赏",
+        "difficulty": "困难",
+        "time": "32min",
+        "questions_count": 10,
+        "status": "todo"
+      },
+      {
+        "subject": "物理",
+        "color": "purple",
+        "icon": "fa-atom",
+        "knowledge_point_id": "kp_phy_02",
+        "point": "力学综合",
+        "difficulty": "困难",
+        "time": "28min",
+        "questions_count": 6,
+        "status": "todo"
+      },
+      {
+        "subject": "数学",
+        "color": "blue",
+        "icon": "fa-square-root-variable",
+        "knowledge_point_id": "kp_math_01",
+        "point": "圆锥曲线综合",
+        "difficulty": "困难",
+        "time": "47min",
+        "questions_count": 22,
+        "status": "todo"
+      },
+      {
+        "subject": "数学",
+        "color": "blue",
+        "icon": "fa-square-root-variable",
+        "knowledge_point_id": "kp_math_02",
+        "point": "导数第二问",
+        "difficulty": "困难",
+        "time": "41min",
+        "questions_count": 17,
+        "status": "todo"
+      }
+    ],
+    "total_time": "148min",
+    "subjects_covered": ["语文", "物理", "数学"],
+    "fallback_tip": "服务端任务接口暂不可用，可点击下方按钮开始练习"
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "goal_card": {
+    "title": "目标分数分解",
+    "icon": "fa-bullseye",
+    "total_target": 620,
+    "subjects": [
+      {
+        "name": "数学",
+        "target": 135
+      },
+      {
+        "name": "英语",
+        "target": 130
+      },
+      {
+        "name": "物理",
+        "target": 100
+      },
+      {
+        "name": "化学",
+        "target": 90
+      },
+      {
+        "name": "语文",
+        "target": 130
+      }
+    ]
+  },
+  "ai_predict": {
+    "title": "AI预测",
+    "icon": "fa-chart-line",
+    "content_prefix": "按此计划执行，预计可提升",
+    "improve": "+35分"
+  },
+  "plan_title": "30天冲刺计划",
+  "plan_title_icon": "fa-calendar-alt",
+  "plan_more": "第1周",
+  "weeks": [
+    {
+      "week": 1,
+      "theme": "数学突破",
+      "color": "#3B82F6",
+      "gradient": "blue",
+      "tasks": [
+        "导数分类讨论专项（每日2小时）",
+        "圆锥曲线基础巩固",
+        "每日10道导数真题",
+        "错题回顾与整理"
+      ],
+      "done": true
+    },
+    {
+      "week": 2,
+      "theme": "英语提升",
+      "color": "#10B981",
+      "gradient": "green",
+      "tasks": [
+        "阅读理解提速训练",
+        "完形填空高频词积累",
+        "写作模板背诵与仿写",
+        "听力每日30分钟"
+      ],
+      "done": false
+    },
+    {
+      "week": 3,
+      "theme": "综合训练",
+      "color": "#8B5CF6",
+      "gradient": "purple",
+      "tasks": [
+        "理综套卷限时训练",
+        "数学压轴题突破",
+        "英语真题模考",
+        "弱项查漏补缺"
+      ],
+      "done": false
+    },
+    {
+      "week": 4,
+      "theme": "模考冲刺",
+      "color": "#F59E0B",
+      "gradient": "orange",
+      "tasks": [
+        "全真模拟考试（隔日一套）",
+        "试卷复盘与错题分析",
+        "考前心态调整",
+        "重点知识速记"
+      ],
+      "done": false
+    }
+  ],
+  "overall_progress": {
+    "label": "整体进度",
+    "percent": 25,
+    "color": "#3B82F6",
+    "completed_days": 7,
+    "total_days": 30,
+    "tip": "加油！"
+  },
+  "buttons": [
+    {
+      "text": "调整计划",
+      "icon": "fa-sliders-h",
+      "type": "outline"
+    },
+    {
+      "text": "导出计划",
+      "icon": "fa-file-export",
+      "type": "primary"
+    }
+  ]
+}

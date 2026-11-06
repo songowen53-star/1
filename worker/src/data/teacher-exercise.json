@@ -1,0 +1,88 @@
+{
+  "settings": {
+    "subjects": [
+      "数学",
+      "物理",
+      "化学"
+    ],
+    "difficulties": [
+      "简单",
+      "中等",
+      "困难",
+      "分层难度"
+    ],
+    "selectedDifficulty": "中等",
+    "counts": [
+      "5 题",
+      "10 题",
+      "15 题",
+      "20 题"
+    ],
+    "selectedCount": "10 题",
+    "points": [
+      {
+        "name": "导数概念",
+        "active": false
+      },
+      {
+        "name": "导数极值",
+        "active": true
+      },
+      {
+        "name": "函数单调性",
+        "active": true
+      },
+      {
+        "name": "分类讨论",
+        "active": false
+      },
+      {
+        "name": "最值问题",
+        "active": false
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "no": 1,
+      "type": "选择题",
+      "diff": "简单",
+      "score": 5,
+      "point": "导数的几何意义",
+      "content": "已知函数 f(x)=x³-3x，下列说法正确的是（ ）"
+    },
+    {
+      "no": 2,
+      "type": "选择题",
+      "diff": "中等",
+      "score": 5,
+      "point": "函数单调性判断",
+      "content": "已知函数 f(x)=x³-3x，下列说法正确的是（ ）"
+    },
+    {
+      "no": 3,
+      "type": "填空题",
+      "diff": "中等",
+      "score": 5,
+      "point": "极值的求法",
+      "content": "函数 f(x)=x²-2lnx 的单调递增区间为 ______。"
+    },
+    {
+      "no": 4,
+      "type": "解答题",
+      "diff": "困难",
+      "score": 12,
+      "point": "导数综合应用",
+      "content": "设函数 f(x)=e^x-ax-1，讨论 f(x) 的单调性并求其极值。"
+    },
+    {
+      "no": 5,
+      "type": "解答题",
+      "diff": "困难",
+      "score": 14,
+      "point": "分类讨论思想",
+      "content": "设函数 f(x)=e^x-ax-1，讨论 f(x) 的单调性并求其极值。"
+    }
+  ],
+  "totalScore": 41
+}

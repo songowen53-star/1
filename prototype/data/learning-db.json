@@ -1,0 +1,3305 @@
+{
+  "meta": {
+    "version": 1,
+    "created_at": "2026-10-22T03:10:52.111Z"
+  },
+  "users": {
+    "e2e_1792638679603": {
+      "id": "u_339cf7a34173",
+      "username": "e2e_1792638679603",
+      "password_salt": "2f232bdfa81c99ba043cc58f38d731a2",
+      "password_hash": "30ba56d8ce6f7e6886fdd9879f394d0ba28d3186c6e084098cd96f4cbe9bbd81",
+      "name": "测试同学",
+      "grade": "高三",
+      "province": "浙江",
+      "phone": "",
+      "openid": "",
+      "role": "student",
+      "created_at": "2026-10-22T03:11:19.674Z"
+    },
+    "e2e2_1792638679772": {
+      "id": "u_ac245432e6f9",
+      "username": "e2e2_1792638679772",
+      "password_salt": "cdc5a1c5391811f82cef768569657a27",
+      "password_hash": "b904d1edaf082dc3a8973dbd48056a9bd980d0bc41ac5af8485751774d2a6e4f",
+      "name": "隔离同学",
+      "grade": "高三",
+      "province": "",
+      "phone": "",
+      "openid": "",
+      "role": "student",
+      "created_at": "2026-10-22T03:11:19.812Z"
+    },
+    "stu_1792638788": {
+      "id": "u_19295030be2a",
+      "username": "stu_1792638788",
+      "password_salt": "ada33a4f5c58d33d0a3b6b7d1fc345a3",
+      "password_hash": "ce52e5cc5b459de726e6545b3dfd1bafb99f3052821afbc0a2ede13c4a198554",
+      "name": "回归学生",
+      "grade": "高三",
+      "province": "浙江",
+      "phone": "",
+      "openid": "",
+      "role": "student",
+      "created_at": "2026-10-22T03:13:08.554Z"
+    },
+    "stu_1792638792": {
+      "id": "u_0722b86d967c",
+      "username": "stu_1792638792",
+      "password_salt": "c2165cceea8e1cc8b1461d69a1989b25",
+      "password_hash": "8836f47104cbd6a2a8bbd6b0b3c3bee44d2368af8510fcd93c382c4cc07d40c6",
+      "name": "回归学生",
+      "grade": "高三",
+      "province": "浙江",
+      "phone": "",
+      "openid": "",
+      "role": "student",
+      "created_at": "2026-10-22T03:13:12.516Z"
+    },
+    "chk_1792638798": {
+      "id": "u_d8bcc6de2972",
+      "username": "chk_1792638798",
+      "password_salt": "bbebc86e9a45980dda4ec69481d3b88d",
+      "password_hash": "06d4a6aadfb9622527fd223726da2172cb1d4137ae3d9c46b55e9a1278d413bb",
+      "name": "检查",
+      "grade": "高三",
+      "province": "",
+      "phone": "",
+      "openid": "",
+      "role": "student",
+      "created_at": "2026-10-22T03:13:18.342Z"
+    },
+    "py_1792638811": {
+      "id": "u_982d1f515c77",
+      "username": "py_1792638811",
+      "password_salt": "f0e53615bef0b7223b19fed827bc8023",
+      "password_hash": "ba51e677132887aaa89b8d751ad116f2e960e94b12d96a514f0b8851b979d909",
+      "name": "端到端",
+      "grade": "高三",
+      "province": "浙江",
+      "phone": "",
+      "openid": "",
+      "role": "student",
+      "created_at": "2026-10-22T03:13:31.500Z"
+    },
+    "py_1792638817": {
+      "id": "u_ae303dc15984",
+      "username": "py_1792638817",
+      "password_salt": "7f557118153bdfd28aaf678be3e5fcee",
+      "password_hash": "e548e53512b503dde67728d6e1c125ad6b25075354906f7a7bcd5836d2641f21",
+      "name": "端到端",
+      "grade": "高三",
+      "province": "浙江",
+      "phone": "",
+      "openid": "",
+      "role": "student",
+      "created_at": "2026-10-22T03:13:37.229Z"
+    },
+    "py_1792638824": {
+      "id": "u_a1f92c1e0ae0",
+      "username": "py_1792638824",
+      "password_salt": "a7ad22eef3caba660ab2c63a5327bd32",
+      "password_hash": "c068afa47d0c3858c25cba98128788a4ba984a237626dbe851c84afff93e4d6f",
+      "name": "端到端",
+      "grade": "高三",
+      "province": "浙江",
+      "phone": "",
+      "openid": "",
+      "role": "student",
+      "created_at": "2026-10-22T03:13:45.014Z"
+    }
+  },
+  "tokens": {
+    "tk_67227d6c2f6aa0ebc578e6e52c594eedf51f": {
+      "user_id": "u_339cf7a34173",
+      "created_at": "2026-10-22T03:11:19.693Z",
+      "expires_at": "2026-11-21T03:11:19.693Z"
+    },
+    "tk_dbf9cd74bbf3c950bc080d2834c5f7fdc2e7": {
+      "user_id": "u_ac245432e6f9",
+      "created_at": "2026-10-22T03:11:19.815Z",
+      "expires_at": "2026-11-21T03:11:19.815Z"
+    },
+    "tk_8faa79aa2d3c757dbf236978862f5c4932b3": {
+      "user_id": "u_19295030be2a",
+      "created_at": "2026-10-22T03:13:08.558Z",
+      "expires_at": "2026-11-21T03:13:08.558Z"
+    },
+    "tk_e4ac36ed7d20781a27e28481005e0b5fd974": {
+      "user_id": "u_0722b86d967c",
+      "created_at": "2026-10-22T03:13:12.518Z",
+      "expires_at": "2026-11-21T03:13:12.518Z"
+    },
+    "tk_8a7742f98bd075feb731951f703c6d583195": {
+      "user_id": "u_d8bcc6de2972",
+      "created_at": "2026-10-22T03:13:18.346Z",
+      "expires_at": "2026-11-21T03:13:18.346Z"
+    },
+    "tk_9dee5334a6fd13e384d4882dd32896f89200": {
+      "user_id": "u_982d1f515c77",
+      "created_at": "2026-10-22T03:13:31.503Z",
+      "expires_at": "2026-11-21T03:13:31.503Z"
+    },
+    "tk_875be63f6299e0974872e414544cdcafb1c7": {
+      "user_id": "u_ae303dc15984",
+      "created_at": "2026-10-22T03:13:37.231Z",
+      "expires_at": "2026-11-21T03:13:37.231Z"
+    },
+    "tk_d1418932112cbce071aa80f5dc27731cc212": {
+      "user_id": "u_a1f92c1e0ae0",
+      "created_at": "2026-10-22T03:13:45.017Z",
+      "expires_at": "2026-11-21T03:13:45.017Z"
+    }
+  },
+  "student_profiles": {
+    "u_339cf7a34173": {
+      "user_id": "u_339cf7a34173",
+      "created_at": "2026-10-22T03:11:19.675Z",
+      "name": "测试同学",
+      "grade": "高三",
+      "province": "浙江",
+      "exam_year": 2027,
+      "target_score": 620,
+      "target_school": "",
+      "updated_at": "2026-10-22T03:11:19.766Z",
+      "current_level": 256,
+      "diagnosis_completed_at": "2026-10-22T03:11:19.751Z",
+      "portrait_updated_at": "2026-10-22T03:11:19.766Z",
+      "last_active_at": "2026-10-22T03:11:19.766Z",
+      "studies_count": 1
+    },
+    "u_ac245432e6f9": {
+      "user_id": "u_ac245432e6f9",
+      "created_at": "2026-10-22T03:11:19.813Z",
+      "name": "隔离同学",
+      "grade": "高三",
+      "province": "",
+      "exam_year": 2027,
+      "target_score": 600,
+      "target_school": "",
+      "updated_at": "2026-10-22T03:11:19.813Z"
+    },
+    "u_19295030be2a": {
+      "user_id": "u_19295030be2a",
+      "created_at": "2026-10-22T03:13:08.555Z",
+      "name": "回归学生",
+      "grade": "高三",
+      "province": "浙江",
+      "exam_year": 2027,
+      "target_score": 600,
+      "target_school": "",
+      "updated_at": "2026-10-22T03:13:08.555Z"
+    },
+    "u_0722b86d967c": {
+      "user_id": "u_0722b86d967c",
+      "created_at": "2026-10-22T03:13:12.517Z",
+      "name": "回归学生",
+      "grade": "高三",
+      "province": "浙江",
+      "exam_year": 2027,
+      "target_score": 600,
+      "target_school": "",
+      "updated_at": "2026-10-22T03:13:12.517Z"
+    },
+    "u_d8bcc6de2972": {
+      "user_id": "u_d8bcc6de2972",
+      "created_at": "2026-10-22T03:13:18.344Z",
+      "name": "检查",
+      "grade": "高三",
+      "province": "",
+      "exam_year": 2027,
+      "target_score": 600,
+      "target_school": "",
+      "updated_at": "2026-10-22T03:13:18.344Z"
+    },
+    "u_982d1f515c77": {
+      "user_id": "u_982d1f515c77",
+      "created_at": "2026-10-22T03:13:31.501Z",
+      "name": "端到端",
+      "grade": "高三",
+      "province": "浙江",
+      "exam_year": 2027,
+      "target_score": 640,
+      "target_school": "浙江大学",
+      "updated_at": "2026-10-22T03:13:31.510Z"
+    },
+    "u_ae303dc15984": {
+      "user_id": "u_ae303dc15984",
+      "created_at": "2026-10-22T03:13:37.230Z",
+      "name": "端到端",
+      "grade": "高三",
+      "province": "浙江",
+      "exam_year": 2027,
+      "target_score": 640,
+      "target_school": "浙江大学",
+      "updated_at": "2026-10-22T03:13:37.289Z",
+      "current_level": 332,
+      "diagnosis_completed_at": "2026-10-22T03:13:37.275Z",
+      "portrait_updated_at": "2026-10-22T03:13:37.288Z",
+      "last_active_at": "2026-10-22T03:13:37.288Z",
+      "studies_count": 1
+    },
+    "u_a1f92c1e0ae0": {
+      "user_id": "u_a1f92c1e0ae0",
+      "created_at": "2026-10-22T03:13:45.015Z",
+      "name": "端到端",
+      "grade": "高三",
+      "province": "浙江",
+      "exam_year": 2027,
+      "target_score": 640,
+      "target_school": "浙江大学",
+      "updated_at": "2026-10-22T03:13:45.088Z",
+      "current_level": 332,
+      "diagnosis_completed_at": "2026-10-22T03:13:45.069Z",
+      "portrait_updated_at": "2026-10-22T03:13:45.088Z",
+      "last_active_at": "2026-10-22T03:13:45.088Z",
+      "studies_count": 1
+    }
+  },
+  "learning_goals": {
+    "u_339cf7a34173": {
+      "user_id": "u_339cf7a34173",
+      "created_at": "2026-10-22T03:11:19.675Z",
+      "status": "active",
+      "target_score": 620,
+      "target_school": "",
+      "exam_year": 2027,
+      "daily_minutes": 120,
+      "updated_at": "2026-10-22T03:11:19.675Z"
+    },
+    "u_ac245432e6f9": {
+      "user_id": "u_ac245432e6f9",
+      "created_at": "2026-10-22T03:11:19.813Z",
+      "status": "active",
+      "target_score": 600,
+      "target_school": "",
+      "exam_year": 2027,
+      "daily_minutes": 120,
+      "updated_at": "2026-10-22T03:11:19.813Z"
+    },
+    "u_19295030be2a": {
+      "user_id": "u_19295030be2a",
+      "created_at": "2026-10-22T03:13:08.555Z",
+      "status": "active",
+      "target_score": 600,
+      "target_school": "",
+      "exam_year": 2027,
+      "daily_minutes": 120,
+      "updated_at": "2026-10-22T03:13:08.555Z"
+    },
+    "u_0722b86d967c": {
+      "user_id": "u_0722b86d967c",
+      "created_at": "2026-10-22T03:13:12.517Z",
+      "status": "active",
+      "target_score": 600,
+      "target_school": "",
+      "exam_year": 2027,
+      "daily_minutes": 120,
+      "updated_at": "2026-10-22T03:13:12.517Z"
+    },
+    "u_d8bcc6de2972": {
+      "user_id": "u_d8bcc6de2972",
+      "created_at": "2026-10-22T03:13:18.344Z",
+      "status": "active",
+      "target_score": 600,
+      "target_school": "",
+      "exam_year": 2027,
+      "daily_minutes": 120,
+      "updated_at": "2026-10-22T03:13:18.344Z"
+    },
+    "u_982d1f515c77": {
+      "user_id": "u_982d1f515c77",
+      "created_at": "2026-10-22T03:13:31.502Z",
+      "status": "active",
+      "target_score": 640,
+      "target_school": "浙江大学",
+      "exam_year": 2027,
+      "daily_minutes": 120,
+      "updated_at": "2026-10-22T03:13:31.510Z"
+    },
+    "u_ae303dc15984": {
+      "user_id": "u_ae303dc15984",
+      "created_at": "2026-10-22T03:13:37.230Z",
+      "status": "active",
+      "target_score": 640,
+      "target_school": "浙江大学",
+      "exam_year": 2027,
+      "daily_minutes": 120,
+      "updated_at": "2026-10-22T03:13:37.236Z"
+    },
+    "u_a1f92c1e0ae0": {
+      "user_id": "u_a1f92c1e0ae0",
+      "created_at": "2026-10-22T03:13:45.016Z",
+      "status": "active",
+      "target_score": 640,
+      "target_school": "浙江大学",
+      "exam_year": 2027,
+      "daily_minutes": 120,
+      "updated_at": "2026-10-22T03:13:45.024Z"
+    }
+  },
+  "diagnostic_sessions": {
+    "ds_c83e0e46e1f3": {
+      "session_id": "ds_c83e0e46e1f3",
+      "user_id": "u_339cf7a34173",
+      "status": "completed",
+      "question_ids": [
+        "dg_math_01",
+        "dg_math_02",
+        "dg_math_03",
+        "dg_math_04",
+        "dg_phy_01",
+        "dg_phy_02",
+        "dg_phy_03",
+        "dg_chem_01",
+        "dg_chem_02",
+        "dg_chem_03",
+        "dg_eng_01",
+        "dg_eng_02"
+      ],
+      "started_at": "2026-10-22T03:11:19.715Z",
+      "submitted_at": "2026-10-22T03:11:19.751Z",
+      "date_key": "2026-10-22"
+    },
+    "ds_0d695f404ae2": {
+      "session_id": "ds_0d695f404ae2",
+      "user_id": "u_0722b86d967c",
+      "status": "in_progress",
+      "question_ids": [
+        "dg_math_01",
+        "dg_math_02",
+        "dg_math_03",
+        "dg_math_04",
+        "dg_phy_01",
+        "dg_phy_02",
+        "dg_phy_03",
+        "dg_chem_01",
+        "dg_chem_02",
+        "dg_chem_03",
+        "dg_eng_01",
+        "dg_eng_02"
+      ],
+      "started_at": "2026-10-22T03:13:13.795Z",
+      "submitted_at": null,
+      "date_key": "2026-10-22"
+    },
+    "ds_d325a1f2f7ad": {
+      "session_id": "ds_d325a1f2f7ad",
+      "user_id": "u_d8bcc6de2972",
+      "status": "in_progress",
+      "question_ids": [
+        "dg_math_01",
+        "dg_math_02",
+        "dg_math_03",
+        "dg_math_04",
+        "dg_phy_01",
+        "dg_phy_02",
+        "dg_phy_03",
+        "dg_chem_01",
+        "dg_chem_02",
+        "dg_chem_03",
+        "dg_eng_01",
+        "dg_eng_02"
+      ],
+      "started_at": "2026-10-22T03:13:18.821Z",
+      "submitted_at": null,
+      "date_key": "2026-10-22"
+    },
+    "ds_4766de662cf2": {
+      "session_id": "ds_4766de662cf2",
+      "user_id": "u_ae303dc15984",
+      "status": "completed",
+      "question_ids": [
+        "dg_math_01",
+        "dg_math_02",
+        "dg_math_03",
+        "dg_math_04",
+        "dg_phy_01",
+        "dg_phy_02",
+        "dg_phy_03",
+        "dg_chem_01",
+        "dg_chem_02",
+        "dg_chem_03",
+        "dg_eng_01",
+        "dg_eng_02"
+      ],
+      "started_at": "2026-10-22T03:13:37.239Z",
+      "submitted_at": "2026-10-22T03:13:37.275Z",
+      "date_key": "2026-10-22"
+    },
+    "ds_95613a56a119": {
+      "session_id": "ds_95613a56a119",
+      "user_id": "u_a1f92c1e0ae0",
+      "status": "completed",
+      "question_ids": [
+        "dg_math_01",
+        "dg_math_02",
+        "dg_math_03",
+        "dg_math_04",
+        "dg_phy_01",
+        "dg_phy_02",
+        "dg_phy_03",
+        "dg_chem_01",
+        "dg_chem_02",
+        "dg_chem_03",
+        "dg_eng_01",
+        "dg_eng_02"
+      ],
+      "started_at": "2026-10-22T03:13:45.028Z",
+      "submitted_at": "2026-10-22T03:13:45.069Z",
+      "date_key": "2026-10-22"
+    }
+  },
+  "answer_records": [
+    {
+      "id": "ans_117e9b51dcda",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "question_id": "dg_math_01",
+      "subject": "数学",
+      "knowledge_point_id": "kp_math_conic",
+      "knowledge_point": "圆锥曲线综合",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:11:19.719Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:11:19.719Z"
+    },
+    {
+      "id": "ans_3da9444448cb",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "question_id": "dg_math_02",
+      "subject": "数学",
+      "knowledge_point_id": "kp_math_derivative",
+      "knowledge_point": "导数应用专题",
+      "difficulty": 5,
+      "answered_at": "2026-10-22T03:11:19.722Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:11:19.722Z"
+    },
+    {
+      "id": "ans_0d0e25eb8308",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "question_id": "dg_math_03",
+      "subject": "数学",
+      "knowledge_point_id": "kp_math_sequence",
+      "knowledge_point": "数列求和方法",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:11:19.725Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:11:19.725Z"
+    },
+    {
+      "id": "ans_ffd3540c6d13",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "question_id": "dg_math_04",
+      "subject": "数学",
+      "knowledge_point_id": "kp_math_probability",
+      "knowledge_point": "概率统计",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:11:19.727Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:11:19.728Z"
+    },
+    {
+      "id": "ans_e87009e8ca6f",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "question_id": "dg_phy_01",
+      "subject": "物理",
+      "knowledge_point_id": "kp_phy_induction",
+      "knowledge_point": "电磁感应综合题",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:11:19.730Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:11:19.731Z"
+    },
+    {
+      "id": "ans_cf5ce28ea444",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "question_id": "dg_phy_02",
+      "subject": "物理",
+      "knowledge_point_id": "kp_phy_mechanics",
+      "knowledge_point": "力学综合分析",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:11:19.733Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:11:19.733Z"
+    },
+    {
+      "id": "ans_ec745f67f1ca",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "question_id": "dg_phy_03",
+      "subject": "物理",
+      "knowledge_point_id": "kp_phy_momentum",
+      "knowledge_point": "动量与冲量",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:11:19.735Z",
+      "date_key": "2026-10-22",
+      "answer_index": 3,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:11:19.735Z"
+    },
+    {
+      "id": "ans_269d2ab74d1f",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "question_id": "dg_chem_01",
+      "subject": "化学",
+      "knowledge_point_id": "kp_chem_equilibrium",
+      "knowledge_point": "化学平衡计算",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:11:19.738Z",
+      "date_key": "2026-10-22",
+      "answer_index": 3,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:11:19.738Z"
+    },
+    {
+      "id": "ans_1f6c66afb416",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "question_id": "dg_chem_02",
+      "subject": "化学",
+      "knowledge_point_id": "kp_chem_organic",
+      "knowledge_point": "有机推断题型",
+      "difficulty": 5,
+      "answered_at": "2026-10-22T03:11:19.740Z",
+      "date_key": "2026-10-22",
+      "answer_index": 3,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:11:19.741Z"
+    },
+    {
+      "id": "ans_ba90e8e0097e",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "question_id": "dg_chem_03",
+      "subject": "化学",
+      "knowledge_point_id": "kp_chem_electro",
+      "knowledge_point": "电化学原理",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:11:19.743Z",
+      "date_key": "2026-10-22",
+      "answer_index": 3,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:11:19.743Z"
+    },
+    {
+      "id": "ans_aad87a5d3e11",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "question_id": "dg_eng_01",
+      "subject": "英语",
+      "knowledge_point_id": "kp_eng_cloze",
+      "knowledge_point": "完形填空技巧",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:11:19.745Z",
+      "date_key": "2026-10-22",
+      "answer_index": 3,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:11:19.746Z"
+    },
+    {
+      "id": "ans_ea39ff9ea38c",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "question_id": "dg_eng_02",
+      "subject": "英语",
+      "knowledge_point_id": "kp_eng_grammar",
+      "knowledge_point": "语法填空",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:11:19.748Z",
+      "date_key": "2026-10-22",
+      "answer_index": 3,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:11:19.749Z"
+    },
+    {
+      "id": "ans_b330785c20a7",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "question_id": "dg_math_01",
+      "subject": "数学",
+      "knowledge_point_id": "kp_math_conic",
+      "knowledge_point": "圆锥曲线综合",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:13:37.243Z",
+      "date_key": "2026-10-22",
+      "answer_index": 1,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:37.243Z"
+    },
+    {
+      "id": "ans_0c5e8d2939b0",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "question_id": "dg_math_02",
+      "subject": "数学",
+      "knowledge_point_id": "kp_math_derivative",
+      "knowledge_point": "导数应用专题",
+      "difficulty": 5,
+      "answered_at": "2026-10-22T03:13:37.246Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:37.246Z"
+    },
+    {
+      "id": "ans_465ad2278b64",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "question_id": "dg_math_03",
+      "subject": "数学",
+      "knowledge_point_id": "kp_math_sequence",
+      "knowledge_point": "数列求和方法",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:13:37.248Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:37.248Z"
+    },
+    {
+      "id": "ans_1c15f239b780",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "question_id": "dg_math_04",
+      "subject": "数学",
+      "knowledge_point_id": "kp_math_probability",
+      "knowledge_point": "概率统计",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:13:37.251Z",
+      "date_key": "2026-10-22",
+      "answer_index": 1,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:37.251Z"
+    },
+    {
+      "id": "ans_f2e21ed9ec48",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "question_id": "dg_phy_01",
+      "subject": "物理",
+      "knowledge_point_id": "kp_phy_induction",
+      "knowledge_point": "电磁感应综合题",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:13:37.253Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:37.254Z"
+    },
+    {
+      "id": "ans_421c33168313",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "question_id": "dg_phy_02",
+      "subject": "物理",
+      "knowledge_point_id": "kp_phy_mechanics",
+      "knowledge_point": "力学综合分析",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:13:37.256Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:37.256Z"
+    },
+    {
+      "id": "ans_1abd8b783632",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "question_id": "dg_phy_03",
+      "subject": "物理",
+      "knowledge_point_id": "kp_phy_momentum",
+      "knowledge_point": "动量与冲量",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:13:37.258Z",
+      "date_key": "2026-10-22",
+      "answer_index": 1,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:37.259Z"
+    },
+    {
+      "id": "ans_1c1b6852da3a",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "question_id": "dg_chem_01",
+      "subject": "化学",
+      "knowledge_point_id": "kp_chem_equilibrium",
+      "knowledge_point": "化学平衡计算",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:13:37.261Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:37.261Z"
+    },
+    {
+      "id": "ans_0ba1f407c81d",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "question_id": "dg_chem_02",
+      "subject": "化学",
+      "knowledge_point_id": "kp_chem_organic",
+      "knowledge_point": "有机推断题型",
+      "difficulty": 5,
+      "answered_at": "2026-10-22T03:13:37.263Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:37.264Z"
+    },
+    {
+      "id": "ans_396d5d11c0f8",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "question_id": "dg_chem_03",
+      "subject": "化学",
+      "knowledge_point_id": "kp_chem_electro",
+      "knowledge_point": "电化学原理",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:13:37.266Z",
+      "date_key": "2026-10-22",
+      "answer_index": 1,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:37.266Z"
+    },
+    {
+      "id": "ans_9fbae5615541",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "question_id": "dg_eng_01",
+      "subject": "英语",
+      "knowledge_point_id": "kp_eng_cloze",
+      "knowledge_point": "完形填空技巧",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:13:37.269Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:37.269Z"
+    },
+    {
+      "id": "ans_f935cf32fd87",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "question_id": "dg_eng_02",
+      "subject": "英语",
+      "knowledge_point_id": "kp_eng_grammar",
+      "knowledge_point": "语法填空",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:13:37.272Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:37.272Z"
+    },
+    {
+      "id": "ans_3daa1787ac77",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "question_id": "dg_math_01",
+      "subject": "数学",
+      "knowledge_point_id": "kp_math_conic",
+      "knowledge_point": "圆锥曲线综合",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:13:45.031Z",
+      "date_key": "2026-10-22",
+      "answer_index": 1,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:45.031Z"
+    },
+    {
+      "id": "ans_f4b13f7b71ae",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "question_id": "dg_math_02",
+      "subject": "数学",
+      "knowledge_point_id": "kp_math_derivative",
+      "knowledge_point": "导数应用专题",
+      "difficulty": 5,
+      "answered_at": "2026-10-22T03:13:45.034Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:45.034Z"
+    },
+    {
+      "id": "ans_40a78ea3d099",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "question_id": "dg_math_03",
+      "subject": "数学",
+      "knowledge_point_id": "kp_math_sequence",
+      "knowledge_point": "数列求和方法",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:13:45.037Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:45.037Z"
+    },
+    {
+      "id": "ans_57d0ec8709c9",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "question_id": "dg_math_04",
+      "subject": "数学",
+      "knowledge_point_id": "kp_math_probability",
+      "knowledge_point": "概率统计",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:13:45.040Z",
+      "date_key": "2026-10-22",
+      "answer_index": 1,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:45.041Z"
+    },
+    {
+      "id": "ans_8e60dc89b981",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "question_id": "dg_phy_01",
+      "subject": "物理",
+      "knowledge_point_id": "kp_phy_induction",
+      "knowledge_point": "电磁感应综合题",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:13:45.044Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:45.044Z"
+    },
+    {
+      "id": "ans_37c0c176b109",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "question_id": "dg_phy_02",
+      "subject": "物理",
+      "knowledge_point_id": "kp_phy_mechanics",
+      "knowledge_point": "力学综合分析",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:13:45.047Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:45.047Z"
+    },
+    {
+      "id": "ans_b027e7735261",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "question_id": "dg_phy_03",
+      "subject": "物理",
+      "knowledge_point_id": "kp_phy_momentum",
+      "knowledge_point": "动量与冲量",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:13:45.050Z",
+      "date_key": "2026-10-22",
+      "answer_index": 1,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:45.050Z"
+    },
+    {
+      "id": "ans_f62dc436d52c",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "question_id": "dg_chem_01",
+      "subject": "化学",
+      "knowledge_point_id": "kp_chem_equilibrium",
+      "knowledge_point": "化学平衡计算",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:13:45.053Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:45.053Z"
+    },
+    {
+      "id": "ans_5bc54b602f38",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "question_id": "dg_chem_02",
+      "subject": "化学",
+      "knowledge_point_id": "kp_chem_organic",
+      "knowledge_point": "有机推断题型",
+      "difficulty": 5,
+      "answered_at": "2026-10-22T03:13:45.056Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:45.056Z"
+    },
+    {
+      "id": "ans_0ff14ea3c66b",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "question_id": "dg_chem_03",
+      "subject": "化学",
+      "knowledge_point_id": "kp_chem_electro",
+      "knowledge_point": "电化学原理",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:13:45.059Z",
+      "date_key": "2026-10-22",
+      "answer_index": 1,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:45.060Z"
+    },
+    {
+      "id": "ans_3b88f4a7377a",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "question_id": "dg_eng_01",
+      "subject": "英语",
+      "knowledge_point_id": "kp_eng_cloze",
+      "knowledge_point": "完形填空技巧",
+      "difficulty": 3,
+      "answered_at": "2026-10-22T03:13:45.063Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": false,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:45.063Z"
+    },
+    {
+      "id": "ans_224264f093e5",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "question_id": "dg_eng_02",
+      "subject": "英语",
+      "knowledge_point_id": "kp_eng_grammar",
+      "knowledge_point": "语法填空",
+      "difficulty": 4,
+      "answered_at": "2026-10-22T03:13:45.066Z",
+      "date_key": "2026-10-22",
+      "answer_index": 0,
+      "is_correct": true,
+      "duration_sec": 45,
+      "updated_at": "2026-10-22T03:13:45.066Z"
+    }
+  ],
+  "knowledge_states": {
+    "u_339cf7a34173": [
+      {
+        "user_id": "u_339cf7a34173",
+        "knowledge_point_id": "kp_math_conic",
+        "knowledge_point": "圆锥曲线综合",
+        "subject": "数学",
+        "mastery": 0.06,
+        "accuracy": 0,
+        "attempts": 10,
+        "correct": 7,
+        "updated_at": "2026-10-22T03:11:19.764Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "knowledge_point_id": "kp_math_probability",
+        "knowledge_point": "概率统计",
+        "subject": "数学",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "knowledge_point_id": "kp_phy_mechanics",
+        "knowledge_point": "力学综合分析",
+        "subject": "物理",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "knowledge_point_id": "kp_phy_momentum",
+        "knowledge_point": "动量与冲量",
+        "subject": "物理",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "knowledge_point_id": "kp_chem_equilibrium",
+        "knowledge_point": "化学平衡计算",
+        "subject": "化学",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "knowledge_point_id": "kp_chem_organic",
+        "knowledge_point": "有机推断题型",
+        "subject": "化学",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "knowledge_point_id": "kp_chem_electro",
+        "knowledge_point": "电化学原理",
+        "subject": "化学",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "knowledge_point_id": "kp_eng_cloze",
+        "knowledge_point": "完形填空技巧",
+        "subject": "英语",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "knowledge_point_id": "kp_eng_grammar",
+        "knowledge_point": "语法填空",
+        "subject": "英语",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "knowledge_point_id": "kp_math_derivative",
+        "knowledge_point": "导数应用专题",
+        "subject": "数学",
+        "mastery": 0.9,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "knowledge_point_id": "kp_phy_induction",
+        "knowledge_point": "电磁感应综合题",
+        "subject": "物理",
+        "mastery": 0.95,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "knowledge_point_id": "kp_math_sequence",
+        "knowledge_point": "数列求和方法",
+        "subject": "数学",
+        "mastery": 1,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      }
+    ],
+    "u_ae303dc15984": [
+      {
+        "user_id": "u_ae303dc15984",
+        "knowledge_point_id": "kp_math_probability",
+        "knowledge_point": "概率统计",
+        "subject": "数学",
+        "mastery": 0.05,
+        "accuracy": 0,
+        "attempts": 9,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:13:37.287Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "knowledge_point_id": "kp_phy_mechanics",
+        "knowledge_point": "力学综合分析",
+        "subject": "物理",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "knowledge_point_id": "kp_phy_momentum",
+        "knowledge_point": "动量与冲量",
+        "subject": "物理",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "knowledge_point_id": "kp_chem_equilibrium",
+        "knowledge_point": "化学平衡计算",
+        "subject": "化学",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "knowledge_point_id": "kp_chem_electro",
+        "knowledge_point": "电化学原理",
+        "subject": "化学",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "knowledge_point_id": "kp_eng_cloze",
+        "knowledge_point": "完形填空技巧",
+        "subject": "英语",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "knowledge_point_id": "kp_math_derivative",
+        "knowledge_point": "导数应用专题",
+        "subject": "数学",
+        "mastery": 0.9,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "knowledge_point_id": "kp_chem_organic",
+        "knowledge_point": "有机推断题型",
+        "subject": "化学",
+        "mastery": 0.9,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "knowledge_point_id": "kp_math_conic",
+        "knowledge_point": "圆锥曲线综合",
+        "subject": "数学",
+        "mastery": 0.95,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "knowledge_point_id": "kp_phy_induction",
+        "knowledge_point": "电磁感应综合题",
+        "subject": "物理",
+        "mastery": 0.95,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "knowledge_point_id": "kp_eng_grammar",
+        "knowledge_point": "语法填空",
+        "subject": "英语",
+        "mastery": 0.95,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "knowledge_point_id": "kp_math_sequence",
+        "knowledge_point": "数列求和方法",
+        "subject": "数学",
+        "mastery": 1,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      }
+    ],
+    "u_a1f92c1e0ae0": [
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "knowledge_point_id": "kp_math_probability",
+        "knowledge_point": "概率统计",
+        "subject": "数学",
+        "mastery": 0.05,
+        "accuracy": 0,
+        "attempts": 9,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:13:45.086Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "knowledge_point_id": "kp_phy_mechanics",
+        "knowledge_point": "力学综合分析",
+        "subject": "物理",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "knowledge_point_id": "kp_phy_momentum",
+        "knowledge_point": "动量与冲量",
+        "subject": "物理",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "knowledge_point_id": "kp_chem_equilibrium",
+        "knowledge_point": "化学平衡计算",
+        "subject": "化学",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "knowledge_point_id": "kp_chem_electro",
+        "knowledge_point": "电化学原理",
+        "subject": "化学",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "knowledge_point_id": "kp_eng_cloze",
+        "knowledge_point": "完形填空技巧",
+        "subject": "英语",
+        "mastery": 0,
+        "accuracy": 0,
+        "attempts": 1,
+        "correct": 0,
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "knowledge_point_id": "kp_math_derivative",
+        "knowledge_point": "导数应用专题",
+        "subject": "数学",
+        "mastery": 0.9,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "knowledge_point_id": "kp_chem_organic",
+        "knowledge_point": "有机推断题型",
+        "subject": "化学",
+        "mastery": 0.9,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "knowledge_point_id": "kp_math_conic",
+        "knowledge_point": "圆锥曲线综合",
+        "subject": "数学",
+        "mastery": 0.95,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "knowledge_point_id": "kp_phy_induction",
+        "knowledge_point": "电磁感应综合题",
+        "subject": "物理",
+        "mastery": 0.95,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "knowledge_point_id": "kp_eng_grammar",
+        "knowledge_point": "语法填空",
+        "subject": "英语",
+        "mastery": 0.95,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "knowledge_point_id": "kp_math_sequence",
+        "knowledge_point": "数列求和方法",
+        "subject": "数学",
+        "mastery": 1,
+        "accuracy": 1,
+        "attempts": 1,
+        "correct": 1,
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      }
+    ]
+  },
+  "ability_states": {
+    "u_339cf7a34173": [
+      {
+        "user_id": "u_339cf7a34173",
+        "subject": "数学",
+        "color": "blue",
+        "icon": "fa-square-root-variable",
+        "full_score": 150,
+        "attempts": 4,
+        "correct": 2,
+        "accuracy": 0.5,
+        "mastery": 0.49,
+        "estimated_score": 99,
+        "level": "基础",
+        "updated_at": "2026-10-22T03:11:19.765Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "subject": "英语",
+        "color": "green",
+        "icon": "fa-language",
+        "full_score": 150,
+        "attempts": 2,
+        "correct": 0,
+        "accuracy": 0,
+        "mastery": 0,
+        "estimated_score": 60,
+        "level": "基础",
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "subject": "物理",
+        "color": "purple",
+        "icon": "fa-atom",
+        "full_score": 100,
+        "attempts": 3,
+        "correct": 1,
+        "accuracy": 0.33,
+        "mastery": 0.32,
+        "estimated_score": 57,
+        "level": "基础",
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      },
+      {
+        "user_id": "u_339cf7a34173",
+        "subject": "化学",
+        "color": "orange",
+        "icon": "fa-flask",
+        "full_score": 100,
+        "attempts": 3,
+        "correct": 0,
+        "accuracy": 0,
+        "mastery": 0,
+        "estimated_score": 40,
+        "level": "基础",
+        "updated_at": "2026-10-22T03:11:19.752Z"
+      }
+    ],
+    "u_ae303dc15984": [
+      {
+        "user_id": "u_ae303dc15984",
+        "subject": "数学",
+        "color": "blue",
+        "icon": "fa-square-root-variable",
+        "full_score": 150,
+        "attempts": 4,
+        "correct": 3,
+        "accuracy": 0.75,
+        "mastery": 0.73,
+        "estimated_score": 119,
+        "level": "进阶",
+        "updated_at": "2026-10-22T03:13:37.287Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "subject": "英语",
+        "color": "green",
+        "icon": "fa-language",
+        "full_score": 150,
+        "attempts": 2,
+        "correct": 1,
+        "accuracy": 0.5,
+        "mastery": 0.48,
+        "estimated_score": 99,
+        "level": "基础",
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "subject": "物理",
+        "color": "purple",
+        "icon": "fa-atom",
+        "full_score": 100,
+        "attempts": 3,
+        "correct": 1,
+        "accuracy": 0.33,
+        "mastery": 0.32,
+        "estimated_score": 57,
+        "level": "基础",
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      },
+      {
+        "user_id": "u_ae303dc15984",
+        "subject": "化学",
+        "color": "orange",
+        "icon": "fa-flask",
+        "full_score": 100,
+        "attempts": 3,
+        "correct": 1,
+        "accuracy": 0.33,
+        "mastery": 0.3,
+        "estimated_score": 57,
+        "level": "基础",
+        "updated_at": "2026-10-22T03:13:37.275Z"
+      }
+    ],
+    "u_a1f92c1e0ae0": [
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "subject": "数学",
+        "color": "blue",
+        "icon": "fa-square-root-variable",
+        "full_score": 150,
+        "attempts": 4,
+        "correct": 3,
+        "accuracy": 0.75,
+        "mastery": 0.73,
+        "estimated_score": 119,
+        "level": "进阶",
+        "updated_at": "2026-10-22T03:13:45.087Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "subject": "英语",
+        "color": "green",
+        "icon": "fa-language",
+        "full_score": 150,
+        "attempts": 2,
+        "correct": 1,
+        "accuracy": 0.5,
+        "mastery": 0.48,
+        "estimated_score": 99,
+        "level": "基础",
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "subject": "物理",
+        "color": "purple",
+        "icon": "fa-atom",
+        "full_score": 100,
+        "attempts": 3,
+        "correct": 1,
+        "accuracy": 0.33,
+        "mastery": 0.32,
+        "estimated_score": 57,
+        "level": "基础",
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      },
+      {
+        "user_id": "u_a1f92c1e0ae0",
+        "subject": "化学",
+        "color": "orange",
+        "icon": "fa-flask",
+        "full_score": 100,
+        "attempts": 3,
+        "correct": 1,
+        "accuracy": 0.33,
+        "mastery": 0.3,
+        "estimated_score": 57,
+        "level": "基础",
+        "updated_at": "2026-10-22T03:13:45.070Z"
+      }
+    ]
+  },
+  "ai_diagnosis_reports": {
+    "u_339cf7a34173": {
+      "report_id": "rep_380fc38eb1e3",
+      "user_id": "u_339cf7a34173",
+      "session_id": "ds_c83e0e46e1f3",
+      "created_at": "2026-10-22T03:11:19.752Z",
+      "generated_from": "diagnostic",
+      "summary": {
+        "total_questions": 12,
+        "correct_count": 3,
+        "accuracy": 0.25,
+        "accuracy_pct": 25,
+        "current_level": 256,
+        "estimated_score": 256,
+        "target_score": 620,
+        "score_gap": 364,
+        "mastery_avg": 0.2
+      },
+      "weak_points": [
+        {
+          "subject": "数学",
+          "knowledge_point": "圆锥曲线综合",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        },
+        {
+          "subject": "数学",
+          "knowledge_point": "概率统计",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        },
+        {
+          "subject": "物理",
+          "knowledge_point": "力学综合分析",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        },
+        {
+          "subject": "物理",
+          "knowledge_point": "动量与冲量",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        },
+        {
+          "subject": "化学",
+          "knowledge_point": "化学平衡计算",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        }
+      ],
+      "strengths": [
+        {
+          "subject": "数学",
+          "knowledge_point": "导数应用专题",
+          "mastery": 0.9
+        },
+        {
+          "subject": "物理",
+          "knowledge_point": "电磁感应综合题",
+          "mastery": 0.95
+        },
+        {
+          "subject": "数学",
+          "knowledge_point": "数列求和方法",
+          "mastery": 1
+        }
+      ],
+      "ability_profile": [
+        {
+          "subject": "数学",
+          "level": "基础",
+          "mastery": 0.48,
+          "accuracy": 0.5,
+          "estimated_score": 99,
+          "full_score": 150
+        },
+        {
+          "subject": "英语",
+          "level": "基础",
+          "mastery": 0,
+          "accuracy": 0,
+          "estimated_score": 60,
+          "full_score": 150
+        },
+        {
+          "subject": "物理",
+          "level": "基础",
+          "mastery": 0.32,
+          "accuracy": 0.33,
+          "estimated_score": 57,
+          "full_score": 100
+        },
+        {
+          "subject": "化学",
+          "level": "基础",
+          "mastery": 0,
+          "accuracy": 0,
+          "estimated_score": 40,
+          "full_score": 100
+        }
+      ],
+      "paragraphs": [
+        "本次AI学情诊断共作答 12 题，答对 3 题，整体正确率 25%。",
+        "学科能力上，数学表现最好（掌握度 48%），英语相对薄弱（掌握度 0%）。",
+        "当前薄弱知识点集中在：数学·圆锥曲线综合、数学·概率统计、物理·力学综合分析、物理·动量与冲量、化学·化学平衡计算，建议优先安排专项训练。",
+        "基于诊断数据估算当前水平约 256 分，距离目标 620 分还有 364 分的提升空间。"
+      ]
+    },
+    "u_ae303dc15984": {
+      "report_id": "rep_099fdc34d24e",
+      "user_id": "u_ae303dc15984",
+      "session_id": "ds_4766de662cf2",
+      "created_at": "2026-10-22T03:13:37.276Z",
+      "generated_from": "diagnostic",
+      "summary": {
+        "total_questions": 12,
+        "correct_count": 6,
+        "accuracy": 0.5,
+        "accuracy_pct": 50,
+        "current_level": 332,
+        "estimated_score": 332,
+        "target_score": 640,
+        "score_gap": 308,
+        "mastery_avg": 0.45
+      },
+      "weak_points": [
+        {
+          "subject": "数学",
+          "knowledge_point": "概率统计",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        },
+        {
+          "subject": "物理",
+          "knowledge_point": "力学综合分析",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        },
+        {
+          "subject": "物理",
+          "knowledge_point": "动量与冲量",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        },
+        {
+          "subject": "化学",
+          "knowledge_point": "化学平衡计算",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        },
+        {
+          "subject": "化学",
+          "knowledge_point": "电化学原理",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        }
+      ],
+      "strengths": [
+        {
+          "subject": "数学",
+          "knowledge_point": "导数应用专题",
+          "mastery": 0.9
+        },
+        {
+          "subject": "化学",
+          "knowledge_point": "有机推断题型",
+          "mastery": 0.9
+        },
+        {
+          "subject": "数学",
+          "knowledge_point": "圆锥曲线综合",
+          "mastery": 0.95
+        },
+        {
+          "subject": "物理",
+          "knowledge_point": "电磁感应综合题",
+          "mastery": 0.95
+        },
+        {
+          "subject": "英语",
+          "knowledge_point": "语法填空",
+          "mastery": 0.95
+        },
+        {
+          "subject": "数学",
+          "knowledge_point": "数列求和方法",
+          "mastery": 1
+        }
+      ],
+      "ability_profile": [
+        {
+          "subject": "数学",
+          "level": "进阶",
+          "mastery": 0.71,
+          "accuracy": 0.75,
+          "estimated_score": 119,
+          "full_score": 150
+        },
+        {
+          "subject": "英语",
+          "level": "基础",
+          "mastery": 0.48,
+          "accuracy": 0.5,
+          "estimated_score": 99,
+          "full_score": 150
+        },
+        {
+          "subject": "物理",
+          "level": "基础",
+          "mastery": 0.32,
+          "accuracy": 0.33,
+          "estimated_score": 57,
+          "full_score": 100
+        },
+        {
+          "subject": "化学",
+          "level": "基础",
+          "mastery": 0.3,
+          "accuracy": 0.33,
+          "estimated_score": 57,
+          "full_score": 100
+        }
+      ],
+      "paragraphs": [
+        "本次AI学情诊断共作答 12 题，答对 6 题，整体正确率 50%。",
+        "学科能力上，数学表现最好（掌握度 71%），化学相对薄弱（掌握度 30%）。",
+        "当前薄弱知识点集中在：数学·概率统计、物理·力学综合分析、物理·动量与冲量、化学·化学平衡计算、化学·电化学原理，建议优先安排专项训练。",
+        "基于诊断数据估算当前水平约 332 分，距离目标 640 分还有 308 分的提升空间。"
+      ]
+    },
+    "u_a1f92c1e0ae0": {
+      "report_id": "rep_d209ba8a2a41",
+      "user_id": "u_a1f92c1e0ae0",
+      "session_id": "ds_95613a56a119",
+      "created_at": "2026-10-22T03:13:45.071Z",
+      "generated_from": "diagnostic",
+      "summary": {
+        "total_questions": 12,
+        "correct_count": 6,
+        "accuracy": 0.5,
+        "accuracy_pct": 50,
+        "current_level": 332,
+        "estimated_score": 332,
+        "target_score": 640,
+        "score_gap": 308,
+        "mastery_avg": 0.45
+      },
+      "weak_points": [
+        {
+          "subject": "数学",
+          "knowledge_point": "概率统计",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        },
+        {
+          "subject": "物理",
+          "knowledge_point": "力学综合分析",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        },
+        {
+          "subject": "物理",
+          "knowledge_point": "动量与冲量",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        },
+        {
+          "subject": "化学",
+          "knowledge_point": "化学平衡计算",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        },
+        {
+          "subject": "化学",
+          "knowledge_point": "电化学原理",
+          "mastery": 0,
+          "accuracy": 0,
+          "suggestion": "先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。"
+        }
+      ],
+      "strengths": [
+        {
+          "subject": "数学",
+          "knowledge_point": "导数应用专题",
+          "mastery": 0.9
+        },
+        {
+          "subject": "化学",
+          "knowledge_point": "有机推断题型",
+          "mastery": 0.9
+        },
+        {
+          "subject": "数学",
+          "knowledge_point": "圆锥曲线综合",
+          "mastery": 0.95
+        },
+        {
+          "subject": "物理",
+          "knowledge_point": "电磁感应综合题",
+          "mastery": 0.95
+        },
+        {
+          "subject": "英语",
+          "knowledge_point": "语法填空",
+          "mastery": 0.95
+        },
+        {
+          "subject": "数学",
+          "knowledge_point": "数列求和方法",
+          "mastery": 1
+        }
+      ],
+      "ability_profile": [
+        {
+          "subject": "数学",
+          "level": "进阶",
+          "mastery": 0.71,
+          "accuracy": 0.75,
+          "estimated_score": 119,
+          "full_score": 150
+        },
+        {
+          "subject": "英语",
+          "level": "基础",
+          "mastery": 0.48,
+          "accuracy": 0.5,
+          "estimated_score": 99,
+          "full_score": 150
+        },
+        {
+          "subject": "物理",
+          "level": "基础",
+          "mastery": 0.32,
+          "accuracy": 0.33,
+          "estimated_score": 57,
+          "full_score": 100
+        },
+        {
+          "subject": "化学",
+          "level": "基础",
+          "mastery": 0.3,
+          "accuracy": 0.33,
+          "estimated_score": 57,
+          "full_score": 100
+        }
+      ],
+      "paragraphs": [
+        "本次AI学情诊断共作答 12 题，答对 6 题，整体正确率 50%。",
+        "学科能力上，数学表现最好（掌握度 71%），化学相对薄弱（掌握度 30%）。",
+        "当前薄弱知识点集中在：数学·概率统计、物理·力学综合分析、物理·动量与冲量、化学·化学平衡计算、化学·电化学原理，建议优先安排专项训练。",
+        "基于诊断数据估算当前水平约 332 分，距离目标 640 分还有 308 分的提升空间。"
+      ]
+    }
+  },
+  "learning_plans": {
+    "u_339cf7a34173": {
+      "plan_id": "plan_d50b066d61e4",
+      "user_id": "u_339cf7a34173",
+      "report_id": "rep_380fc38eb1e3",
+      "created_at": "2026-10-22T03:11:19.753Z",
+      "plan_date": "2026-10-22",
+      "total_minutes": 140,
+      "task_count": 4,
+      "status": "active",
+      "tasks": [
+        {
+          "id": "task_7860fb446b88",
+          "user_id": "u_339cf7a34173",
+          "plan_id": "plan_d50b066d61e4",
+          "subject": "数学",
+          "color": "blue",
+          "icon": "fa-square-root-variable",
+          "point": "圆锥曲线综合",
+          "knowledge_point_id": "kp_1",
+          "knowledge_point_name": "圆锥曲线综合",
+          "difficulty": "困难",
+          "time": "30min",
+          "planned_minutes": 30,
+          "questions_count": 8,
+          "status": "done",
+          "planned_date": "2026-10-22",
+          "created_at": "2026-10-22T03:11:19.753Z",
+          "started_at": "2026-10-22T03:11:19.761Z",
+          "completed_at": "2026-10-22T03:11:19.764Z",
+          "duration_min": 31,
+          "correct_rate": 78,
+          "answered": 9
+        },
+        {
+          "id": "task_44a7a5df4572",
+          "user_id": "u_339cf7a34173",
+          "plan_id": "plan_d50b066d61e4",
+          "subject": "数学",
+          "color": "blue",
+          "icon": "fa-square-root-variable",
+          "point": "概率统计",
+          "knowledge_point_id": "kp_2",
+          "knowledge_point_name": "概率统计",
+          "difficulty": "困难",
+          "time": "40min",
+          "planned_minutes": 40,
+          "questions_count": 10,
+          "status": "todo",
+          "planned_date": "2026-10-22",
+          "created_at": "2026-10-22T03:11:19.753Z",
+          "started_at": null,
+          "completed_at": null,
+          "duration_min": null,
+          "correct_rate": null
+        },
+        {
+          "id": "task_44ab9427fe0c",
+          "user_id": "u_339cf7a34173",
+          "plan_id": "plan_d50b066d61e4",
+          "subject": "物理",
+          "color": "purple",
+          "icon": "fa-atom",
+          "point": "力学综合分析",
+          "knowledge_point_id": "kp_3",
+          "knowledge_point_name": "力学综合分析",
+          "difficulty": "困难",
+          "time": "30min",
+          "planned_minutes": 30,
+          "questions_count": 8,
+          "status": "todo",
+          "planned_date": "2026-10-22",
+          "created_at": "2026-10-22T03:11:19.753Z",
+          "started_at": null,
+          "completed_at": null,
+          "duration_min": null,
+          "correct_rate": null
+        },
+        {
+          "id": "task_efeb2af45f1f",
+          "user_id": "u_339cf7a34173",
+          "plan_id": "plan_d50b066d61e4",
+          "subject": "物理",
+          "color": "purple",
+          "icon": "fa-atom",
+          "point": "动量与冲量",
+          "knowledge_point_id": "kp_4",
+          "knowledge_point_name": "动量与冲量",
+          "difficulty": "困难",
+          "time": "40min",
+          "planned_minutes": 40,
+          "questions_count": 10,
+          "status": "todo",
+          "planned_date": "2026-10-22",
+          "created_at": "2026-10-22T03:11:19.753Z",
+          "started_at": null,
+          "completed_at": null,
+          "duration_min": null,
+          "correct_rate": null
+        }
+      ]
+    },
+    "u_ae303dc15984": {
+      "plan_id": "plan_3a15a6a671d7",
+      "user_id": "u_ae303dc15984",
+      "report_id": "rep_099fdc34d24e",
+      "created_at": "2026-10-22T03:13:37.277Z",
+      "plan_date": "2026-10-22",
+      "total_minutes": 140,
+      "task_count": 4,
+      "status": "active",
+      "tasks": [
+        {
+          "id": "task_b02262e05fdf",
+          "user_id": "u_ae303dc15984",
+          "plan_id": "plan_3a15a6a671d7",
+          "subject": "数学",
+          "color": "blue",
+          "icon": "fa-square-root-variable",
+          "point": "概率统计",
+          "knowledge_point_id": "kp_1",
+          "knowledge_point_name": "概率统计",
+          "difficulty": "困难",
+          "time": "30min",
+          "planned_minutes": 30,
+          "questions_count": 8,
+          "status": "done",
+          "planned_date": "2026-10-22",
+          "created_at": "2026-10-22T03:13:37.277Z",
+          "started_at": "2026-10-22T03:13:37.284Z",
+          "completed_at": "2026-10-22T03:13:37.286Z",
+          "duration_min": 20,
+          "correct_rate": null
+        },
+        {
+          "id": "task_8e3572eab2d8",
+          "user_id": "u_ae303dc15984",
+          "plan_id": "plan_3a15a6a671d7",
+          "subject": "物理",
+          "color": "purple",
+          "icon": "fa-atom",
+          "point": "力学综合分析",
+          "knowledge_point_id": "kp_2",
+          "knowledge_point_name": "力学综合分析",
+          "difficulty": "困难",
+          "time": "40min",
+          "planned_minutes": 40,
+          "questions_count": 10,
+          "status": "todo",
+          "planned_date": "2026-10-22",
+          "created_at": "2026-10-22T03:13:37.277Z",
+          "started_at": null,
+          "completed_at": null,
+          "duration_min": null,
+          "correct_rate": null
+        },
+        {
+          "id": "task_7388fe4d18a1",
+          "user_id": "u_ae303dc15984",
+          "plan_id": "plan_3a15a6a671d7",
+          "subject": "物理",
+          "color": "purple",
+          "icon": "fa-atom",
+          "point": "动量与冲量",
+          "knowledge_point_id": "kp_3",
+          "knowledge_point_name": "动量与冲量",
+          "difficulty": "困难",
+          "time": "30min",
+          "planned_minutes": 30,
+          "questions_count": 8,
+          "status": "todo",
+          "planned_date": "2026-10-22",
+          "created_at": "2026-10-22T03:13:37.277Z",
+          "started_at": null,
+          "completed_at": null,
+          "duration_min": null,
+          "correct_rate": null
+        },
+        {
+          "id": "task_8cc973edf062",
+          "user_id": "u_ae303dc15984",
+          "plan_id": "plan_3a15a6a671d7",
+          "subject": "化学",
+          "color": "orange",
+          "icon": "fa-flask",
+          "point": "化学平衡计算",
+          "knowledge_point_id": "kp_4",
+          "knowledge_point_name": "化学平衡计算",
+          "difficulty": "困难",
+          "time": "40min",
+          "planned_minutes": 40,
+          "questions_count": 10,
+          "status": "todo",
+          "planned_date": "2026-10-22",
+          "created_at": "2026-10-22T03:13:37.277Z",
+          "started_at": null,
+          "completed_at": null,
+          "duration_min": null,
+          "correct_rate": null
+        }
+      ]
+    },
+    "u_a1f92c1e0ae0": {
+      "plan_id": "plan_409f5ba6244d",
+      "user_id": "u_a1f92c1e0ae0",
+      "report_id": "rep_d209ba8a2a41",
+      "created_at": "2026-10-22T03:13:45.072Z",
+      "plan_date": "2026-10-22",
+      "total_minutes": 140,
+      "task_count": 4,
+      "status": "active",
+      "tasks": [
+        {
+          "id": "task_c99248ab906d",
+          "user_id": "u_a1f92c1e0ae0",
+          "plan_id": "plan_409f5ba6244d",
+          "subject": "数学",
+          "color": "blue",
+          "icon": "fa-square-root-variable",
+          "point": "概率统计",
+          "knowledge_point_id": "kp_1",
+          "knowledge_point_name": "概率统计",
+          "difficulty": "困难",
+          "time": "30min",
+          "planned_minutes": 30,
+          "questions_count": 8,
+          "status": "done",
+          "planned_date": "2026-10-22",
+          "created_at": "2026-10-22T03:13:45.072Z",
+          "started_at": "2026-10-22T03:13:45.081Z",
+          "completed_at": "2026-10-22T03:13:45.085Z",
+          "duration_min": 20,
+          "correct_rate": null
+        },
+        {
+          "id": "task_29715afc1e5b",
+          "user_id": "u_a1f92c1e0ae0",
+          "plan_id": "plan_409f5ba6244d",
+          "subject": "物理",
+          "color": "purple",
+          "icon": "fa-atom",
+          "point": "力学综合分析",
+          "knowledge_point_id": "kp_2",
+          "knowledge_point_name": "力学综合分析",
+          "difficulty": "困难",
+          "time": "40min",
+          "planned_minutes": 40,
+          "questions_count": 10,
+          "status": "todo",
+          "planned_date": "2026-10-22",
+          "created_at": "2026-10-22T03:13:45.072Z",
+          "started_at": null,
+          "completed_at": null,
+          "duration_min": null,
+          "correct_rate": null
+        },
+        {
+          "id": "task_45406d20a698",
+          "user_id": "u_a1f92c1e0ae0",
+          "plan_id": "plan_409f5ba6244d",
+          "subject": "物理",
+          "color": "purple",
+          "icon": "fa-atom",
+          "point": "动量与冲量",
+          "knowledge_point_id": "kp_3",
+          "knowledge_point_name": "动量与冲量",
+          "difficulty": "困难",
+          "time": "30min",
+          "planned_minutes": 30,
+          "questions_count": 8,
+          "status": "todo",
+          "planned_date": "2026-10-22",
+          "created_at": "2026-10-22T03:13:45.072Z",
+          "started_at": null,
+          "completed_at": null,
+          "duration_min": null,
+          "correct_rate": null
+        },
+        {
+          "id": "task_6ba0b139f0df",
+          "user_id": "u_a1f92c1e0ae0",
+          "plan_id": "plan_409f5ba6244d",
+          "subject": "化学",
+          "color": "orange",
+          "icon": "fa-flask",
+          "point": "化学平衡计算",
+          "knowledge_point_id": "kp_4",
+          "knowledge_point_name": "化学平衡计算",
+          "difficulty": "困难",
+          "time": "40min",
+          "planned_minutes": 40,
+          "questions_count": 10,
+          "status": "todo",
+          "planned_date": "2026-10-22",
+          "created_at": "2026-10-22T03:13:45.072Z",
+          "started_at": null,
+          "completed_at": null,
+          "duration_min": null,
+          "correct_rate": null
+        }
+      ]
+    }
+  },
+  "learning_tasks": [
+    {
+      "id": "task_7860fb446b88",
+      "user_id": "u_339cf7a34173",
+      "plan_id": "plan_d50b066d61e4",
+      "subject": "数学",
+      "color": "blue",
+      "icon": "fa-square-root-variable",
+      "point": "圆锥曲线综合",
+      "knowledge_point_id": "kp_1",
+      "knowledge_point_name": "圆锥曲线综合",
+      "difficulty": "困难",
+      "time": "30min",
+      "planned_minutes": 30,
+      "questions_count": 8,
+      "status": "done",
+      "planned_date": "2026-10-22",
+      "created_at": "2026-10-22T03:11:19.753Z",
+      "started_at": "2026-10-22T03:11:19.761Z",
+      "completed_at": "2026-10-22T03:11:19.764Z",
+      "duration_min": 31,
+      "correct_rate": 78,
+      "answered": 9
+    },
+    {
+      "id": "task_44a7a5df4572",
+      "user_id": "u_339cf7a34173",
+      "plan_id": "plan_d50b066d61e4",
+      "subject": "数学",
+      "color": "blue",
+      "icon": "fa-square-root-variable",
+      "point": "概率统计",
+      "knowledge_point_id": "kp_2",
+      "knowledge_point_name": "概率统计",
+      "difficulty": "困难",
+      "time": "40min",
+      "planned_minutes": 40,
+      "questions_count": 10,
+      "status": "todo",
+      "planned_date": "2026-10-22",
+      "created_at": "2026-10-22T03:11:19.753Z",
+      "started_at": null,
+      "completed_at": null,
+      "duration_min": null,
+      "correct_rate": null
+    },
+    {
+      "id": "task_44ab9427fe0c",
+      "user_id": "u_339cf7a34173",
+      "plan_id": "plan_d50b066d61e4",
+      "subject": "物理",
+      "color": "purple",
+      "icon": "fa-atom",
+      "point": "力学综合分析",
+      "knowledge_point_id": "kp_3",
+      "knowledge_point_name": "力学综合分析",
+      "difficulty": "困难",
+      "time": "30min",
+      "planned_minutes": 30,
+      "questions_count": 8,
+      "status": "todo",
+      "planned_date": "2026-10-22",
+      "created_at": "2026-10-22T03:11:19.753Z",
+      "started_at": null,
+      "completed_at": null,
+      "duration_min": null,
+      "correct_rate": null
+    },
+    {
+      "id": "task_efeb2af45f1f",
+      "user_id": "u_339cf7a34173",
+      "plan_id": "plan_d50b066d61e4",
+      "subject": "物理",
+      "color": "purple",
+      "icon": "fa-atom",
+      "point": "动量与冲量",
+      "knowledge_point_id": "kp_4",
+      "knowledge_point_name": "动量与冲量",
+      "difficulty": "困难",
+      "time": "40min",
+      "planned_minutes": 40,
+      "questions_count": 10,
+      "status": "todo",
+      "planned_date": "2026-10-22",
+      "created_at": "2026-10-22T03:11:19.753Z",
+      "started_at": null,
+      "completed_at": null,
+      "duration_min": null,
+      "correct_rate": null
+    },
+    {
+      "id": "task_b02262e05fdf",
+      "user_id": "u_ae303dc15984",
+      "plan_id": "plan_3a15a6a671d7",
+      "subject": "数学",
+      "color": "blue",
+      "icon": "fa-square-root-variable",
+      "point": "概率统计",
+      "knowledge_point_id": "kp_1",
+      "knowledge_point_name": "概率统计",
+      "difficulty": "困难",
+      "time": "30min",
+      "planned_minutes": 30,
+      "questions_count": 8,
+      "status": "done",
+      "planned_date": "2026-10-22",
+      "created_at": "2026-10-22T03:13:37.277Z",
+      "started_at": "2026-10-22T03:13:37.284Z",
+      "completed_at": "2026-10-22T03:13:37.286Z",
+      "duration_min": 20,
+      "correct_rate": null
+    },
+    {
+      "id": "task_8e3572eab2d8",
+      "user_id": "u_ae303dc15984",
+      "plan_id": "plan_3a15a6a671d7",
+      "subject": "物理",
+      "color": "purple",
+      "icon": "fa-atom",
+      "point": "力学综合分析",
+      "knowledge_point_id": "kp_2",
+      "knowledge_point_name": "力学综合分析",
+      "difficulty": "困难",
+      "time": "40min",
+      "planned_minutes": 40,
+      "questions_count": 10,
+      "status": "todo",
+      "planned_date": "2026-10-22",
+      "created_at": "2026-10-22T03:13:37.277Z",
+      "started_at": null,
+      "completed_at": null,
+      "duration_min": null,
+      "correct_rate": null
+    },
+    {
+      "id": "task_7388fe4d18a1",
+      "user_id": "u_ae303dc15984",
+      "plan_id": "plan_3a15a6a671d7",
+      "subject": "物理",
+      "color": "purple",
+      "icon": "fa-atom",
+      "point": "动量与冲量",
+      "knowledge_point_id": "kp_3",
+      "knowledge_point_name": "动量与冲量",
+      "difficulty": "困难",
+      "time": "30min",
+      "planned_minutes": 30,
+      "questions_count": 8,
+      "status": "todo",
+      "planned_date": "2026-10-22",
+      "created_at": "2026-10-22T03:13:37.277Z",
+      "started_at": null,
+      "completed_at": null,
+      "duration_min": null,
+      "correct_rate": null
+    },
+    {
+      "id": "task_8cc973edf062",
+      "user_id": "u_ae303dc15984",
+      "plan_id": "plan_3a15a6a671d7",
+      "subject": "化学",
+      "color": "orange",
+      "icon": "fa-flask",
+      "point": "化学平衡计算",
+      "knowledge_point_id": "kp_4",
+      "knowledge_point_name": "化学平衡计算",
+      "difficulty": "困难",
+      "time": "40min",
+      "planned_minutes": 40,
+      "questions_count": 10,
+      "status": "todo",
+      "planned_date": "2026-10-22",
+      "created_at": "2026-10-22T03:13:37.277Z",
+      "started_at": null,
+      "completed_at": null,
+      "duration_min": null,
+      "correct_rate": null
+    },
+    {
+      "id": "task_c99248ab906d",
+      "user_id": "u_a1f92c1e0ae0",
+      "plan_id": "plan_409f5ba6244d",
+      "subject": "数学",
+      "color": "blue",
+      "icon": "fa-square-root-variable",
+      "point": "概率统计",
+      "knowledge_point_id": "kp_1",
+      "knowledge_point_name": "概率统计",
+      "difficulty": "困难",
+      "time": "30min",
+      "planned_minutes": 30,
+      "questions_count": 8,
+      "status": "done",
+      "planned_date": "2026-10-22",
+      "created_at": "2026-10-22T03:13:45.072Z",
+      "started_at": "2026-10-22T03:13:45.081Z",
+      "completed_at": "2026-10-22T03:13:45.085Z",
+      "duration_min": 20,
+      "correct_rate": null
+    },
+    {
+      "id": "task_29715afc1e5b",
+      "user_id": "u_a1f92c1e0ae0",
+      "plan_id": "plan_409f5ba6244d",
+      "subject": "物理",
+      "color": "purple",
+      "icon": "fa-atom",
+      "point": "力学综合分析",
+      "knowledge_point_id": "kp_2",
+      "knowledge_point_name": "力学综合分析",
+      "difficulty": "困难",
+      "time": "40min",
+      "planned_minutes": 40,
+      "questions_count": 10,
+      "status": "todo",
+      "planned_date": "2026-10-22",
+      "created_at": "2026-10-22T03:13:45.072Z",
+      "started_at": null,
+      "completed_at": null,
+      "duration_min": null,
+      "correct_rate": null
+    },
+    {
+      "id": "task_45406d20a698",
+      "user_id": "u_a1f92c1e0ae0",
+      "plan_id": "plan_409f5ba6244d",
+      "subject": "物理",
+      "color": "purple",
+      "icon": "fa-atom",
+      "point": "动量与冲量",
+      "knowledge_point_id": "kp_3",
+      "knowledge_point_name": "动量与冲量",
+      "difficulty": "困难",
+      "time": "30min",
+      "planned_minutes": 30,
+      "questions_count": 8,
+      "status": "todo",
+      "planned_date": "2026-10-22",
+      "created_at": "2026-10-22T03:13:45.072Z",
+      "started_at": null,
+      "completed_at": null,
+      "duration_min": null,
+      "correct_rate": null
+    },
+    {
+      "id": "task_6ba0b139f0df",
+      "user_id": "u_a1f92c1e0ae0",
+      "plan_id": "plan_409f5ba6244d",
+      "subject": "化学",
+      "color": "orange",
+      "icon": "fa-flask",
+      "point": "化学平衡计算",
+      "knowledge_point_id": "kp_4",
+      "knowledge_point_name": "化学平衡计算",
+      "difficulty": "困难",
+      "time": "40min",
+      "planned_minutes": 40,
+      "questions_count": 10,
+      "status": "todo",
+      "planned_date": "2026-10-22",
+      "created_at": "2026-10-22T03:13:45.072Z",
+      "started_at": null,
+      "completed_at": null,
+      "duration_min": null,
+      "correct_rate": null
+    }
+  ],
+  "behavior_events": [
+    {
+      "id": "ev_06fe9d153a0a",
+      "user_id": "u_339cf7a34173",
+      "type": "user_registered",
+      "payload": {
+        "username": "e2e_1792638679603"
+      },
+      "occurred_at": "2026-10-22T03:11:19.676Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_4f4884c92ac3",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_started",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3"
+      },
+      "occurred_at": "2026-10-22T03:11:19.716Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_c239d6664c12",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "question_id": "dg_math_01",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:11:19.719Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_ca8e71c0a420",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "question_id": "dg_math_02",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:11:19.722Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_87b62559868c",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "question_id": "dg_math_03",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:11:19.725Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_85c5fc3323f9",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "question_id": "dg_math_04",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:11:19.728Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_4eadd94731e0",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "question_id": "dg_phy_01",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:11:19.731Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_c0caa740b6b4",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "question_id": "dg_phy_02",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:11:19.733Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_32e8bfea5d9c",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "question_id": "dg_phy_03",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:11:19.736Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_ab9e5bbb0ac8",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "question_id": "dg_chem_01",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:11:19.738Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_906053a6499c",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "question_id": "dg_chem_02",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:11:19.741Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_5792033a2479",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "question_id": "dg_chem_03",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:11:19.743Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_777c43817588",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "question_id": "dg_eng_01",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:11:19.747Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_dd354c0d35f0",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "question_id": "dg_eng_02",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:11:19.749Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_f64879b5f017",
+      "user_id": "u_339cf7a34173",
+      "type": "diagnostic_completed",
+      "payload": {
+        "session_id": "ds_c83e0e46e1f3",
+        "report_id": "rep_380fc38eb1e3",
+        "plan_id": "plan_d50b066d61e4"
+      },
+      "occurred_at": "2026-10-22T03:11:19.754Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_812ada9a0ba2",
+      "user_id": "u_339cf7a34173",
+      "type": "task_started",
+      "payload": {
+        "task_id": "task_7860fb446b88",
+        "subject": "数学",
+        "point": "圆锥曲线综合"
+      },
+      "occurred_at": "2026-10-22T03:11:19.762Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_01897fbf10fb",
+      "user_id": "u_339cf7a34173",
+      "type": "task_completed",
+      "payload": {
+        "task_id": "task_7860fb446b88",
+        "subject": "数学",
+        "point": "圆锥曲线综合",
+        "duration_min": 31,
+        "answered": 9,
+        "correct_rate": 78
+      },
+      "occurred_at": "2026-10-22T03:11:19.766Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_258426c0ddf9",
+      "user_id": "u_ac245432e6f9",
+      "type": "user_registered",
+      "payload": {
+        "username": "e2e2_1792638679772"
+      },
+      "occurred_at": "2026-10-22T03:11:19.814Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_6ed33e1e2a57",
+      "user_id": "u_19295030be2a",
+      "type": "user_registered",
+      "payload": {
+        "username": "stu_1792638788"
+      },
+      "occurred_at": "2026-10-22T03:13:08.556Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_412880067a56",
+      "user_id": "u_0722b86d967c",
+      "type": "user_registered",
+      "payload": {
+        "username": "stu_1792638792"
+      },
+      "occurred_at": "2026-10-22T03:13:12.518Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_83ac163c9c15",
+      "user_id": "u_0722b86d967c",
+      "type": "diagnostic_started",
+      "payload": {
+        "session_id": "ds_0d695f404ae2"
+      },
+      "occurred_at": "2026-10-22T03:13:13.796Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_5eee371213fa",
+      "user_id": "u_d8bcc6de2972",
+      "type": "user_registered",
+      "payload": {
+        "username": "chk_1792638798"
+      },
+      "occurred_at": "2026-10-22T03:13:18.345Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_24f70037a070",
+      "user_id": "u_d8bcc6de2972",
+      "type": "diagnostic_started",
+      "payload": {
+        "session_id": "ds_d325a1f2f7ad"
+      },
+      "occurred_at": "2026-10-22T03:13:18.822Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_9e5b02325d94",
+      "user_id": "u_982d1f515c77",
+      "type": "user_registered",
+      "payload": {
+        "username": "py_1792638811"
+      },
+      "occurred_at": "2026-10-22T03:13:31.502Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_cb0f31d5ae30",
+      "user_id": "u_982d1f515c77",
+      "type": "goal_set",
+      "payload": {
+        "target_score": 640,
+        "target_school": "浙江大学",
+        "exam_year": 2027,
+        "daily_minutes": 120
+      },
+      "occurred_at": "2026-10-22T03:13:31.511Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_e98a8609a2c3",
+      "user_id": "u_ae303dc15984",
+      "type": "user_registered",
+      "payload": {
+        "username": "py_1792638817"
+      },
+      "occurred_at": "2026-10-22T03:13:37.230Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_416f07c1de68",
+      "user_id": "u_ae303dc15984",
+      "type": "goal_set",
+      "payload": {
+        "target_score": 640,
+        "target_school": "浙江大学",
+        "exam_year": 2027,
+        "daily_minutes": 120
+      },
+      "occurred_at": "2026-10-22T03:13:37.237Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_2aa7cad35b22",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_started",
+      "payload": {
+        "session_id": "ds_4766de662cf2"
+      },
+      "occurred_at": "2026-10-22T03:13:37.240Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_80740f59ebd8",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "question_id": "dg_math_01",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:37.244Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_347b76b7efac",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "question_id": "dg_math_02",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:37.246Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_9f0f1f616d37",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "question_id": "dg_math_03",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:37.249Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_52c60890ac55",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "question_id": "dg_math_04",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:37.252Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_37299cba16b8",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "question_id": "dg_phy_01",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:37.254Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_3046d819a16a",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "question_id": "dg_phy_02",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:37.257Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_d339df3a4a69",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "question_id": "dg_phy_03",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:37.259Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_219cf4452ecf",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "question_id": "dg_chem_01",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:37.262Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_a44298abe22e",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "question_id": "dg_chem_02",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:37.264Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_dc5019c484af",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "question_id": "dg_chem_03",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:37.267Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_db8437491ba5",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "question_id": "dg_eng_01",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:37.270Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_00681a27a67f",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "question_id": "dg_eng_02",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:37.273Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_98dbc4930ddf",
+      "user_id": "u_ae303dc15984",
+      "type": "diagnostic_completed",
+      "payload": {
+        "session_id": "ds_4766de662cf2",
+        "report_id": "rep_099fdc34d24e",
+        "plan_id": "plan_3a15a6a671d7"
+      },
+      "occurred_at": "2026-10-22T03:13:37.278Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_4bf7f56f64b2",
+      "user_id": "u_ae303dc15984",
+      "type": "task_started",
+      "payload": {
+        "task_id": "task_b02262e05fdf",
+        "subject": "数学",
+        "point": "概率统计"
+      },
+      "occurred_at": "2026-10-22T03:13:37.284Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_67f89390f839",
+      "user_id": "u_ae303dc15984",
+      "type": "task_completed",
+      "payload": {
+        "task_id": "task_b02262e05fdf",
+        "subject": "数学",
+        "point": "概率统计",
+        "duration_min": 20,
+        "answered": 0,
+        "correct_rate": null
+      },
+      "occurred_at": "2026-10-22T03:13:37.289Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_7070b80eb8f7",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "user_registered",
+      "payload": {
+        "username": "py_1792638824"
+      },
+      "occurred_at": "2026-10-22T03:13:45.016Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_ed1038d15508",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "goal_set",
+      "payload": {
+        "target_score": 640,
+        "target_school": "浙江大学",
+        "exam_year": 2027,
+        "daily_minutes": 120
+      },
+      "occurred_at": "2026-10-22T03:13:45.025Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_ff00dadcb7f4",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_started",
+      "payload": {
+        "session_id": "ds_95613a56a119"
+      },
+      "occurred_at": "2026-10-22T03:13:45.029Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_77953eb929eb",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "question_id": "dg_math_01",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:45.032Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_3a7b74625b59",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "question_id": "dg_math_02",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:45.035Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_a4046a8f2b86",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "question_id": "dg_math_03",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:45.038Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_8d014cc6472d",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "question_id": "dg_math_04",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:45.041Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_3a03f81f9483",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "question_id": "dg_phy_01",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:45.045Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_e96396c04a29",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "question_id": "dg_phy_02",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:45.047Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_30b233d583a1",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "question_id": "dg_phy_03",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:45.051Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_e434b31cb181",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "question_id": "dg_chem_01",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:45.054Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_dcf5f1372af5",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "question_id": "dg_chem_02",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:45.057Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_16b40e29f565",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "question_id": "dg_chem_03",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:45.061Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_f57237ab2083",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "question_id": "dg_eng_01",
+        "is_correct": false,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:45.064Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_5f24f76d2c93",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_answered",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "question_id": "dg_eng_02",
+        "is_correct": true,
+        "duration_sec": 45
+      },
+      "occurred_at": "2026-10-22T03:13:45.067Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_7a2e517fd189",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "diagnostic_completed",
+      "payload": {
+        "session_id": "ds_95613a56a119",
+        "report_id": "rep_d209ba8a2a41",
+        "plan_id": "plan_409f5ba6244d"
+      },
+      "occurred_at": "2026-10-22T03:13:45.074Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_45ee0f29ed74",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "task_started",
+      "payload": {
+        "task_id": "task_c99248ab906d",
+        "subject": "数学",
+        "point": "概率统计"
+      },
+      "occurred_at": "2026-10-22T03:13:45.082Z",
+      "date_key": "2026-10-22"
+    },
+    {
+      "id": "ev_fe8d511545db",
+      "user_id": "u_a1f92c1e0ae0",
+      "type": "task_completed",
+      "payload": {
+        "task_id": "task_c99248ab906d",
+        "subject": "数学",
+        "point": "概率统计",
+        "duration_min": 20,
+        "answered": 0,
+        "correct_rate": null
+      },
+      "occurred_at": "2026-10-22T03:13:45.089Z",
+      "date_key": "2026-10-22"
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "header_card": {
+    "title": "AI模型中心",
+    "subtitle": "集成全球开源AI能力",
+    "icon": "fa-microchip",
+    "description": "平台深度集成GitHub开源社区的主流AI模型，覆盖自然语言处理、计算机视觉、语音、多模态等核心领域，为智能刷题、AI讲题、拍照搜题等场景提供底层AI能力支撑。",
+    "stats": [
+      { "value": "12", "label": "已集成模型" },
+      { "value": "8", "label": "运行中" },
+      { "value": "4", "label": "待命" },
+      { "value": "99.2%", "label": "可用率" }
+    ]
+  },
+  "categories": [
+    {
+      "name": "自然语言处理（NLP）",
+      "icon": "fa-language",
+      "color": "#3B82F6",
+      "models": [
+        {
+          "name": "ChatGLM-6B",
+          "status": "running",
+          "license": "MIT",
+          "stars": "28.5k",
+          "desc": "清华开源的中英双语对话模型，支持高考题干语义理解、AI答疑、错题解析生成，67B参数量化部署于本地vLLM引擎。",
+          "use": "AI答疑 / 错题分析"
+        },
+        {
+          "name": "Qwen-7B",
+          "status": "running",
+          "license": "Tongyi-Qianwen",
+          "stars": "18.3k",
+          "desc": "阿里通义千问开源版本，擅长中文知识问答与学科概念解释，为AI讲题引擎提供长文本推理能力。",
+          "use": "AI讲题 / 知识图谱"
+        },
+        {
+          "name": "BERT-base-chinese",
+          "status": "running",
+          "license": "Apache-2.0",
+          "stars": "12.7k",
+          "desc": "经典中文预训练模型，用于题目文本分类、相似题检索、知识点抽取等轻量级NLP任务。",
+          "use": "相似题 / 知识标定"
+        }
+      ]
+    },
+    {
+      "name": "计算机视觉（CV）",
+      "icon": "fa-eye",
+      "color": "#10B981",
+      "models": [
+        {
+          "name": "PaddleOCR-v4",
+          "status": "running",
+          "license": "Apache-2.0",
+          "stars": "42.1k",
+          "desc": "百度开源OCR引擎，支持手写体、印刷体混合识别，拍照搜题准确率98.6%，毫秒级响应。",
+          "use": "拍照搜题 / 试卷入库"
+        },
+        {
+          "name": "YOLOv8",
+          "status": "running",
+          "license": "AGPL-3.0",
+          "stars": "35.8k",
+          "desc": "Ultralytics开源目标检测模型，用于试卷版面分析、题目区域切割、图表识别。",
+          "use": "试卷切分 / 图表识别"
+        },
+        {
+          "name": "Donut",
+          "status": "standby",
+          "license": "MIT",
+          "stars": "8.2k",
+          "desc": "文档理解视觉模型，支持复杂版式数学公式识别，作为OCR补充能力待命。",
+          "use": "公式识别 / 图表解析"
+        }
+      ]
+    },
+    {
+      "name": "多模态大模型",
+      "icon": "fa-layer-group",
+      "color": "#8B5CF6",
+      "models": [
+        {
+          "name": "LLaVA-1.5-13B",
+          "status": "running",
+          "license": "Apache-2.0",
+          "stars": "22.4k",
+          "desc": "开源视觉语言模型，支持图文混合输入，可解析几何图形题、函数图像题等需要视觉理解的题型。",
+          "use": "图形题解析 / 图像理解"
+        },
+        {
+          "name": "Qwen-VL",
+          "status": "running",
+          "license": "Tongyi-Qianwen",
+          "stars": "15.6k",
+          "desc": "通义千问视觉版本，支持中文场景的图文对话，为拍照搜题提供多模态问答能力。",
+          "use": "拍照搜题 / 多模态答疑"
+        }
+      ]
+    },
+    {
+      "name": "语音与ASR",
+      "icon": "fa-microphone",
+      "color": "#F59E0B",
+      "models": [
+        {
+          "name": "Whisper-large-v3",
+          "status": "running",
+          "license": "MIT",
+          "stars": "45.2k",
+          "desc": "OpenAI开源语音识别模型，支持中英文混合语音输入，用于AI语音答疑、错题口述录入。",
+          "use": "语音答疑 / 口述录入"
+        },
+        {
+          "name": "VITS-chinese",
+          "status": "standby",
+          "license": "MIT",
+          "stars": "9.8k",
+          "desc": "开源语音合成模型，可生成自然中文语音，为视障学生提供题目朗读辅助。",
+          "use": "语音朗读 / 无障碍"
+        }
+      ]
+    },
+    {
+      "name": "推荐与预测",
+      "icon": "fa-brain",
+      "color": "#EF4444",
+      "models": [
+        {
+          "name": "XGBoost",
+          "status": "running",
+          "license": "Apache-2.0",
+          "stars": "27.3k",
+          "desc": "梯度提升树模型，用于提分预测、个性化题目推荐、知识点掌握度建模，特征工程覆盖历史成绩与学习行为。",
+          "use": "提分预测 / 智能推荐"
+        },
+        {
+          "name": "LightGBM",
+          "status": "running",
+          "license": "MIT",
+          "stars": "18.9k",
+          "desc": "高效梯度提升框架，与XGBoost集成用于趋势拟合，预测高考分数波动区间与志愿匹配。",
+          "use": "志愿推荐 / 趋势预测"
+        }
+      ]
+    }
+  ],
+  "model_card": {
+    "title": "模型运行状态",
+    "metrics": [
+      { "label": "今日推理次数", "value": "128.5k", "color": "#3B82F6", "trend": "12%" },
+      { "label": "平均响应时间", "value": "326ms", "color": "#10B981", "trend": "8%" },
+      { "label": "GPU利用率", "value": "67%", "color": "#F59E0B", "trend": "5%" },
+      { "label": "服务可用率", "value": "99.2%", "color": "#8B5CF6", "trend": "0.3%" }
+    ]
+  }
+}

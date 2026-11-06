@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" class=""><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>高分AI-AI高考智能提分教练 - 主应用</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="css/fontawesome/all.min.css?v=20260901C">
+    <!-- 设计系统样式（完整 CSS 变量与全部组件样式，含模块联动引擎样式） -->
+    <link rel="stylesheet" href="css/style.css?v=20261103A">
+    <!-- Chart.js 图表库（本地静态资源，不依赖外部 CDN） -->
+    <script src="js/lib/chart.min.js?v=20260901C"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- ============ 侧边栏 ============ -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">AI</div>
+                    <div>
+                        <div class="logo-title">AI高考提分</div>
+                        <div class="logo-subtitle">智能学习教练</div>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="home"><i class="fas fa-home"></i> 首页</a>
+                <a href="#" class="nav-item" data-page="analysis"><i class="fas fa-chart-bar"></i> 学情分析</a>
+                <a href="#" class="nav-item" data-page="ai-diagnosis"><i class="fas fa-stethoscope"></i> AI学情诊断</a>
+                <a href="#" class="nav-item" data-page="plan"><i class="fas fa-calendar-check"></i> 学习计划</a>
+                <a href="#" class="nav-item" data-page="knowledge"><i class="fas fa-project-diagram"></i> 知识图谱</a>
+                <a href="#" class="nav-item" data-page="training"><i class="fas fa-pen-to-square"></i> 刷题训练</a>
+                <a href="#" class="nav-item" data-page="mistakes"><i class="fas fa-times-circle"></i> 错题本</a>
+                <a href="#" class="nav-item" data-page="ai-explain"><i class="fas fa-robot"></i> AI讲题</a>
+                <a href="#" class="nav-item" data-page="exam-predict"><i class="fas fa-chart-line"></i> 模考预测</a>
+                <a href="#" class="nav-item" data-page="volunteer"><i class="fas fa-graduation-cap"></i> 志愿填报</a>
+                <a href="#" class="nav-item" data-page="profile"><i class="fas fa-user"></i> 个人中心</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="ai-coach-card">
+                    <div class="ai-coach-title">AI学习教练</div>
+                    <div class="ai-coach-subtitle">24小时智能辅导</div>
+                    <div class="ai-coach-avatar"><i class="fas fa-robot"></i></div>
+                    <button class="ai-coach-btn" onclick="toggleAIChat()">开始对话</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ============ 主内容区 ============ -->
+        <main class="main-content">
+            <!-- 顶部头部 -->
+            <header class="top-header">
+                <div class="header-left">
+                    <div class="welcome-text" id="welcome-text">Hi, 张同学 👋</div>
+                    <div class="date-info">
+                        <span>2026年7月29日</span>
+                        <span class="divider">|</span>
+                        <span>距离高考还有 <span class="highlight-days">313</span> 天</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="search-box" style="position:relative;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="搜索知识点、题目、试卷..." oninput="handleSearch(this.value)">
+                        <div class="search-results" id="search-results"></div>
+                    </div>
+                    <div class="notification" onclick="toggleNotifications(event)">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notif-badge">3</span>
+                        <div class="notification-dropdown" id="notification-dropdown">
+                            <div class="notif-header">通知消息</div>
+                            <div class="notif-item unread" onclick="handleNotifClick(this,'你的学习周报已生成，正确率提升5%','info')">
+                                <div class="notif-item-title">学习周报已生成</div>
+                                <div class="notif-item-time">2分钟前</div>
+                            </div>
+                            <div class="notif-item unread" onclick="handleNotifClick(this,'错题本新增3道错题，建议复习','warning')">
+                                <div class="notif-item-title">错题本更新</div>
+                                <div class="notif-item-time">1小时前</div>
+                            </div>
+                            <div class="notif-item unread" onclick="handleNotifClick(this,'AI为你推荐了一份专属试卷','success')">
+                                <div class="notif-item-title">AI推荐试卷</div>
+                                <div class="notif-item-time">昨天</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ai-coach-toggle" onclick="toggleAIChat()">
+                        <i class="fas fa-robot"></i> AI教练
+                    </div>
+                    <div class="user-profile" onclick="openAuthModal()" title="点击登录 / 注册">
+                        <div class="user-avatar-zh">ZH</div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容滚动区（id=page-container 用于动态页面渲染；.content-scroll 由 main.js switchPage 复用） -->
+            <div class="content-scroll" id="page-container">
+
+                <!-- ===== 第一行：目标分 + 学习计划 ===== -->
+                <div class="row row-1">
+                    <div class="card goal-card" data-module="goal">
+                        <div class="goal-header">
+                            <div class="goal-title"><i class="fas fa-robot" style="color:#3B82F6;margin-right:4px;"></i>AI今日提分</div>
+                            <span id="today-boost-badge" style="background:rgba(59,130,246,0.1);color:#3B82F6;font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600;">今日 +3 分</span>
+                        </div>
+                        <div class="goal-content">
+                            <div class="goal-left">
+                                <div class="score-display">
+                                    <div class="current-score">
+                                        <div class="score-num" id="current-score-num">615</div>
+                                        <div class="score-label">当前估分</div>
+                                    </div>
+                                    <div class="score-arrow"><i class="fas fa-arrow-right"></i></div>
+                                    <div class="target-score">
+                                        <div class="score-num" id="target-score-num">633</div>
+                                        <div class="score-label">目标分数</div>
+                                    </div>
+                                </div>
+                                <div class="score-improvement">
+                                    预计提升 <span class="improvement-num" id="improvement-num">18</span> 分
+                                </div>
+                                <div class="goal-progress-text">目标达成率 <span class="rate" id="goal-rate">97%</span></div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="goal-progress-fill" style="width: 97%;"></div>
+                                </div>
+                                <div id="ai-boost-advice" style="margin-top:8px;background:rgba(59,130,246,0.06);border-radius:8px;padding:8px 10px;font-size:12px;color:#1E40AF;display:flex;align-items:center;gap:6px;">
+                                    <i class="fas fa-lightbulb"></i> <span id="ai-advice-text">AI建议：重点突破数学导数与物理电磁感应</span>
+                                </div>
+                            </div>
+                            <div class="goal-right">
+                                <canvas id="scoreChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card plan-card" data-module="plan">
+                        <div class="plan-header">
+                            <div class="plan-title">今日学习计划</div>
+                            <a href="#" class="adjust-link" onclick="adjustPlan(event)"><i class="fas fa-magic"></i> 智能调整</a>
+                        </div>
+                        <div class="plan-list" id="home-plan-list">
+                            <div class="plan-item" style="justify-content:center;color:#9CA3AF;">
+                                <i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i>正在加载今日任务…
+                            </div>
+                        </div>
+                        <button class="start-study-btn" onclick="startStudy()"><i class="fas fa-play"></i> 开始学习</button>
+                    </div>
+                </div>
+
+                <!-- ===== 第二行：薄弱知识点 + 学科能力雷达图 ===== -->
+                <div class="row row-2">
+                    <div class="card weak-points-card" data-module="weak-points">
+                        <div class="weak-header">
+                            <div>
+                                <div class="weak-title">薄弱知识点</div>
+                                <div class="weak-subtitle">掌握率低于65%的考点，重点突破可快速提分</div>
+                            </div>
+                            <a href="#" class="more-link" onclick="showWeakDetails(event)">查看全部 <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <table class="weak-table">
+                            <thead>
+                                <tr>
+                                    <th>知识点</th>
+                                    <th>掌握率</th>
+                                    <th>预计提分</th>
+                                    <th>建议</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="tag tag-math">数</span>圆锥曲线综合</td>
+                                    <td>
+                                        <div class="mastery-bar"><div class="mastery-fill red" style="width:41%"></div></div>
+                                        <span class="mastery-text">41%</span>
+                                    </td>
+                                    <td><span class="score-gain">+18分</span></td>
+                                    <td><span class="advice advice-priority">优先突破</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="tag tag-physics">物</span>电磁感应综合题</td>
+                                    <td>
+                                        <div class="mastery-bar"><div class="mastery-fill orange" style="width:48%"></div></div>
+                                        <span class="mastery-text">48%</span>
+                                    </td>
+                                    <td><span class="score-gain">+12分</span></td>
+                                    <td><span class="advice advice-focus">重点突破</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="tag tag-english">英</span>完形填空技巧</td>
+                                    <td>
+                                        <div class="mastery-bar"><div class="mastery-fill orange" style="width:53%"></div></div>
+                                        <span class="mastery-text">53%</span>
+                                    </td>
+                                    <td><span class="score-gain">+9分</span></td>
+                                    <td><span class="advice advice-focus">重点突破</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="tag tag-chem">化</span>有机推断题型</td>
+                                    <td>
+                                        <div class="mastery-bar"><div class="mastery-fill blue" style="width:58%"></div></div>
+                                        <span class="mastery-text">58%</span>
+                                    </td>
+                                    <td><span class="score-gain">+7分</span></td>
+                                    <td><span class="advice advice-train">加强训练</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="tag tag-math">数</span>概率统计</td>
+                                    <td>
+                                        <div class="mastery-bar"><div class="mastery-fill blue" style="width:62%"></div></div>
+                                        <span class="mastery-text">62%</span>
+                                    </td>
+                                    <td><span class="score-gain">+5分</span></td>
+                                    <td><span class="advice advice-train">加强训练</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card radar-card" data-module="radar">
+                        <div class="radar-header">
+                            <div class="radar-title">学科能力雷达图</div>
+                            <div class="radar-score">总分 <strong>389</strong></div>
+                        </div>
+                        <div class="radar-chart-wrapper">
+                            <canvas id="radarChart"></canvas>
+                        </div>
+                        <div class="radar-legend">
+                            <div class="legend-item"><span class="legend-line solid"></span> 当前水平</div>
+                            <div class="legend-item"><span class="legend-line dashed"></span> 高考目标</div>
+                        </div>
+                        <div class="subject-scores">
+                            <div class="sub-score"><div class="sub-name">数学</div><div class="sub-num">115/150</div></div>
+                            <div class="sub-score"><div class="sub-name">语文</div><div class="sub-num">108/150</div></div>
+                            <div class="sub-score"><div class="sub-name">英语</div><div class="sub-num">97/120</div></div>
+                            <div class="sub-score"><div class="sub-name">物理</div><div class="sub-num">38/50</div></div>
+                            <div class="sub-score"><div class="sub-name">化学</div><div class="sub-num">31/40</div></div>
+                            <div class="sub-score"><div class="sub-name">生物</div><div class="sub-num">62/100</div></div>
+                            <div class="sub-score"><div class="sub-name">政治</div><div class="sub-num">68/100</div></div>
+                            <div class="sub-score"><div class="sub-name">历史</div><div class="sub-num">71/100</div></div>
+                            <div class="sub-score"><div class="sub-name">地理</div><div class="sub-num">65/100</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== 第三行：AI智能推荐 ===== -->
+                <div class="row row-3">
+                    <div class="card ai-recommend-card" data-module="recommend">
+                        <div class="ai-recommend-title">AI智能推荐</div>
+                        <div class="recommend-grid">
+                            <div class="recommend-item">
+                                <div class="recommend-info">
+                                    <div class="recommend-name">智能组卷</div>
+                                    <div class="recommend-desc">根据你的薄弱点<br>生成专属试卷</div>
+                                    <button class="recommend-btn" onclick="handleRecommend('智能组卷')">去组卷</button>
+                                </div>
+                                <div class="recommend-icon blue"><i class="fas fa-file-alt"></i></div>
+                            </div>
+                            <div class="recommend-item">
+                                <div class="recommend-info">
+                                    <div class="recommend-name">错题强化</div>
+                                    <div class="recommend-desc">巩固薄弱知识点<br>减少重复错误</div>
+                                    <button class="recommend-btn" onclick="handleRecommend('错题强化')">去强化</button>
+                                </div>
+                                <div class="recommend-icon orange"><i class="fas fa-times-circle"></i></div>
+                            </div>
+                            <div class="recommend-item">
+                                <div class="recommend-info">
+                                    <div class="recommend-name">考点训练</div>
+                                    <div class="recommend-desc">高频考点专项训练<br>精准提分</div>
+                                    <button class="recommend-btn" onclick="handleRecommend('考点训练')">去训练</button>
+                                </div>
+                                <div class="recommend-icon cyan"><i class="fas fa-bullseye"></i></div>
+                            </div>
+                            <div class="recommend-item">
+                                <div class="recommend-info">
+                                    <div class="recommend-name">真题演练</div>
+                                    <div class="recommend-desc">近10年真题精选<br>掌握命题趋势</div>
+                                    <button class="recommend-btn" onclick="handleRecommend('真题演练')">去演练</button>
+                                </div>
+                                <div class="recommend-icon green"><i class="fas fa-book"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== 第四行：学习日历 + 模考预测 + 成长记录 ===== -->
+                <div class="row row-4">
+                    <div class="card calendar-card" data-module="calendar">
+                        <div class="calendar-title">学习日历</div>
+                        <div class="calendar-subtitle">本周学习情况</div>
+                        <div class="calendar-hours">
+                            <span class="hours-num" id="week-hours-num">0</span>
+                            <span class="hours-total">/ <span id="week-hours-goal">15</span> 小时</span>
+                        </div>
+                        <div class="week-days">
+                            <div class="day-item active"><div class="day-label">一</div><div class="day-check"><i class="fas fa-check"></i></div></div>
+                            <div class="day-item active"><div class="day-label">二</div><div class="day-check"><i class="fas fa-check"></i></div></div>
+                            <div class="day-item active"><div class="day-label">三</div><div class="day-check"><i class="fas fa-check"></i></div></div>
+                            <div class="day-item today"><div class="day-label">四</div><div class="day-check"><i class="fas fa-check"></i></div></div>
+                            <div class="day-item"><div class="day-label">五</div><div class="day-check"></div></div>
+                            <div class="day-item"><div class="day-label">六</div><div class="day-check"></div></div>
+                            <div class="day-item"><div class="day-label">日</div><div class="day-check"></div></div>
+                        </div>
+                        <div class="today-progress">
+                            <div class="today-progress-label">
+                                <span>今日任务进度</span>
+                                <span id="today-task-progress">0/0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill blue" id="today-progress-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="encourage-text" id="calendar-encourage">加载中…</div>
+                    </div>
+
+                    <div class="card exam-predict-card" data-module="exam-predict">
+                        <div class="exam-title">模考预测</div>
+                        <div class="exam-subtitle">基于近30天学情数据预测</div>
+                        <div class="exam-chart-wrapper">
+                            <div class="ring-chart">
+                                <svg viewBox="0 0 120 120">
+                                    <circle class="ring-bg" cx="60" cy="60" r="50"></circle>
+                                    <circle class="ring-fill" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="103.67"></circle>
+                                </svg>
+                                <div class="ring-text"><span class="ring-percent">67%</span></div>
+                            </div>
+                            <div>
+                                <div class="predict-score">623<span class="score-unit">分</span></div>
+                            </div>
+                        </div>
+                        <div class="predict-rank">预测排名：全省 <strong>12,580</strong> 名</div>
+                        <div class="confidence">置信度：<strong>89%</strong></div>
+                        <button class="view-report-btn" onclick="showExamReport()">查看完整报告</button>
+                    </div>
+
+                    <div class="card growth-card" data-module="growth">
+                        <div class="growth-header">
+                            <div class="growth-title">成长记录</div>
+                            <select class="week-select"><option>本周</option><option>上周</option></select>
+                        </div>
+                        <div class="growth-list">
+                            <div class="growth-item">
+                                <div class="growth-icon"><i class="fas fa-clock"></i></div>
+                                <div class="growth-info">
+                                    <div class="growth-label">学习时长</div>
+                                    <div class="growth-value">12.5 小时</div>
+                                </div>
+                                <div class="growth-change up">较上周 <i class="fas fa-arrow-up"></i> 12%</div>
+                            </div>
+                            <div class="growth-item">
+                                <div class="growth-icon"><i class="fas fa-pen"></i></div>
+                                <div class="growth-info">
+                                    <div class="growth-label">做题数量</div>
+                                    <div class="growth-value">186 题</div>
+                                </div>
+                                <div class="growth-change up">较上周 <i class="fas fa-arrow-up"></i> 8%</div>
+                            </div>
+                            <div class="growth-item">
+                                <div class="growth-icon"><i class="fas fa-check-double"></i></div>
+                                <div class="growth-info">
+                                    <div class="growth-label">正确率</div>
+                                    <div class="growth-value">78%</div>
+                                </div>
+                                <div class="growth-change up">较上周 <i class="fas fa-arrow-up"></i> 5%</div>
+                            </div>
+                            <div class="growth-item">
+                                <div class="growth-icon"><i class="fas fa-star"></i></div>
+                                <div class="growth-info">
+                                    <div class="growth-label">累计积分</div>
+                                    <div class="growth-value">1240 分</div>
+                                </div>
+                                <div class="growth-change up">较上周 <i class="fas fa-arrow-up"></i> +120</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== 底部横幅：高考冲刺计划 ===== -->
+                <div class="banner-card" data-module="banner">
+                    <div>
+                        <div class="banner-title">高考冲刺计划</div>
+                        <div class="banner-desc">距高考还有 <span id="banner-days">313</span> 天，AI已为你制定专属冲刺方案，预计可提升 <span id="banner-improve">30</span> 分</div>
+                    </div>
+                    <button class="banner-btn" onclick="showToast('正在打开高考冲刺计划...','info'); switchPage('plan');">立即查看</button>
+                    <div class="banner-illustration"><i class="fas fa-graduation-cap"></i></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ============ Toast 提示容器 ============ -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- ============ 模态弹窗 ============ -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modal-title">标题</h3>
+                <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- ============ AI聊天悬浮窗 ============ -->
+    <div class="ai-chat-widget" id="ai-chat-widget">
+        <div class="chat-header">
+            <div class="chat-title"><i class="fas fa-robot"></i> AI学习教练</div>
+            <div class="chat-actions">
+                <button onclick="toggleAIChat()"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="chat-msg bot">
+                <div class="chat-avatar"><i class="fas fa-robot"></i></div>
+                <div class="chat-bubble">你好张同学！我是你的AI学习教练。根据你的学情，建议优先突破圆锥曲线综合，预计可提升18分！有什么学习问题随时问我～</div>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="输入你的问题...">
+            <button class="chat-send" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- ============ 学习计时器 ============ -->
+    <div class="study-timer hidden" id="study-timer">
+        <div class="timer-header">
+            <div class="timer-title">学习中</div>
+            <button class="timer-close" onclick="stopStudy()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="timer-display" id="timer-display">00:00</div>
+        <div class="timer-subject" id="timer-subject">导数应用专题</div>
+    </div>
+
+    <!-- ============ 底部导航（移动端） - 与原型 AI今日提分 页面保持一致 ============ -->
+    <nav class="bottom-nav">
+        <a href="#" class="bottom-item active"><i class="fas fa-graduation-cap"></i><span>学习</span></a>
+        <a href="#" class="bottom-item"><i class="fas fa-compass"></i><span>发现</span></a>
+        <a href="#" class="bottom-item"><i class="fas fa-camera"></i><span>搜题</span></a>
+        <a href="#" class="bottom-item"><i class="fas fa-comment-dots"></i><span>消息</span></a>
+        <a href="#" class="bottom-item"><i class="fas fa-user"></i><span>我的</span></a>
+    </nav>
+
+    <!-- ============ 内嵌基础脚本（降级兜底，不与 main.js 重复定义） ============ -->
+    <!--
+        说明：showToast / openModal / closeModal / toggleAIChat / handleSearch /
+        toggleNotifications / editGoalScore / adjustPlan / startStudy / showWeakDetails /
+        handleRecommend / sendChatMessage / loadAppData 等全部交互函数
+        均由 /js/main.js 完整实现。本内嵌脚本仅在 main.js 加载失败时安装最小降级实现，
+        避免与 main.js 重复定义；main.js 正常加载时此块不挂载任何函数。
+        页面初始化（loadAppData）由 main.js 的 DOMContentLoaded 处理。
+    -->
+    <script>
+    (function () {
+        function installFallbacks() {
+            // main.js 正常加载则跳过，绝不重复定义
+            if (typeof window.showToast === 'function' && typeof window.switchPage === 'function') {
+                return;
+            }
+            console.warn('[index-home] main.js 未加载，启用基础降级交互');
+            window.showToast = function (msg, type) {
+                var c = document.getElementById('toast-container');
+                if (!c) { alert('[' + (type || 'info') + '] ' + msg); return; }
+                var t = document.createElement('div');
+                t.className = 'toast ' + (type || 'info');
+                t.innerHTML = '<i class="fas fa-info-circle"></i><span>' + msg + '</span>';
+                c.appendChild(t);
+                setTimeout(function () { t.remove(); }, 3000);
+            };
+            window.openModal = function (title, bodyHTML) {
+                var o = document.getElementById('modal-overlay');
+                var tt = document.getElementById('modal-title');
+                var b = document.getElementById('modal-body');
+                if (tt) tt.textContent = title;
+                if (b) b.innerHTML = bodyHTML || '';
+                if (o) o.classList.add('show');
+            };
+            window.closeModal = function () {
+                var o = document.getElementById('modal-overlay');
+                if (o) o.classList.remove('show');
+            };
+            window.toggleAIChat = function () {
+                var w = document.getElementById('ai-chat-widget');
+                if (w) w.classList.toggle('show');
+            };
+            window.toggleNotifications = function (e) {
+                if (e) e.stopPropagation();
+                var d = document.getElementById('notification-dropdown');
+                if (d) d.classList.toggle('show');
+            };
+            window.handleSearch = function (q) {
+                var r = document.getElementById('search-results');
+                if (r && (!q || !q.trim())) r.classList.remove('show');
+            };
+            window.sendChatMessage = function () {
+                var i = document.getElementById('chat-input');
+                if (i) i.value = '';
+            };
+            window.adjustPlan = function (e) { if (e) e.preventDefault(); showToast('main.js 未加载', 'warning'); };
+            window.startStudy = function () { showToast('main.js 未加载', 'warning'); };
+            window.showWeakDetails = function (e) { if (e) e.preventDefault(); showToast('main.js 未加载', 'warning'); };
+            window.handleRecommend = function () { showToast('main.js 未加载', 'warning'); };
+            window.handleNotifClick = function (el, msg, type) {
+                if (el) el.classList.remove('unread');
+                showToast(msg, type);
+                var d = document.getElementById('notification-dropdown');
+                if (d) d.classList.remove('show');
+            };
+        }
+        if (document.readyState === 'complete') {
+            installFallbacks();
+        } else {
+            window.addEventListener('load', installFallbacks);
+        }
+    })();
+    </script>
+
+    <!-- ============ 外部依赖：API 封装 + 纯JS二维码生成器 + 主交互逻辑（最后加载） ============ -->
+    <script src="js/api.js?v=20261104B"></script>
+    <script src="js/lib/qrcode-gen.js?v=20260918F"></script>
+    <script src="js/main.js?v=20261105G"></script>
+</body>
+</html>

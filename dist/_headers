@@ -1,0 +1,50 @@
+# Cloudflare Pages 缓存策略
+# 注意：Pages 会把 /xxx.html 308 重定向到 /xxx（clean URL），
+# 因此 html 与无扩展名路径都要显式声明，否则规则只命中重定向响应。
+
+/
+  Cache-Control: no-store, no-cache, must-revalidate
+  Pragma: no-cache
+
+/index-home.html
+  Cache-Control: no-store, no-cache, must-revalidate
+  Pragma: no-cache
+
+/index-home
+  Cache-Control: no-store, no-cache, must-revalidate
+  Pragma: no-cache
+
+/index-static.html
+  Cache-Control: no-store, no-cache, must-revalidate
+  Pragma: no-cache
+
+/index-static
+  Cache-Control: no-store, no-cache, must-revalidate
+  Pragma: no-cache
+
+/index.html
+  Cache-Control: no-store, no-cache, must-revalidate
+  Pragma: no-cache
+
+/index
+  Cache-Control: no-store, no-cache, must-revalidate
+  Pragma: no-cache
+
+/prototype/
+  Cache-Control: no-store, no-cache, must-revalidate
+  Pragma: no-cache
+
+/prototype/index.html
+  Cache-Control: no-store, no-cache, must-revalidate
+  Pragma: no-cache
+
+/prototype/index
+  Cache-Control: no-store, no-cache, must-revalidate
+  Pragma: no-cache
+
+# 脚本与样式始终向服务器校验（配合 ?v= 版本号，改动立即生效）
+/*.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.css
+  Cache-Control: public, max-age=0, must-revalidate
