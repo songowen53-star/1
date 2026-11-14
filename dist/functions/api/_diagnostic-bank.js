@@ -8,13 +8,18 @@ export default [
     "difficulty": 4,
     "stem": "已知椭圆 x^2/4 + y^2/3 = 1，过点 P(1,1) 的直线与椭圆交于 A、B 两点，则弦长 |AB| 的取值范围是？",
     "options": [
-      "A. [2, 2√3]",
-      "B. [√3, 2√3]",
-      "C. [2, 4]",
-      "D. [√2, 2√2]"
+      "A. [√3, 2√3]",
+      "B. [√2, 2√2]",
+      "C. [2, 2√3]",
+      "D. [2, 4]"
     ],
-    "answer_index": 1,
-    "analysis": "设直线斜率 k，联立椭圆方程用韦达定理求 |AB|，再求最值域。"
+    "answer_index": 0,
+    "analysis": "设直线斜率 k，联立椭圆方程用韦达定理求 |AB|，再求最值域。",
+    "domain": "解析几何",
+    "ability": "分析应用",
+    "p_value": 0.44,
+    "discrimination": 0.41,
+    "param_source": "prior"
   },
   {
     "id": "dg_math_02",
@@ -24,13 +29,18 @@ export default [
     "difficulty": 5,
     "stem": "设 f(x)=x^3-3x+1，下列关于其极值与零点个数的说法正确的是？",
     "options": [
-      "A. 极大值 3，极小值 -1，3 个零点",
-      "B. 极大值 -1，极小值 3，3 个零点",
+      "A. 无极值，1 个零点",
+      "B. 极大值 3，极小值 -1，3 个零点",
       "C. 极大值 3，极小值 -1，1 个零点",
-      "D. 无极值，1 个零点"
+      "D. 极大值 -1，极小值 3，3 个零点"
     ],
-    "answer_index": 0,
-    "analysis": "f'(x)=3x^2-3，驻点 x=±1；f(-1)=3 为极大值，f(1)=-1 为极小值，结合零点定理有 3 个零点。"
+    "answer_index": 1,
+    "analysis": "f'(x)=3x^2-3，驻点 x=±1；f(-1)=3 为极大值，f(1)=-1 为极小值，结合零点定理有 3 个零点。",
+    "domain": "函数与导数",
+    "ability": "综合迁移",
+    "p_value": 0.25,
+    "discrimination": 0.32,
+    "param_source": "prior"
   },
   {
     "id": "dg_math_03",
@@ -40,13 +50,18 @@ export default [
     "difficulty": 3,
     "stem": "数列 {an} 满足 an = 1/[n(n+1)]，则其前 n 项和 Sn = ?",
     "options": [
-      "A. n/(n+1)",
-      "B. (n+1)/(n+2)",
-      "C. 1-1/n",
-      "D. n/(2n+1)"
+      "A. (n+1)/(n+2)",
+      "B. n/(2n+1)",
+      "C. n/(n+1)",
+      "D. 1-1/n"
     ],
-    "answer_index": 0,
-    "analysis": "裂项相消：1/[n(n+1)] = 1/n - 1/(n+1)，求和得 1 - 1/(n+1) = n/(n+1)。"
+    "answer_index": 2,
+    "analysis": "裂项相消：1/[n(n+1)] = 1/n - 1/(n+1)，求和得 1 - 1/(n+1) = n/(n+1)。",
+    "domain": "数列",
+    "ability": "理解识记",
+    "p_value": 0.71,
+    "discrimination": 0.41,
+    "param_source": "prior"
   },
   {
     "id": "dg_math_04",
@@ -56,13 +71,18 @@ export default [
     "difficulty": 3,
     "stem": "从 5 男 3 女中任选 3 人，至少有 1 名女生的概率是？",
     "options": [
-      "A. 5/14",
-      "B. 9/14",
+      "A. 9/14",
+      "B. 5/14",
       "C. 15/28",
       "D. 23/28"
     ],
     "answer_index": 3,
-    "analysis": "对立事件为全男：C(5,3)/C(8,3)=10/56，故所求 1-10/56=23/28。"
+    "analysis": "对立事件为全男：C(5,3)/C(8,3)=10/56，故所求 1-10/56=23/28。",
+    "domain": "概率与统计",
+    "ability": "理解识记",
+    "p_value": 0.72,
+    "discrimination": 0.42,
+    "param_source": "prior"
   },
   {
     "id": "dg_phy_01",
@@ -73,12 +93,17 @@ export default [
     "stem": "导体棒在匀强磁场 B 中以速度 v 垂直切割磁感线，回路总电阻为 R，则感应电流大小为？",
     "options": [
       "A. BLv/R",
-      "B. Bv/R",
+      "B. BLvR",
       "C. BL/R",
-      "D. BLvR"
+      "D. Bv/R"
     ],
     "answer_index": 0,
-    "analysis": "ε=BLv，闭合电路欧姆定律 I=ε/R=BLv/R。"
+    "analysis": "ε=BLv，闭合电路欧姆定律 I=ε/R=BLv/R。",
+    "domain": "电磁学",
+    "ability": "分析应用",
+    "p_value": 0.42,
+    "discrimination": 0.39,
+    "param_source": "prior"
   },
   {
     "id": "dg_phy_02",
@@ -94,7 +119,12 @@ export default [
       "D. 0"
     ],
     "answer_index": 1,
-    "analysis": "动能定理：合外力做功等于动能变化量 1/2mv^2。"
+    "analysis": "动能定理：合外力做功等于动能变化量 1/2mv^2。",
+    "domain": "力学",
+    "ability": "分析应用",
+    "p_value": 0.43,
+    "discrimination": 0.4,
+    "param_source": "prior"
   },
   {
     "id": "dg_phy_03",
@@ -104,13 +134,18 @@ export default [
     "difficulty": 3,
     "stem": "质量 2kg 的物体速度从 3m/s 增大到 5m/s，动量变化量大小为？",
     "options": [
-      "A. 4 kg·m/s",
+      "A. 10 kg·m/s",
       "B. 6 kg·m/s",
-      "C. 8 kg·m/s",
-      "D. 10 kg·m/s"
+      "C. 4 kg·m/s",
+      "D. 8 kg·m/s"
     ],
-    "answer_index": 0,
-    "analysis": "Δp = m(v2-v1) = 2×(5-3) = 4 kg·m/s。"
+    "answer_index": 2,
+    "analysis": "Δp = m(v2-v1) = 2×(5-3) = 4 kg·m/s。",
+    "domain": "力学",
+    "ability": "理解识记",
+    "p_value": 0.69,
+    "discrimination": 0.39,
+    "param_source": "prior"
   },
   {
     "id": "dg_chem_01",
@@ -121,12 +156,17 @@ export default [
     "stem": "对于反应 aA+bB↔cC+dD，化学平衡常数 K 的表达式为？",
     "options": [
       "A. [c(C)·c(D)]/[c(A)·c(B)]",
-      "B. c(C)^c·c(D)^d /[c(A)^a·c(B)^b]",
-      "C. c(A)^a·c(B)^b /[c(C)^c·c(D)^d]",
-      "D. (a+b)/(c+d)"
+      "B. c(A)^a·c(B)^b /[c(C)^c·c(D)^d]",
+      "C. (a+b)/(c+d)",
+      "D. c(C)^c·c(D)^d /[c(A)^a·c(B)^b]"
     ],
-    "answer_index": 1,
-    "analysis": "K 为生成物浓度幂之积除以反应物浓度幂之积，固体与纯液体不计入。"
+    "answer_index": 3,
+    "analysis": "K 为生成物浓度幂之积除以反应物浓度幂之积，固体与纯液体不计入。",
+    "domain": "化学反应原理",
+    "ability": "分析应用",
+    "p_value": 0.46,
+    "discrimination": 0.43,
+    "param_source": "prior"
   },
   {
     "id": "dg_chem_02",
@@ -137,12 +177,17 @@ export default [
     "stem": "某链状化合物 A 分子式 C4H8O2，能与 NaHCO3 反应放出 CO2，则 A 的结构简式为？",
     "options": [
       "A. CH3CH2CH2COOH",
-      "B. CH3COOCH2CH3",
+      "B. CH3CH2OCH2CH3",
       "C. HOCH2CH2CH2CHO",
-      "D. CH3CH2OCH2CH3"
+      "D. CH3COOCH2CH3"
     ],
     "answer_index": 0,
-    "analysis": "与 NaHCO3 反应说明含羧基，C4H8O2 不饱和度为 1，故为丁酸。"
+    "analysis": "与 NaHCO3 反应说明含羧基，C4H8O2 不饱和度为 1，故为丁酸。",
+    "domain": "有机化学",
+    "ability": "综合迁移",
+    "p_value": 0.27,
+    "discrimination": 0.34,
+    "param_source": "prior"
   },
   {
     "id": "dg_chem_03",
@@ -152,13 +197,18 @@ export default [
     "difficulty": 3,
     "stem": "关于原电池，下列说法正确的是？",
     "options": [
-      "A. 正极发生氧化反应",
-      "B. 负极发生还原反应",
-      "C. 电子由负极经外电路流向正极",
+      "A. 负极发生还原反应",
+      "B. 电子由负极经外电路流向正极",
+      "C. 正极发生氧化反应",
       "D. 阳离子向负极迁移"
     ],
-    "answer_index": 2,
-    "analysis": "负极失电子被氧化，电子经外电路流向正极；阳离子向正极迁移。"
+    "answer_index": 1,
+    "analysis": "负极失电子被氧化，电子经外电路流向正极；阳离子向正极迁移。",
+    "domain": "化学反应原理",
+    "ability": "理解识记",
+    "p_value": 0.73,
+    "discrimination": 0.43,
+    "param_source": "prior"
   },
   {
     "id": "dg_eng_01",
@@ -169,12 +219,17 @@ export default [
     "stem": "The students were ___ by the teacher's inspiring speech.",
     "options": [
       "A. bored",
-      "B. moved",
-      "C. confused",
+      "B. confused",
+      "C. moved",
       "D. scared"
     ],
-    "answer_index": 1,
-    "analysis": "inspiring speech 暗示积极情绪，moved（感动）最符合语境。"
+    "answer_index": 2,
+    "analysis": "inspiring speech 暗示积极情绪，moved（感动）最符合语境。",
+    "domain": "完形填空",
+    "ability": "理解识记",
+    "p_value": 0.72,
+    "discrimination": 0.42,
+    "param_source": "prior"
   },
   {
     "id": "dg_eng_02",
@@ -184,13 +239,18 @@ export default [
     "difficulty": 4,
     "stem": "Not only ___ he finished the task, but he also helped others.",
     "options": [
-      "A. did",
+      "A. had",
       "B. has",
-      "C. had",
-      "D. does"
+      "C. does",
+      "D. did"
     ],
-    "answer_index": 0,
-    "analysis": "Not only 置于句首时主句部分倒装，一般过去时用助动词 did。"
+    "answer_index": 3,
+    "analysis": "Not only 置于句首时主句部分倒装，一般过去时用助动词 did。",
+    "domain": "语法填空",
+    "ability": "分析应用",
+    "p_value": 0.48,
+    "discrimination": 0.45,
+    "param_source": "prior"
   },
   {
     "id": "dg_chi_01",
@@ -200,13 +260,18 @@ export default [
     "difficulty": 3,
     "stem": "下列加点词解释有误的一项是？",
     "options": [
-      "A. 沛公军霸上（军：驻扎）",
+      "A. 项伯杀人，臣活之（活：活泼）",
       "B. 素善留侯张良（善：与……交好）",
-      "C. 项伯杀人，臣活之（活：活泼）",
+      "C. 沛公军霸上（军：驻扎）",
       "D. 吾得兄事之（兄：像对待兄长一样）"
     ],
-    "answer_index": 2,
-    "analysis": "活，使动用法，使……活下来，不是\"活泼\"。"
+    "answer_index": 0,
+    "analysis": "活，使动用法，使……活下来，不是\"活泼\"。",
+    "domain": "古诗文阅读",
+    "ability": "理解识记",
+    "p_value": 0.7,
+    "discrimination": 0.4,
+    "param_source": "prior"
   },
   {
     "id": "dg_chi_02",
@@ -216,13 +281,18 @@ export default [
     "difficulty": 4,
     "stem": "\"明月松间照，清泉石上流\"最突出的艺术手法是？",
     "options": [
-      "A. 用典",
+      "A. 互文",
       "B. 动静结合",
-      "C. 夸张",
-      "D. 互文"
+      "C. 用典",
+      "D. 夸张"
     ],
     "answer_index": 1,
-    "analysis": "明月静照、清泉动流，一动一静相映成趣，体现王维\"诗中有画\"的意境。"
+    "analysis": "明月静照、清泉动流，一动一静相映成趣，体现王维\"诗中有画\"的意境。",
+    "domain": "古诗文阅读",
+    "ability": "分析应用",
+    "p_value": 0.46,
+    "discrimination": 0.43,
+    "param_source": "prior"
   },
   {
     "id": "dg_chi_03",
@@ -232,13 +302,18 @@ export default [
     "difficulty": 3,
     "stem": "鲁迅《拿来主义》中\"大宅子\"比喻的是？",
     "options": [
-      "A. 封建文化遗产",
-      "B. 外国先进技术",
-      "C. 民族资本主义",
-      "D. 封建社会"
+      "A. 外国先进技术",
+      "B. 封建社会",
+      "C. 封建文化遗产",
+      "D. 民族资本主义"
     ],
-    "answer_index": 0,
-    "analysis": "\"大宅子\"比喻中外文化遗产，\"拿来主义\"主张取其精华去其糟粕。"
+    "answer_index": 2,
+    "analysis": "\"大宅子\"比喻中外文化遗产，\"拿来主义\"主张取其精华去其糟粕。",
+    "domain": "现代文阅读",
+    "ability": "理解识记",
+    "p_value": 0.72,
+    "discrimination": 0.42,
+    "param_source": "prior"
   },
   {
     "id": "dg_chi_04",
@@ -249,12 +324,17 @@ export default [
     "stem": "下列句子中没有语病的一项是？",
     "options": [
       "A. 通过这次学习，使我明白了团结的重要性",
-      "B. 能否坚持到底，是取得成功的关键",
-      "C. 我们要继承和发扬老一辈革命家的优良传统",
-      "D. 为了防止不再发生类似事故，我们加强了管理"
+      "B. 为了防止不再发生类似事故，我们加强了管理",
+      "C. 能否坚持到底，是取得成功的关键",
+      "D. 我们要继承和发扬老一辈革命家的优良传统"
     ],
-    "answer_index": 2,
-    "analysis": "A 缺主语（删\"通过\"或\"使\"）；B 两面对一面；D 否定不当，应删\"不再\"。"
+    "answer_index": 3,
+    "analysis": "A 缺主语（删\"通过\"或\"使\"）；B 两面对一面；D 否定不当，应删\"不再\"。",
+    "domain": "语言文字运用",
+    "ability": "分析应用",
+    "p_value": 0.48,
+    "discrimination": 0.45,
+    "param_source": "prior"
   },
   {
     "id": "dg_math_05",
@@ -266,11 +346,16 @@ export default [
     "options": [
       "A. -12/25",
       "B. 12/25",
-      "C. -6/25",
-      "D. 6/25"
+      "C. 6/25",
+      "D. -6/25"
     ],
     "answer_index": 0,
-    "analysis": "两边平方：1 + 2sinαcosα = 1/25，故 sinαcosα = -12/25。"
+    "analysis": "两边平方：1 + 2sinαcosα = 1/25，故 sinαcosα = -12/25。",
+    "domain": "三角函数",
+    "ability": "理解识记",
+    "p_value": 0.73,
+    "discrimination": 0.43,
+    "param_source": "prior"
   },
   {
     "id": "dg_math_06",
@@ -280,13 +365,18 @@ export default [
     "difficulty": 3,
     "stem": "向量 a=(1,2)，b=(x,-4)，若 a//b，则 x = ?",
     "options": [
-      "A. -2",
-      "B. 2",
-      "C. -8",
-      "D. 8"
+      "A. 8",
+      "B. -2",
+      "C. 2",
+      "D. -8"
     ],
-    "answer_index": 0,
-    "analysis": "a//b => 1·(-4) - 2·x = 0 => x = -2。"
+    "answer_index": 1,
+    "analysis": "a//b => 1·(-4) - 2·x = 0 => x = -2。",
+    "domain": "平面向量",
+    "ability": "理解识记",
+    "p_value": 0.67,
+    "discrimination": 0.37,
+    "param_source": "prior"
   },
   {
     "id": "dg_math_07",
@@ -296,13 +386,18 @@ export default [
     "difficulty": 4,
     "stem": "正方体 ABCD-A1B1C1D1 棱长为 2，则三棱锥 A1-BC1D 的体积为？",
     "options": [
-      "A. 4/3",
+      "A. 4",
       "B. 8/3",
-      "C. 4",
+      "C. 4/3",
       "D. 2"
     ],
-    "answer_index": 0,
-    "analysis": "用正方体体积减去四个等体积三棱锥，或直接计算得 4/3。"
+    "answer_index": 2,
+    "analysis": "用正方体体积减去四个等体积三棱锥，或直接计算得 4/3。",
+    "domain": "立体几何",
+    "ability": "分析应用",
+    "p_value": 0.43,
+    "discrimination": 0.4,
+    "param_source": "prior"
   },
   {
     "id": "dg_math_08",
@@ -312,13 +407,18 @@ export default [
     "difficulty": 3,
     "stem": "复数 z = (1+i)/(1-i)，则 |z| = ?",
     "options": [
-      "A. 0",
-      "B. 1",
-      "C. √2",
-      "D. 2"
+      "A. √2",
+      "B. 2",
+      "C. 0",
+      "D. 1"
     ],
-    "answer_index": 1,
-    "analysis": "z = (1+i)^2/2 = i，|z| = 1。"
+    "answer_index": 3,
+    "analysis": "z = (1+i)^2/2 = i，|z| = 1。",
+    "domain": "复数与集合",
+    "ability": "理解识记",
+    "p_value": 0.69,
+    "discrimination": 0.39,
+    "param_source": "prior"
   },
   {
     "id": "dg_eng_03",
@@ -328,13 +428,18 @@ export default [
     "difficulty": 4,
     "stem": "\"The main idea of the passage is that ___.\" 这类题目考察的是？",
     "options": [
-      "A. 细节理解能力",
-      "B. 文章主旨概括能力",
-      "C. 词汇猜测能力",
-      "D. 推理判断能力"
+      "A. 文章主旨概括能力",
+      "B. 词汇猜测能力",
+      "C. 推理判断能力",
+      "D. 细节理解能力"
     ],
-    "answer_index": 1,
-    "analysis": "主旨题（main idea / best title）考察对文章中心思想的概括能力。"
+    "answer_index": 0,
+    "analysis": "主旨题（main idea / best title）考察对文章中心思想的概括能力。",
+    "domain": "阅读理解",
+    "ability": "分析应用",
+    "p_value": 0.42,
+    "discrimination": 0.39,
+    "param_source": "prior"
   },
   {
     "id": "dg_eng_04",
@@ -344,13 +449,18 @@ export default [
     "difficulty": 3,
     "stem": "正式邮件开头最合适的称呼是？",
     "options": [
-      "A. Hey buddy",
+      "A. Hi guys",
       "B. Dear Sir/Madam",
-      "C. What's up",
-      "D. Hi guys"
+      "C. Hey buddy",
+      "D. What's up"
     ],
     "answer_index": 1,
-    "analysis": "正式邮件用 Dear Sir/Madam 或 Dear + 姓名，其余均为非正式用语。"
+    "analysis": "正式邮件用 Dear Sir/Madam 或 Dear + 姓名，其余均为非正式用语。",
+    "domain": "写作",
+    "ability": "理解识记",
+    "p_value": 0.68,
+    "discrimination": 0.38,
+    "param_source": "prior"
   },
   {
     "id": "dg_phy_04",
@@ -361,12 +471,17 @@ export default [
     "stem": "光从空气射入水中，入射角为 60°，折射角为 30°，则水的折射率为？",
     "options": [
       "A. √3/3",
-      "B. √3",
-      "C. 3",
+      "B. 3",
+      "C. √3",
       "D. 1/3"
     ],
-    "answer_index": 1,
-    "analysis": "n = sinθ1/sinθ2 = sin60°/sin30° = (√3/2)/(1/2) = √3。"
+    "answer_index": 2,
+    "analysis": "n = sinθ1/sinθ2 = sin60°/sin30° = (√3/2)/(1/2) = √3。",
+    "domain": "光学",
+    "ability": "分析应用",
+    "p_value": 0.45,
+    "discrimination": 0.42,
+    "param_source": "prior"
   },
   {
     "id": "dg_chem_04",
@@ -376,13 +491,18 @@ export default [
     "difficulty": 4,
     "stem": "标准状况下，11.2L CO2 与 18g H2O 分子数之比为？",
     "options": [
-      "A. 1:1",
-      "B. 1:2",
-      "C. 2:1",
-      "D. 1:3"
+      "A. 2:1",
+      "B. 1:3",
+      "C. 1:2",
+      "D. 1:1"
     ],
-    "answer_index": 0,
-    "analysis": "n(CO2) = 11.2/22.4 = 0.5mol，n(H2O) = 18/18 = 1mol，分子数之比 = 0.5:1 = 1:2。"
+    "answer_index": 3,
+    "analysis": "n(CO2) = 11.2/22.4 = 0.5mol，n(H2O) = 18/18 = 1mol，分子数之比 = 0.5:1 = 1:2。",
+    "domain": "基本概念与计算",
+    "ability": "分析应用",
+    "p_value": 0.42,
+    "discrimination": 0.39,
+    "param_source": "prior"
   },
   {
     "id": "dg_bio_01",
@@ -392,13 +512,18 @@ export default [
     "difficulty": 3,
     "stem": "下列细胞器中，具有双层膜结构的是？",
     "options": [
-      "A. 核糖体",
-      "B. 线粒体",
-      "C. 内质网",
-      "D. 高尔基体"
+      "A. 线粒体",
+      "B. 高尔基体",
+      "C. 核糖体",
+      "D. 内质网"
     ],
-    "answer_index": 1,
-    "analysis": "线粒体和叶绿体为双层膜；核糖体无膜；内质网和高尔基体为单层膜。"
+    "answer_index": 0,
+    "analysis": "线粒体和叶绿体为双层膜；核糖体无膜；内质网和高尔基体为单层膜。",
+    "domain": "细胞与代谢",
+    "ability": "理解识记",
+    "p_value": 0.71,
+    "discrimination": 0.41,
+    "param_source": "prior"
   },
   {
     "id": "dg_bio_02",
@@ -408,13 +533,18 @@ export default [
     "difficulty": 4,
     "stem": "一对夫妇均为 A 型血，生了一个 O 型血孩子，他们的基因型是？",
     "options": [
-      "A. IAIA × IAIA",
+      "A. IAi × IAIB",
       "B. IAi × IAi",
       "C. IAIA × IAIB",
-      "D. IAi × IAIB"
+      "D. IAIA × IAIA"
     ],
     "answer_index": 1,
-    "analysis": "A 型血基因型为 IAIA 或 IAi；要生出 ii（O 型）孩子，双方必须都是 IAi。"
+    "analysis": "A 型血基因型为 IAIA 或 IAi；要生出 ii（O 型）孩子，双方必须都是 IAi。",
+    "domain": "遗传与进化",
+    "ability": "分析应用",
+    "p_value": 0.47,
+    "discrimination": 0.44,
+    "param_source": "prior"
   },
   {
     "id": "dg_bio_03",
@@ -425,12 +555,17 @@ export default [
     "stem": "生态系统中能量流动的特点是？",
     "options": [
       "A. 循环流动",
-      "B. 单向流动、逐级递减",
-      "C. 双向流动",
+      "B. 双向流动",
+      "C. 单向流动、逐级递减",
       "D. 逐级递增"
     ],
-    "answer_index": 1,
-    "analysis": "能量在生态系统中单向流动、逐级递减（每级约 10%-20% 传递效率）。"
+    "answer_index": 2,
+    "analysis": "能量在生态系统中单向流动、逐级递减（每级约 10%-20% 传递效率）。",
+    "domain": "生态系统",
+    "ability": "理解识记",
+    "p_value": 0.73,
+    "discrimination": 0.43,
+    "param_source": "prior"
   },
   {
     "id": "dg_pol_01",
@@ -440,13 +575,18 @@ export default [
     "difficulty": 3,
     "stem": "市场经济中，资源配置的基础性手段是？",
     "options": [
-      "A. 计划",
-      "B. 市场",
+      "A. 法律法规",
+      "B. 计划",
       "C. 行政命令",
-      "D. 法律法规"
+      "D. 市场"
     ],
-    "answer_index": 1,
-    "analysis": "市场在资源配置中起决定性作用，计划经济以计划为基础。"
+    "answer_index": 3,
+    "analysis": "市场在资源配置中起决定性作用，计划经济以计划为基础。",
+    "domain": "经济生活",
+    "ability": "理解识记",
+    "p_value": 0.69,
+    "discrimination": 0.39,
+    "param_source": "prior"
   },
   {
     "id": "dg_pol_02",
@@ -457,12 +597,17 @@ export default [
     "stem": "我国的根本政治制度是？",
     "options": [
       "A. 人民代表大会制度",
-      "B. 中国共产党领导的多党合作和政治协商制度",
-      "C. 民族区域自治制度",
-      "D. 基层群众自治制度"
+      "B. 基层群众自治制度",
+      "C. 中国共产党领导的多党合作和政治协商制度",
+      "D. 民族区域自治制度"
     ],
     "answer_index": 0,
-    "analysis": "人民代表大会制度是我国的根本政治制度，其余为基本政治制度。"
+    "analysis": "人民代表大会制度是我国的根本政治制度，其余为基本政治制度。",
+    "domain": "政治生活",
+    "ability": "理解识记",
+    "p_value": 0.7,
+    "discrimination": 0.4,
+    "param_source": "prior"
   },
   {
     "id": "dg_pol_03",
@@ -472,13 +617,18 @@ export default [
     "difficulty": 4,
     "stem": "\"世界是物质的，物质是运动的，运动是有规律的\"体现的哲学原理是？",
     "options": [
-      "A. 唯心主义",
-      "B. 形而上学",
-      "C. 辩证唯物主义",
-      "D. 相对主义"
+      "A. 相对主义",
+      "B. 辩证唯物主义",
+      "C. 唯心主义",
+      "D. 形而上学"
     ],
-    "answer_index": 2,
-    "analysis": "物质观+运动观+规律观，是辩证唯物主义的基本观点。"
+    "answer_index": 1,
+    "analysis": "物质观+运动观+规律观，是辩证唯物主义的基本观点。",
+    "domain": "生活与哲学",
+    "ability": "分析应用",
+    "p_value": 0.46,
+    "discrimination": 0.43,
+    "param_source": "prior"
   },
   {
     "id": "dg_his_01",
@@ -488,13 +638,18 @@ export default [
     "difficulty": 3,
     "stem": "标志着中国新民主主义革命开端的事件是？",
     "options": [
-      "A. 辛亥革命",
-      "B. 五四运动",
-      "C. 中国共产党成立",
+      "A. 中国共产党成立",
+      "B. 辛亥革命",
+      "C. 五四运动",
       "D. 北伐战争"
     ],
-    "answer_index": 1,
-    "analysis": "1919 年五四运动中工人阶级登上政治舞台，标志新民主主义革命开始。"
+    "answer_index": 2,
+    "analysis": "1919 年五四运动中工人阶级登上政治舞台，标志新民主主义革命开始。",
+    "domain": "中国近代史",
+    "ability": "理解识记",
+    "p_value": 0.7,
+    "discrimination": 0.4,
+    "param_source": "prior"
   },
   {
     "id": "dg_his_02",
@@ -504,13 +659,18 @@ export default [
     "difficulty": 4,
     "stem": "第一次工业革命的标志性发明是？",
     "options": [
-      "A. 发电机",
-      "B. 蒸汽机",
-      "C. 计算机",
-      "D. 内燃机"
+      "A. 计算机",
+      "B. 内燃机",
+      "C. 发电机",
+      "D. 蒸汽机"
     ],
-    "answer_index": 1,
-    "analysis": "瓦特改良蒸汽机（1785 年）是第一次工业革命的核心标志，人类进入\"蒸汽时代\"。"
+    "answer_index": 3,
+    "analysis": "瓦特改良蒸汽机（1785 年）是第一次工业革命的核心标志，人类进入\"蒸汽时代\"。",
+    "domain": "世界史",
+    "ability": "分析应用",
+    "p_value": 0.46,
+    "discrimination": 0.43,
+    "param_source": "prior"
   },
   {
     "id": "dg_geo_01",
@@ -520,13 +680,18 @@ export default [
     "difficulty": 3,
     "stem": "我国南方地区主要的气候类型是？",
     "options": [
-      "A. 温带季风气候",
-      "B. 亚热带季风气候",
-      "C. 温带大陆性气候",
-      "D. 地中海气候"
+      "A. 亚热带季风气候",
+      "B. 温带季风气候",
+      "C. 地中海气候",
+      "D. 温带大陆性气候"
     ],
-    "answer_index": 1,
-    "analysis": "我国秦岭-淮河以南为亚热带季风气候，以北为温带季风气候。"
+    "answer_index": 0,
+    "analysis": "我国秦岭-淮河以南为亚热带季风气候，以北为温带季风气候。",
+    "domain": "自然地理",
+    "ability": "理解识记",
+    "p_value": 0.7,
+    "discrimination": 0.4,
+    "param_source": "prior"
   },
   {
     "id": "dg_geo_02",
@@ -537,11 +702,3166 @@ export default [
     "stem": "北半球夏至日，下列城市白昼最长的是？",
     "options": [
       "A. 广州",
-      "B. 武汉",
-      "C. 北京",
-      "D. 哈尔滨"
+      "B. 哈尔滨",
+      "C. 武汉",
+      "D. 北京"
+    ],
+    "answer_index": 1,
+    "analysis": "夏至日北半球纬度越高白昼越长，哈尔滨纬度最高（约 45°N）。",
+    "domain": "自然地理",
+    "ability": "分析应用",
+    "p_value": 0.46,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_09",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_seq",
+    "knowledge_point": "数列通项与求和",
+    "difficulty": 3,
+    "stem": "等差数列 {a_n} 中，a_1 = 2，公差 d = 3，则 a_10 的值为？",
+    "options": [
+      "A. 31",
+      "B. 33",
+      "C. 29",
+      "D. 27"
+    ],
+    "answer_index": 2,
+    "analysis": "a_n = a_1 + (n-1)d = 2 + 9×3 = 29。",
+    "domain": "数列",
+    "ability": "理解识记",
+    "p_value": 0.7,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_10",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_geometric",
+    "knowledge_point": "等比数列求和",
+    "difficulty": 3,
+    "stem": "等比数列前 5 项和 S_5 = 62，公比 q = 2，则首项 a_1 为？",
+    "options": [
+      "A. 4",
+      "B. 3",
+      "C. 1",
+      "D. 2"
     ],
     "answer_index": 3,
-    "analysis": "夏至日北半球纬度越高白昼越长，哈尔滨纬度最高（约 45°N）。"
+    "analysis": "S_5 = a_1(2^5 - 1)/(2-1) = 31·a_1 = 62，得 a_1 = 2。",
+    "domain": "数列",
+    "ability": "理解识记",
+    "p_value": 0.71,
+    "discrimination": 0.41,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_11",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_solid",
+    "knowledge_point": "立体几何体积",
+    "difficulty": 4,
+    "stem": "一个圆锥的底面半径 r = 3，高 h = 4，则其侧面积为？",
+    "options": [
+      "A. 15π",
+      "B. 20π",
+      "C. 25π",
+      "D. 12π"
+    ],
+    "answer_index": 0,
+    "analysis": "母线 l = √(3^2 + 4^2) = 5，侧面积 = πrl = 15π。",
+    "domain": "立体几何",
+    "ability": "分析应用",
+    "p_value": 0.47,
+    "discrimination": 0.44,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_12",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_prob",
+    "knowledge_point": "概率与统计",
+    "difficulty": 3,
+    "stem": "从 1、2、3、4、5 五个数中随机抽取两个不同的数，它们的和为偶数的概率是？",
+    "options": [
+      "A. 7/10",
+      "B. 2/5",
+      "C. 1/2",
+      "D. 3/10"
+    ],
+    "answer_index": 1,
+    "analysis": "和为偶 ⟺ 两奇或两偶。C(3,2)+C(2,2) = 4，总 C(5,2)=10，P = 4/10 = 2/5。",
+    "domain": "概率与统计",
+    "ability": "理解识记",
+    "p_value": 0.73,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_05",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_kinematics",
+    "knowledge_point": "匀变速直线运动",
+    "difficulty": 3,
+    "stem": "一物体做匀加速直线运动，初速度 v_0 = 2 m/s，加速度 a = 3 m/s^2，则 4 秒后的速度为？",
+    "options": [
+      "A. 16 m/s",
+      "B. 12 m/s",
+      "C. 14 m/s",
+      "D. 10 m/s"
+    ],
+    "answer_index": 2,
+    "analysis": "v = v_0 + at = 2 + 3×4 = 14 m/s。",
+    "domain": "力学",
+    "ability": "理解识记",
+    "p_value": 0.71,
+    "discrimination": 0.41,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_06",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_newton",
+    "knowledge_point": "牛顿第二定律",
+    "difficulty": 3,
+    "stem": "质量 m = 2 kg 的物体在水平面上受 F = 10 N 的水平拉力，摩擦系数 μ = 0.2，g = 10 m/s^2，则加速度为？",
+    "options": [
+      "A. 4 m/s^2",
+      "B. 5 m/s^2",
+      "C. 2 m/s^2",
+      "D. 3 m/s^2"
+    ],
+    "answer_index": 3,
+    "analysis": "f = μmg = 4 N，F合 = 6 N，a = F合/m = 3 m/s^2。",
+    "domain": "力学",
+    "ability": "理解识记",
+    "p_value": 0.72,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_07",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_energy",
+    "knowledge_point": "动能定理",
+    "difficulty": 4,
+    "stem": "一物体从高 h = 20 m 处自由落下，落地时的动能是（不计空气阻力，g = 10 m/s^2）？",
+    "options": [
+      "A. 200m J",
+      "B. 400m J",
+      "C. 条件不足",
+      "D. 100m J"
+    ],
+    "answer_index": 0,
+    "analysis": "mgh = Ek，Ek = m·10·20 = 200m J。",
+    "domain": "力学",
+    "ability": "分析应用",
+    "p_value": 0.48,
+    "discrimination": 0.45,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_08",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_circular",
+    "knowledge_point": "圆周运动向心力",
+    "difficulty": 3,
+    "stem": "汽车以 v = 20 m/s 的速度通过半径 r = 100 m 的凸形桥顶时，对桥面的压力是其重力的（g = 10 m/s^2）？",
+    "options": [
+      "A. 0.6 倍",
+      "B. 0.8 倍",
+      "C. 1.0 倍",
+      "D. 1.2 倍"
+    ],
+    "answer_index": 1,
+    "analysis": "mg - N = mv^2/r，N = m(g - v^2/r) = m(10 - 4) = 6m；6m/10m = 0.6。",
+    "domain": "力学",
+    "ability": "理解识记",
+    "p_value": 0.67,
+    "discrimination": 0.37,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_05",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_atom",
+    "knowledge_point": "原子结构与元素周期律",
+    "difficulty": 3,
+    "stem": "下列元素中，原子半径最大的是？",
+    "options": [
+      "A. Al",
+      "B. Mg",
+      "C. K",
+      "D. Na"
+    ],
+    "answer_index": 2,
+    "analysis": "电子层数越多半径越大，K 有 4 个电子层，其余均为 3 层。",
+    "domain": "物质结构",
+    "ability": "理解识记",
+    "p_value": 0.68,
+    "discrimination": 0.38,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_06",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_bond",
+    "knowledge_point": "化学键类型判断",
+    "difficulty": 3,
+    "stem": "下列化合物中，只含有共价键的是？",
+    "options": [
+      "A. CaCO3",
+      "B. NaOH",
+      "C. NaCl",
+      "D. H2O"
+    ],
+    "answer_index": 3,
+    "analysis": "NaCl 含离子键；NaOH、CaCO3 既有离子键又有共价键；H2O 只含 O-H 共价键。",
+    "domain": "物质结构",
+    "ability": "理解识记",
+    "p_value": 0.69,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_07",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_redox",
+    "knowledge_point": "氧化还原反应",
+    "difficulty": 4,
+    "stem": "反应 2KMnO4 + 16HCl = 2MnCl2 + 5Cl2↑ + 2KCl + 8H2O 中，氧化剂是？",
+    "options": [
+      "A. KMnO4",
+      "B. HCl",
+      "C. MnCl2",
+      "D. Cl2"
+    ],
+    "answer_index": 0,
+    "analysis": "KMnO4 中 Mn 从 +7 降到 +2，得到电子，是氧化剂。",
+    "domain": "基本概念与计算",
+    "ability": "分析应用",
+    "p_value": 0.45,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_08",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_solution",
+    "knowledge_point": "溶液 pH 计算",
+    "difficulty": 3,
+    "stem": "常温下，0.01 mol/L 的盐酸溶液，pH 为？",
+    "options": [
+      "A. 13",
+      "B. 2",
+      "C. 1",
+      "D. 12"
+    ],
+    "answer_index": 1,
+    "analysis": "c(H+) = 0.01 mol/L，pH = -lg(0.01) = 2。",
+    "domain": "化学反应原理",
+    "ability": "理解识记",
+    "p_value": 0.71,
+    "discrimination": 0.41,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_05",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_grammar_tense",
+    "knowledge_point": "时态辨析",
+    "difficulty": 3,
+    "stem": "By the time he arrived at the station, the train ______ for ten minutes.",
+    "options": [
+      "A. has left",
+      "B. was leaving",
+      "C. had left",
+      "D. left"
+    ],
+    "answer_index": 2,
+    "analysis": "\"到他到达时\"是过去的过去，主句谓语用过去完成时 had left。",
+    "domain": "词汇与语法",
+    "ability": "理解识记",
+    "p_value": 0.69,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_06",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_grammar_subjunctive",
+    "knowledge_point": "虚拟语气",
+    "difficulty": 4,
+    "stem": "If I ______ you, I would take the offer.",
+    "options": [
+      "A. was",
+      "B. be",
+      "C. am",
+      "D. were"
+    ],
+    "answer_index": 3,
+    "analysis": "与现在事实相反的虚拟条件句，be 动词一律用 were。",
+    "domain": "词汇与语法",
+    "ability": "分析应用",
+    "p_value": 0.45,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_07",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_clause_attr",
+    "knowledge_point": "定语从句",
+    "difficulty": 3,
+    "stem": "The house ______ we visited yesterday was built in 1990.",
+    "options": [
+      "A. which",
+      "B. where",
+      "C. what",
+      "D. when"
+    ],
+    "answer_index": 0,
+    "analysis": "先行词 house 是物，关系词在从句中作 visited 的宾语，用 which 或 that。",
+    "domain": "词汇与语法",
+    "ability": "理解识记",
+    "p_value": 0.71,
+    "discrimination": 0.41,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_08",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_nonfinite",
+    "knowledge_point": "非谓语动词",
+    "difficulty": 4,
+    "stem": "______ late in the morning, Bob turned off the alarm clock.",
+    "options": [
+      "A. Sleeping",
+      "B. To sleep",
+      "C. Having slept",
+      "D. Sleep"
+    ],
+    "answer_index": 1,
+    "analysis": "不定式 To sleep 作目的状语，表示\"为了……\"。",
+    "domain": "词汇与语法",
+    "ability": "分析应用",
+    "p_value": 0.47,
+    "discrimination": 0.44,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_09",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_vocab",
+    "knowledge_point": "词义辨析",
+    "difficulty": 3,
+    "stem": "The teacher asked us to ______ the homework before Friday.",
+    "options": [
+      "A. hand out",
+      "B. hand over",
+      "C. hand in",
+      "D. hand up"
+    ],
+    "answer_index": 2,
+    "analysis": "hand in 意为\"上交（作业）\"；hand out \"分发\"；hand over \"移交\"；hand up \"举手\"。",
+    "domain": "词汇与语法",
+    "ability": "理解识记",
+    "p_value": 0.73,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_10",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_reading",
+    "knowledge_point": "阅读理解—主旨题",
+    "difficulty": 4,
+    "stem": "An article mainly discusses the causes and effects of global warming. The best title is？",
+    "options": [
+      "A. A Brief History of Climate Change",
+      "B. How to Reduce Carbon Footprint",
+      "C. The Future of Renewable Energy",
+      "D. Global Warming: Causes and Consequences"
+    ],
+    "answer_index": 3,
+    "analysis": "主旨题应涵盖全文两大要点——原因与影响，B 选项标题完全对应。",
+    "domain": "阅读理解",
+    "ability": "分析应用",
+    "p_value": 0.42,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_11",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_writing",
+    "knowledge_point": "书面表达",
+    "difficulty": 3,
+    "stem": "Which sentence is grammatically correct?",
+    "options": [
+      "A. We don't drink coffee.",
+      "B. He don't like apples.",
+      "C. She doesn't likes bananas.",
+      "D. They doesn't eat meat."
+    ],
+    "answer_index": 0,
+    "analysis": "助动词 do/does 后必须接动词原形。只有 D 选项\"我们不喝咖啡\"语法正确。",
+    "domain": "写作",
+    "ability": "理解识记",
+    "p_value": 0.68,
+    "discrimination": 0.38,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_05",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_poem",
+    "knowledge_point": "古诗文鉴赏",
+    "difficulty": 4,
+    "stem": "\"大漠孤烟直，长河落日圆\"出自哪位诗人的作品？",
+    "options": [
+      "A. 杜甫",
+      "B. 王维",
+      "C. 李白",
+      "D. 岑参"
+    ],
+    "answer_index": 1,
+    "analysis": "此句出自王维《使至塞上》，是描写边塞壮阔景象的千古名句。",
+    "domain": "古诗文阅读",
+    "ability": "分析应用",
+    "p_value": 0.46,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_06",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_wenyan",
+    "knowledge_point": "文言虚词",
+    "difficulty": 4,
+    "stem": "\"师者，所以传道受业解惑也\"中\"所以\"的意思是？",
+    "options": [
+      "A. 因此",
+      "B. 实在的原因",
+      "C. 用来……的",
+      "D. 表因果的连词"
+    ],
+    "answer_index": 2,
+    "analysis": "\"所以\"在古汉语中常用作\"用来……的人/方法/原因\"，此处意为\"用来传授道理、教授学业、解答疑惑的人\"。",
+    "domain": "古诗文阅读",
+    "ability": "分析应用",
+    "p_value": 0.47,
+    "discrimination": 0.44,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_07",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_idiom",
+    "knowledge_point": "成语使用",
+    "difficulty": 3,
+    "stem": "下列成语使用正确的一项是？",
+    "options": [
+      "A. 他对工作一丝不苟，经常敷衍塞责",
+      "B. 这篇文章妙笔生花，却错漏百出",
+      "C. 他的演讲振聋发聩，让人昏昏欲睡",
+      "D. 这部小说情节跌宕起伏，引人入胜"
+    ],
+    "answer_index": 3,
+    "analysis": "A、C、D 三项成语与其后描述自相矛盾；B 项\"跌宕起伏、引人入胜\"形容小说情节恰当。",
+    "domain": "语言文字运用",
+    "ability": "理解识记",
+    "p_value": 0.73,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_08",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_modern",
+    "knowledge_point": "现代文阅读",
+    "difficulty": 4,
+    "stem": "鲁迅《拿来主义》的中心论点是？",
+    "options": [
+      "A. 要运用脑髓，放出眼光，自己来拿",
+      "B. 要全盘接受外国文化",
+      "C. 要全盘否定外国文化",
+      "D. 要闭关锁国"
+    ],
+    "answer_index": 0,
+    "analysis": "鲁迅在文中主张对外国文化遗产采取批判继承、创新发展的态度，\"运用脑髓，放出眼光，自己来拿\"是核心观点。",
+    "domain": "现代文阅读",
+    "ability": "分析应用",
+    "p_value": 0.42,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_09",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_sentence",
+    "knowledge_point": "病句辨析",
+    "difficulty": 3,
+    "stem": "下列句子没有语病的一项是？",
+    "options": [
+      "A. 通过这次活动，使我们受益匪浅",
+      "B. 我们要继承和发扬老一辈革命家的优良传统",
+      "C. 为了防止不再生病，我加强了锻炼",
+      "D. 能否坚持到底，是取得成功的关键"
+    ],
+    "answer_index": 1,
+    "analysis": "A 缺主语；C 两面对一面；D \"防止\"\"不再\"双重否定表肯定，与原意矛盾。",
+    "domain": "语言文字运用",
+    "ability": "理解识记",
+    "p_value": 0.68,
+    "discrimination": 0.38,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_10",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_poem2",
+    "knowledge_point": "古诗词背诵",
+    "difficulty": 2,
+    "stem": "\"海内存知己，天涯若比邻\"的作者是？",
+    "options": [
+      "A. 杜甫",
+      "B. 李白",
+      "C. 王勃",
+      "D. 白居易"
+    ],
+    "answer_index": 2,
+    "analysis": "出自王勃《送杜少府之任蜀州》，是送别诗的千古名句。",
+    "domain": "古诗文阅读",
+    "ability": "理解识记",
+    "p_value": 0.84,
+    "discrimination": 0.29,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_11",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_calligraphy",
+    "knowledge_point": "汉字书写",
+    "difficulty": 2,
+    "stem": "下列词语中没有错别字的一组是？",
+    "options": [
+      "A. 不径而走 甘败下风",
+      "B. 一诺千斤 一愁莫展",
+      "C. 按步就班 再接再励",
+      "D. 川流不息 迫不及待"
+    ],
+    "answer_index": 3,
+    "analysis": "A 应为\"按部就班、再接再厉\"；C 应为\"一诺千金、一筹莫展\"；D 应为\"不胫而走、甘拜下风\"。",
+    "domain": "语言文字运用",
+    "ability": "理解识记",
+    "p_value": 0.85,
+    "discrimination": 0.3,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_04",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_cell",
+    "knowledge_point": "细胞结构",
+    "difficulty": 3,
+    "stem": "下列结构中，植物细胞有而动物细胞没有的是？",
+    "options": [
+      "A. 细胞壁",
+      "B. 线粒体",
+      "C. 细胞膜",
+      "D. 细胞质"
+    ],
+    "answer_index": 0,
+    "analysis": "细胞壁、叶绿体、液泡是植物细胞特有的结构。细胞膜、细胞质、线粒体动植物细胞都有。",
+    "domain": "细胞与代谢",
+    "ability": "理解识记",
+    "p_value": 0.67,
+    "discrimination": 0.37,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_05",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_photosynthesis",
+    "knowledge_point": "光合作用",
+    "difficulty": 4,
+    "stem": "光合作用的反应场所主要在？",
+    "options": [
+      "A. 线粒体",
+      "B. 叶绿体",
+      "C. 核糖体",
+      "D. 细胞核"
+    ],
+    "answer_index": 1,
+    "analysis": "光合作用在叶绿体中进行，分为光反应（类囊体膜）和暗反应（基质）两个阶段。",
+    "domain": "细胞与代谢",
+    "ability": "分析应用",
+    "p_value": 0.43,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_06",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_respiration",
+    "knowledge_point": "细胞呼吸",
+    "difficulty": 4,
+    "stem": "有氧呼吸的主要场所是？",
+    "options": [
+      "A. 细胞质基质",
+      "B. 叶绿体",
+      "C. 线粒体",
+      "D. 细胞核"
+    ],
+    "answer_index": 2,
+    "analysis": "有氧呼吸第一阶段在细胞质基质，第二、三阶段在线粒体（基质和内膜）进行，线粒体是主要场所。",
+    "domain": "细胞与代谢",
+    "ability": "分析应用",
+    "p_value": 0.44,
+    "discrimination": 0.41,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_07",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_genetic",
+    "knowledge_point": "遗传与变异",
+    "difficulty": 4,
+    "stem": "孟德尔遗传定律中，分离定律的实质是？",
+    "options": [
+      "A. 受精时雌雄配子随机结合",
+      "B. 基因发生了突变",
+      "C. 子二代性状分离比 3:1",
+      "D. 减数分裂时等位基因彼此分离"
+    ],
+    "answer_index": 3,
+    "analysis": "分离定律实质：减数分裂形成配子时，等位基因随同源染色体分开而分离，分别进入两个配子。",
+    "domain": "遗传与进化",
+    "ability": "分析应用",
+    "p_value": 0.45,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_04",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_economy",
+    "knowledge_point": "经济生活",
+    "difficulty": 3,
+    "stem": "下列选项中，属于商品的是？",
+    "options": [
+      "A. 超市里待售的牛奶",
+      "B. 母亲为你织的毛衣",
+      "C. 农民自种自吃的蔬菜",
+      "D. 同学送给你的钢笔"
+    ],
+    "answer_index": 0,
+    "analysis": "商品是用于交换的劳动产品。A、B、D 都不是用于交换，只有 C 同时满足\"劳动产品\"和\"用于交换\"两个条件。",
+    "domain": "经济生活",
+    "ability": "理解识记",
+    "p_value": 0.72,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_06",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_political",
+    "knowledge_point": "政治生活",
+    "difficulty": 3,
+    "stem": "我国的根本政治制度是？",
+    "options": [
+      "A. 基层群众自治制度",
+      "B. 人民代表大会制度",
+      "C. 中国共产党领导的多党合作和政治协商制度",
+      "D. 民族区域自治制度"
+    ],
+    "answer_index": 1,
+    "analysis": "人民代表大会制度是我国的根本政治制度；B、C、D 是基本政治制度。",
+    "domain": "政治生活",
+    "ability": "理解识记",
+    "p_value": 0.67,
+    "discrimination": 0.37,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_03",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_ancient",
+    "knowledge_point": "中国古代史",
+    "difficulty": 3,
+    "stem": "中国历史上第一个统一的中央集权的封建国家是？",
+    "options": [
+      "A. 夏朝",
+      "B. 汉朝",
+      "C. 秦朝",
+      "D. 商朝"
+    ],
+    "answer_index": 2,
+    "analysis": "公元前 221 年，秦王嬴政统一六国，建立了中国历史上第一个统一的中央集权制封建国家——秦朝。",
+    "domain": "中国古代史",
+    "ability": "理解识记",
+    "p_value": 0.72,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_05",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_modern_cn",
+    "knowledge_point": "中国近代史",
+    "difficulty": 3,
+    "stem": "标志着中国近代史开端的事件是？",
+    "options": [
+      "A. 五四运动",
+      "B. 新中国成立",
+      "C. 辛亥革命",
+      "D. 鸦片战争"
+    ],
+    "answer_index": 3,
+    "analysis": "1840 年鸦片战争是中国近代史的开端，中国开始沦为半殖民地半封建社会。",
+    "domain": "中国近代史",
+    "ability": "理解识记",
+    "p_value": 0.67,
+    "discrimination": 0.37,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_07",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_contemporary",
+    "knowledge_point": "中国现代史",
+    "difficulty": 3,
+    "stem": "中华人民共和国成立于？",
+    "options": [
+      "A. 1949 年",
+      "B. 1919 年",
+      "C. 1945 年",
+      "D. 1911 年"
+    ],
+    "answer_index": 0,
+    "analysis": "1949 年 10 月 1 日，毛泽东在天安门城楼上宣告中华人民共和国中央人民政府成立。",
+    "domain": "中国现代史",
+    "ability": "理解识记",
+    "p_value": 0.69,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_03",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_solar",
+    "knowledge_point": "太阳活动",
+    "difficulty": 3,
+    "stem": "太阳活动对地球的影响不包括？",
+    "options": [
+      "A. 产生磁暴现象",
+      "B. 引起地震",
+      "C. 在高纬产生极光",
+      "D. 干扰无线电短波通讯"
+    ],
+    "answer_index": 1,
+    "analysis": "太阳活动能影响电离层、磁场和大气，但地震是地球内部能量释放的结果，与太阳活动无直接因果关系。",
+    "domain": "自然地理",
+    "ability": "理解识记",
+    "p_value": 0.72,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_05",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_climate",
+    "knowledge_point": "气候类型",
+    "difficulty": 4,
+    "stem": "地中海气候的特点是？",
+    "options": [
+      "A. 全年高温多雨",
+      "B. 全年温和湿润",
+      "C. 夏季炎热干燥，冬季温和多雨",
+      "D. 夏季高温多雨，冬季寒冷干燥"
+    ],
+    "answer_index": 2,
+    "analysis": "地中海气候分布在大陆西岸 30°-40°，夏季受副高控制炎热干燥，冬季受西风带控制温和多雨。",
+    "domain": "自然地理",
+    "ability": "分析应用",
+    "p_value": 0.42,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_10",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_china",
+    "knowledge_point": "中国地理",
+    "difficulty": 3,
+    "stem": "中国地势的主要特征是？",
+    "options": [
+      "A. 东高西低，呈阶梯状分布",
+      "B. 中部高，四周低",
+      "C. 南高北低，呈阶梯状分布",
+      "D. 西高东低，呈阶梯状分布"
+    ],
+    "answer_index": 3,
+    "analysis": "中国地势西高东低，自西向东分为三大阶梯：第一级阶梯青藏高原，第二级阶梯高原盆地，第三级阶梯平原丘陵。",
+    "domain": "区域地理",
+    "ability": "理解识记",
+    "p_value": 0.72,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_13",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_func",
+    "knowledge_point": "函数定义域与值域",
+    "difficulty": 3,
+    "stem": "函数 f(x) = √(x-1) + 1/(x-2) 的定义域为？",
+    "options": [
+      "A. [1, 2) ∪ (2, +∞)",
+      "B. (1, 2) ∪ (2, +∞)",
+      "C. (2, +∞)",
+      "D. [1, +∞)"
+    ],
+    "answer_index": 0,
+    "analysis": "x-1 ≥ 0 ⇒ x ≥ 1；x-2 ≠ 0 ⇒ x ≠ 2。取交集得 [1,2)∪(2,+∞)。",
+    "domain": "函数与导数",
+    "ability": "理解识记",
+    "p_value": 0.67,
+    "discrimination": 0.37,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_14",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_inverse",
+    "knowledge_point": "反函数",
+    "difficulty": 3,
+    "stem": "函数 y = 2x+1 的反函数是？",
+    "options": [
+      "A. y = 2x-1",
+      "B. y = (x-1)/2",
+      "C. y = (x+1)/2",
+      "D. y = (1-x)/2"
+    ],
+    "answer_index": 1,
+    "analysis": "y = 2x+1 ⇒ x = (y-1)/2，交换 x、y 得反函数 y = (x-1)/2。",
+    "domain": "函数与导数",
+    "ability": "理解识记",
+    "p_value": 0.68,
+    "discrimination": 0.38,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_15",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_exp_log",
+    "knowledge_point": "指数与对数",
+    "difficulty": 3,
+    "stem": "log_2 8 + log_3 (1/9) = ？",
+    "options": [
+      "A. 3",
+      "B. 2",
+      "C. 1",
+      "D. -1"
+    ],
+    "answer_index": 2,
+    "analysis": "log_2 8 = 3；log_3(1/9) = log_3 3^-2 = -2；3 + (-2) = 1。",
+    "domain": "函数与导数",
+    "ability": "理解识记",
+    "p_value": 0.69,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_16",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_trig",
+    "knowledge_point": "三角函数求值",
+    "difficulty": 3,
+    "stem": "sin 30° + cos 60° + tan 45° = ？",
+    "options": [
+      "A. 2.5",
+      "B. 1.5",
+      "C. 1",
+      "D. 2"
+    ],
+    "answer_index": 3,
+    "analysis": "sin30° = 1/2，cos60° = 1/2，tan45° = 1，合计 1/2+1/2+1 = 2。",
+    "domain": "三角函数",
+    "ability": "理解识记",
+    "p_value": 0.7,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_17",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_trig2",
+    "knowledge_point": "三角函数诱导公式",
+    "difficulty": 4,
+    "stem": "若 sin α = 3/5，α 为第二象限角，则 cos α 的值为？",
+    "options": [
+      "A. -4/5",
+      "B. 4/5",
+      "C. 3/5",
+      "D. -3/5"
+    ],
+    "answer_index": 0,
+    "analysis": "cos^2 α = 1 - sin^2 α = 16/25，α 在第二象限 cos α < 0，故 cos α = -4/5。",
+    "domain": "三角函数",
+    "ability": "分析应用",
+    "p_value": 0.46,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_18",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_vector",
+    "knowledge_point": "平面向量数量积",
+    "difficulty": 3,
+    "stem": "向量 a = (1, 2)，b = (3, -1)，则 a · b = ？",
+    "options": [
+      "A. 3",
+      "B. 1",
+      "C. -1",
+      "D. 5"
+    ],
+    "answer_index": 1,
+    "analysis": "a·b = 1×3 + 2×(-1) = 3 - 2 = 1。",
+    "domain": "平面向量",
+    "ability": "理解识记",
+    "p_value": 0.72,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_19",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_line",
+    "knowledge_point": "直线与圆",
+    "difficulty": 4,
+    "stem": "圆 x^2 + y^2 = 4 上到直线 x + y - 2 = 0 距离最近的点的坐标是？",
+    "options": [
+      "A. (1, 1)",
+      "B. (2, 0)",
+      "C. (√2, √2)",
+      "D. (-√2, -√2)"
+    ],
+    "answer_index": 2,
+    "analysis": "圆心 (0,0) 在直线上的垂足为 (1,1)，最近点为圆心沿 (1,1) 方向推进半径 2 倍：(√2, √2)。",
+    "domain": "解析几何",
+    "ability": "分析应用",
+    "p_value": 0.48,
+    "discrimination": 0.45,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_20",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_limit",
+    "knowledge_point": "极限与导数定义",
+    "difficulty": 4,
+    "stem": "设 f(x) = x^2，则 f'(1) 的值为？",
+    "options": [
+      "A. 4",
+      "B. 3",
+      "C. 1",
+      "D. 2"
+    ],
+    "answer_index": 3,
+    "analysis": "f'(x) = 2x，f'(1) = 2；或用定义 f'(1) = lim(h→0) [(1+h)^2 - 1]/h = lim(2+h) = 2。",
+    "domain": "函数与导数",
+    "ability": "分析应用",
+    "p_value": 0.42,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_12",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_poem3",
+    "knowledge_point": "古诗阅读·炼字",
+    "difficulty": 4,
+    "stem": "\"红杏枝头春意闹\"中，\"闹\"字的妙处在于？",
+    "options": [
+      "A. 以动写静，渲染春的生机",
+      "B. 直接点明春天喧闹",
+      "C. 表现诗人心情烦躁",
+      "D. 形容杏花多而杂乱"
+    ],
+    "answer_index": 0,
+    "analysis": "\"闹\"是拟人化的动词，将无声的红杏写得富有动感，以动写静，渲染春意盎然、生机勃勃的氛围。",
+    "domain": "古诗文阅读",
+    "ability": "分析应用",
+    "p_value": 0.46,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_13",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_wenyan2",
+    "knowledge_point": "文言文实词",
+    "difficulty": 4,
+    "stem": "\"沛公军霸上\"中\"军\"的意思是？",
+    "options": [
+      "A. 军营",
+      "B. 驻扎",
+      "C. 军队",
+      "D. 军用"
+    ],
+    "answer_index": 1,
+    "analysis": "\"军\"在这里是名词活用作动词，意为\"驻扎（军队）\"。",
+    "domain": "古诗文阅读",
+    "ability": "分析应用",
+    "p_value": 0.47,
+    "discrimination": 0.44,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_14",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_punct",
+    "knowledge_point": "标点符号",
+    "difficulty": 3,
+    "stem": "下列句子标点使用正确的一项是？",
+    "options": [
+      "A. 参加活动的有：张三、李四、王五等五人",
+      "B. 他告诉我说：他身体很好",
+      "C. \"这道题真难啊！\"小明叹了口气说",
+      "D. 写作文要做到：观点明确，论据充分，结构清晰"
+    ],
+    "answer_index": 2,
+    "analysis": "A 中\"说\"后面是间接引语不用冒号；B、D 中\"有\"\"做到\"后不应用冒号（提示语后总括语）；C 正确。",
+    "domain": "语言文字运用",
+    "ability": "理解识记",
+    "p_value": 0.73,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_15",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_fiction",
+    "knowledge_point": "小说阅读",
+    "difficulty": 4,
+    "stem": "《红楼梦》中林黛玉的性格特征最突出的是？",
+    "options": [
+      "A. 活泼开朗",
+      "B. 豪放洒脱",
+      "C. 刚毅果敢",
+      "D. 多愁善感、才情出众"
+    ],
+    "answer_index": 3,
+    "analysis": "林黛玉才情出众、聪慧敏感，多愁善感是其最鲜明的性格标签，与封建大家族格格不入。",
+    "domain": "现代文阅读",
+    "ability": "分析应用",
+    "p_value": 0.42,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_16",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_argument",
+    "knowledge_point": "议论文阅读",
+    "difficulty": 4,
+    "stem": "议论文中\"破立结合\"的\"破\"指的是？",
+    "options": [
+      "A. 批驳错误观点",
+      "B. 打破论点顺序",
+      "C. 破坏文章结构",
+      "D. 破坏论据"
+    ],
+    "answer_index": 0,
+    "analysis": "\"破立结合\"是议论文论证方法：\"破\"即批驳错误观点，\"立\"即树立正确观点，二者结合增强说服力。",
+    "domain": "现代文阅读",
+    "ability": "分析应用",
+    "p_value": 0.43,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_17",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_ancient",
+    "knowledge_point": "古代文化常识",
+    "difficulty": 3,
+    "stem": "\"四书\"不包括下列哪一部？",
+    "options": [
+      "A. 《论语》",
+      "B. 《诗经》",
+      "C. 《大学》",
+      "D. 《中庸》"
+    ],
+    "answer_index": 1,
+    "analysis": "四书：《大学》《中庸》《论语》《孟子》。《诗经》是\"五经\"之一，不属于四书。",
+    "domain": "古诗文阅读",
+    "ability": "理解识记",
+    "p_value": 0.69,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_18",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_poem4",
+    "knowledge_point": "词的鉴赏",
+    "difficulty": 4,
+    "stem": "\"寻寻觅觅，冷冷清清，凄凄惨惨戚戚\"出自哪位词人之手？",
+    "options": [
+      "A. 苏轼",
+      "B. 柳永",
+      "C. 李清照",
+      "D. 辛弃疾"
+    ],
+    "answer_index": 2,
+    "analysis": "此句出自李清照《声声慢·寻寻觅觅》，开篇连下七组叠词，创词史叠词之先河。",
+    "domain": "古诗文阅读",
+    "ability": "分析应用",
+    "p_value": 0.45,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_19",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_translation",
+    "knowledge_point": "文言文翻译",
+    "difficulty": 4,
+    "stem": "\"师者，所以传道受业解惑也\"中\"受\"字通假哪个字？",
+    "options": [
+      "A. 收",
+      "B. 首",
+      "C. 守",
+      "D. 授"
+    ],
+    "answer_index": 3,
+    "analysis": "\"受\"通\"授\"，意为\"教授\"。这是古文常见的同音通假现象。",
+    "domain": "古诗文阅读",
+    "ability": "分析应用",
+    "p_value": 0.46,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_20",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_compose",
+    "knowledge_point": "写作·立意",
+    "difficulty": 3,
+    "stem": "写议论文时，\"立意深刻\"主要是指？",
+    "options": [
+      "A. 观点独到，有思想深度",
+      "B. 用词华丽",
+      "C. 举很多例子",
+      "D. 文章写得很长"
+    ],
+    "answer_index": 0,
+    "analysis": "\"立意\"即确立文章的中心论点，\"深刻\"指观点有思想深度、认识独到不停留在表面。",
+    "domain": "写作",
+    "ability": "理解识记",
+    "p_value": 0.72,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_12",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_grammar_clause",
+    "knowledge_point": "名词性从句",
+    "difficulty": 4,
+    "stem": "______ he will come or not is still unknown.",
+    "options": [
+      "A. If",
+      "B. Whether",
+      "C. What",
+      "D. That"
+    ],
+    "answer_index": 1,
+    "analysis": "引导主语从句且与 or not 搭配时，只能用 Whether，不能用 If。",
+    "domain": "词汇与语法",
+    "ability": "分析应用",
+    "p_value": 0.44,
+    "discrimination": 0.41,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_13",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_grammar_modal",
+    "knowledge_point": "情态动词",
+    "difficulty": 3,
+    "stem": "You ______ be careful when crossing the street.",
+    "options": [
+      "A. can",
+      "B. may",
+      "C. must",
+      "D. might"
+    ],
+    "answer_index": 2,
+    "analysis": "must 表示\"必须\"，语气强烈，适合告诫类语境；can/may/might 表可能性或许可，语气不符。",
+    "domain": "词汇与语法",
+    "ability": "理解识记",
+    "p_value": 0.7,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_14",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_grammar_passive",
+    "knowledge_point": "被动语态",
+    "difficulty": 3,
+    "stem": "The book ______ by millions of people since it was published.",
+    "options": [
+      "A. was reading",
+      "B. had read",
+      "C. has read",
+      "D. has been read"
+    ],
+    "answer_index": 3,
+    "analysis": "书是\"被读\"，用被动语态；since 引导的时间状语从句与现在完成时连用。",
+    "domain": "词汇与语法",
+    "ability": "理解识记",
+    "p_value": 0.71,
+    "discrimination": 0.41,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_15",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_grammar_compare",
+    "knowledge_point": "形容词副词比较级",
+    "difficulty": 3,
+    "stem": "This book is ______ than that one.",
+    "options": [
+      "A. more interesting",
+      "B. most interesting",
+      "C. the most interesting",
+      "D. interesting"
+    ],
+    "answer_index": 0,
+    "analysis": "than 是比较级的标志词；interesting 是多音节形容词，比较级用 more + adj 形式。",
+    "domain": "词汇与语法",
+    "ability": "理解识记",
+    "p_value": 0.72,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_16",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_vocab_phrase",
+    "knowledge_point": "动词短语辨析",
+    "difficulty": 4,
+    "stem": "The firemen arrived and ______ the fire quickly.",
+    "options": [
+      "A. put away",
+      "B. put out",
+      "C. put off",
+      "D. put up"
+    ],
+    "answer_index": 1,
+    "analysis": "put out 意为\"扑灭（火）\"；put off \"推迟\"；put up \"举起/张贴/留宿\"；put away \"收好\"。",
+    "domain": "词汇与语法",
+    "ability": "分析应用",
+    "p_value": 0.48,
+    "discrimination": 0.45,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_17",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_reading_detail",
+    "knowledge_point": "阅读理解·细节题",
+    "difficulty": 3,
+    "stem": "A text mentions \"The meeting starts at 9:00 a.m. on Friday.\" The meeting time is？",
+    "options": [
+      "A. Monday 9:00 a.m.",
+      "B. Friday 9:00 p.m.",
+      "C. Friday 9:00 a.m.",
+      "D. Thursday 9:00 a.m."
+    ],
+    "answer_index": 2,
+    "analysis": "细节题直接定位原文即可：星期五上午 9 点。",
+    "domain": "阅读理解",
+    "ability": "理解识记",
+    "p_value": 0.67,
+    "discrimination": 0.37,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_18",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_writing_letter",
+    "knowledge_point": "应用文·书信",
+    "difficulty": 3,
+    "stem": "In a formal business letter, the correct closing is？",
+    "options": [
+      "A. Cheers,",
+      "B. Love,",
+      "C. Bye bye,",
+      "D. Sincerely,"
+    ],
+    "answer_index": 3,
+    "analysis": "正式商务书信结尾常用 Sincerely / Yours sincerely；Love、Cheers 用于非正式场合。",
+    "domain": "写作",
+    "ability": "理解识记",
+    "p_value": 0.68,
+    "discrimination": 0.38,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_19",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_grammar_inversion",
+    "knowledge_point": "倒装句",
+    "difficulty": 4,
+    "stem": "Never ______ such a beautiful sunset.",
+    "options": [
+      "A. have I seen",
+      "B. I have seen",
+      "C. I saw",
+      "D. did I saw"
+    ],
+    "answer_index": 0,
+    "analysis": "否定词 Never 置于句首引起部分倒装，助动词 have 提前，过去分词 seen 保留。",
+    "domain": "词汇与语法",
+    "ability": "分析应用",
+    "p_value": 0.44,
+    "discrimination": 0.41,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_20",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_clause_adv",
+    "knowledge_point": "状语从句",
+    "difficulty": 4,
+    "stem": "I will go to the library ______ it rains tomorrow.",
+    "options": [
+      "A. if",
+      "B. unless",
+      "C. although",
+      "D. because"
+    ],
+    "answer_index": 1,
+    "analysis": "unless 意为\"除非、如果不\"，句意为\"明天除非下雨，否则我要去图书馆\"；if 逻辑与 will 冲突。",
+    "domain": "词汇与语法",
+    "ability": "分析应用",
+    "p_value": 0.45,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_12",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_optics",
+    "knowledge_point": "光学折射",
+    "difficulty": 4,
+    "stem": "光从水中射向空气时，入射角为 30°，下列说法正确的是？",
+    "options": [
+      "A. 不会发生折射",
+      "B. 折射角等于 30°",
+      "C. 折射角大于 30°",
+      "D. 折射角小于 30°"
+    ],
+    "answer_index": 2,
+    "analysis": "光从光密介质（水）射向光疏介质（空气），折射角大于入射角；只有当入射角 ≥ 临界角时才会全反射。",
+    "domain": "光学",
+    "ability": "分析应用",
+    "p_value": 0.46,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_12",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_metal",
+    "knowledge_point": "金属元素性质",
+    "difficulty": 3,
+    "stem": "下列金属中，与稀硫酸不能发生反应的是？",
+    "options": [
+      "A. Mg",
+      "B. Fe",
+      "C. Zn",
+      "D. Cu"
+    ],
+    "answer_index": 3,
+    "analysis": "Mg、Zn、Fe 在金属活动性顺序表中排在 H 前面，能与稀硫酸反应生成 H2；Cu 排在 H 后面，不反应。",
+    "domain": "元素化合物",
+    "ability": "理解识记",
+    "p_value": 0.68,
+    "discrimination": 0.38,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_10",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_thermal",
+    "knowledge_point": "理想气体状态变化",
+    "difficulty": 3,
+    "stem": "一定质量的理想气体在等温膨胀过程中，下列说法正确的是？",
+    "options": [
+      "A. 内能不变，吸收热量并对外做功",
+      "B. 内能不变，放出热量",
+      "C. 内能增大，对外做功",
+      "D. 压强增大，温度升高"
+    ],
+    "answer_index": 0,
+    "analysis": "等温过程温度不变，理想气体内能不变；体积增大对外做功，由热力学第一定律需吸收热量。",
+    "domain": "热学与近代物理",
+    "ability": "理解识记",
+    "p_value": 0.69,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_11",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_modern",
+    "knowledge_point": "光电效应",
+    "difficulty": 4,
+    "stem": "关于光电效应，下列说法正确的是？",
+    "options": [
+      "A. 光电效应说明光具有波动性",
+      "B. 光电子最大初动能随入射光频率增大而增大",
+      "C. 入射光频率低于截止频率时仍能发生光电效应",
+      "D. 入射光强度越大，光电子最大初动能越大"
+    ],
+    "answer_index": 1,
+    "analysis": "由爱因斯坦光电方程 Ek=hν−W0，最大初动能随频率增大而增大；低于截止频率不发生；强度只影响光电子数目。",
+    "domain": "热学与近代物理",
+    "ability": "分析应用",
+    "p_value": 0.45,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_15",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_newton2",
+    "knowledge_point": "牛顿第二定律",
+    "difficulty": 3,
+    "stem": "质量为 2kg 的物体在水平方向受到 10N 的恒力作用，运动中所受摩擦力为 2N，则物体的加速度大小为？",
+    "options": [
+      "A. 5 m/s²",
+      "B. 6 m/s²",
+      "C. 4 m/s²",
+      "D. 2 m/s²"
+    ],
+    "answer_index": 2,
+    "analysis": "合力 F=10−2=8N，由 a=F/m 得 a=8/2=4 m/s²。",
+    "domain": "力学",
+    "ability": "理解识记",
+    "p_value": 0.67,
+    "discrimination": 0.37,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_13",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_projectile",
+    "knowledge_point": "平抛运动",
+    "difficulty": 3,
+    "stem": "从 20m 高处以 10m/s 的速度水平抛出一个小球，取 g=10 m/s²，不计空气阻力，小球落地所用的时间为？",
+    "options": [
+      "A. 4s",
+      "B. √2 s",
+      "C. 1s",
+      "D. 2s"
+    ],
+    "answer_index": 3,
+    "analysis": "平抛运动竖直方向自由落体，h=½gt²，20=5t²，t=2s。",
+    "domain": "力学",
+    "ability": "理解识记",
+    "p_value": 0.72,
+    "discrimination": 0.42,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_14",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_mechanical_energy",
+    "knowledge_point": "机械能守恒",
+    "difficulty": 4,
+    "stem": "下列过程中，物体的机械能守恒的是？",
+    "options": [
+      "A. 小球自由下落（不计空气阻力）",
+      "B. 物体沿粗糙斜面匀速下滑",
+      "C. 跳伞运动员匀速下落",
+      "D. 汽车在水平路面上加速行驶"
+    ],
+    "answer_index": 0,
+    "analysis": "只有重力做功时机械能守恒；其余过程均有摩擦力或牵引力做负功/正功，机械能改变。",
+    "domain": "力学",
+    "ability": "分析应用",
+    "p_value": 0.48,
+    "discrimination": 0.45,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_10",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_redox",
+    "knowledge_point": "氧化还原反应",
+    "difficulty": 3,
+    "stem": "在反应 2FeCl₃ + Cu = 2FeCl₂ + CuCl₂ 中，被氧化的物质是？",
+    "options": [
+      "A. CuCl₂",
+      "B. Cu",
+      "C. FeCl₃",
+      "D. FeCl₂"
+    ],
+    "answer_index": 1,
+    "analysis": "Cu 的化合价由 0 升至 +2，失电子被氧化；Fe³⁺ 得电子被还原。",
+    "domain": "基本概念与计算",
+    "ability": "理解识记",
+    "p_value": 0.73,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_11",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_ph",
+    "knowledge_point": "溶液 pH 计算",
+    "difficulty": 2,
+    "stem": "常温下，0.01 mol/L 盐酸溶液的 pH 约为？",
+    "options": [
+      "A. 13",
+      "B. 1",
+      "C. 2",
+      "D. 12"
+    ],
+    "answer_index": 2,
+    "analysis": "盐酸完全电离，c(H⁺)=0.01 mol/L，pH=−lg0.01=2。",
+    "domain": "化学反应原理",
+    "ability": "理解识记",
+    "p_value": 0.82,
+    "discrimination": 0.27,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_14",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_periodic",
+    "knowledge_point": "原子结构与元素周期律",
+    "difficulty": 3,
+    "stem": "Na、Mg、Al 三种元素原子半径由大到小的顺序是？",
+    "options": [
+      "A. Mg > Na > Al",
+      "B. Al > Mg > Na",
+      "C. Al > Na > Mg",
+      "D. Na > Mg > Al"
+    ],
+    "answer_index": 3,
+    "analysis": "同周期从左到右核电荷数增大、原子半径减小，故 Na>Mg>Al。",
+    "domain": "物质结构",
+    "ability": "理解识记",
+    "p_value": 0.7,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_13",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_sodium",
+    "knowledge_point": "金属钠的性质",
+    "difficulty": 2,
+    "stem": "钠与水反应时，下列现象中不会出现的是？",
+    "options": [
+      "A. 钠沉入水底",
+      "B. 钠熔成闪亮小球",
+      "C. 钠浮在水面上",
+      "D. 钠在水面上四处游动"
+    ],
+    "answer_index": 0,
+    "analysis": "钠密度小于水，浮在水面；反应放热使钠熔成小球；生成氢气推动钠游动，不会下沉。",
+    "domain": "元素化合物",
+    "ability": "理解识记",
+    "p_value": 0.84,
+    "discrimination": 0.29,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_08",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_photosynthesis",
+    "knowledge_point": "光合作用",
+    "difficulty": 3,
+    "stem": "光合作用光反应阶段的产物是？",
+    "options": [
+      "A. 淀粉和 O₂",
+      "B. O₂、ATP 和 NADPH",
+      "C. 葡萄糖和 O₂",
+      "D. CO₂ 和 ATP"
+    ],
+    "answer_index": 1,
+    "analysis": "光反应在类囊体薄膜上进行水的光解并合成 ATP、NADPH；葡萄糖、淀粉在暗反应后形成。",
+    "domain": "细胞与代谢",
+    "ability": "理解识记",
+    "p_value": 0.71,
+    "discrimination": 0.41,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_09",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_respiration",
+    "knowledge_point": "细胞呼吸",
+    "difficulty": 2,
+    "stem": "真核细胞有氧呼吸的主要场所是？",
+    "options": [
+      "A. 细胞质基质",
+      "B. 核糖体",
+      "C. 线粒体",
+      "D. 叶绿体"
+    ],
+    "answer_index": 2,
+    "analysis": "有氧呼吸第二、三阶段在线粒体中进行，线粒体是有氧呼吸的主要场所。",
+    "domain": "细胞与代谢",
+    "ability": "理解识记",
+    "p_value": 0.87,
+    "discrimination": 0.32,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_10",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_dna",
+    "knowledge_point": "DNA 复制",
+    "difficulty": 3,
+    "stem": "DNA 分子的复制方式是？",
+    "options": [
+      "A. 混合复制",
+      "B. 分散复制",
+      "C. 全保留复制",
+      "D. 半保留复制"
+    ],
+    "answer_index": 3,
+    "analysis": "DNA 复制以母链为模板，新合成子链，每个子代 DNA 含一条母链和一条新链，为半保留复制。",
+    "domain": "遗传与进化",
+    "ability": "理解识记",
+    "p_value": 0.73,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_11",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_mendel",
+    "knowledge_point": "孟德尔分离定律",
+    "difficulty": 2,
+    "stem": "基因型为 Aa 的杂合子自交，其后代表现型的比例约为？",
+    "options": [
+      "A. 3:1",
+      "B. 9:3:3:1",
+      "C. 1:2:1",
+      "D. 1:1"
+    ],
+    "answer_index": 0,
+    "analysis": "Aa 自交子代基因型 AA:Aa:aa=1:2:1，显性表现型:隐性表现型=3:1。",
+    "domain": "遗传与进化",
+    "ability": "理解识记",
+    "p_value": 0.82,
+    "discrimination": 0.27,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_12",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_insulin",
+    "knowledge_point": "血糖调节",
+    "difficulty": 2,
+    "stem": "胰岛素的主要生理作用是？",
+    "options": [
+      "A. 促进非糖物质转化为葡萄糖",
+      "B. 降低血糖浓度",
+      "C. 促进糖原分解",
+      "D. 升高血糖浓度"
+    ],
+    "answer_index": 1,
+    "analysis": "胰岛素促进组织细胞摄取、利用和储存葡萄糖，从而降低血糖。",
+    "domain": "稳态与调节",
+    "ability": "理解识记",
+    "p_value": 0.83,
+    "discrimination": 0.28,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_13",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_energy_flow",
+    "knowledge_point": "生态系统能量流动",
+    "difficulty": 3,
+    "stem": "相邻两个营养级之间的能量传递效率一般为？",
+    "options": [
+      "A. 30%～40%",
+      "B. 1%～5%",
+      "C. 10%～20%",
+      "D. 50% 左右"
+    ],
+    "answer_index": 2,
+    "analysis": "能量沿食物链逐级递减，相邻营养级传递效率通常为 10%～20%。",
+    "domain": "生态系统",
+    "ability": "理解识记",
+    "p_value": 0.69,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_14",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_supply_demand",
+    "knowledge_point": "供求与价格",
+    "difficulty": 2,
+    "stem": "在其他条件不变的情况下，某商品供不应求时，通常会出现？",
+    "options": [
+      "A. 价格下跌",
+      "B. 需求减少",
+      "C. 供给自动增加",
+      "D. 价格上涨"
+    ],
+    "answer_index": 3,
+    "analysis": "供不应求时购买者竞争加剧，价格趋于上涨；供过于求则价格下跌。",
+    "domain": "经济生活",
+    "ability": "理解识记",
+    "p_value": 0.83,
+    "discrimination": 0.28,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_07",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_value_law",
+    "knowledge_point": "价值规律",
+    "difficulty": 3,
+    "stem": "价值规律的基本内容是？",
+    "options": [
+      "A. 商品价值由社会必要劳动时间决定，交换以价值量为基础实行等价交换",
+      "B. 商品价值由个别劳动时间决定",
+      "C. 商品价值由供求关系决定",
+      "D. 价格始终等于价值"
+    ],
+    "answer_index": 0,
+    "analysis": "价值规律的基本内容是价值由社会必要劳动时间决定、等价交换；表现形式是价格围绕价值上下波动。",
+    "domain": "经济生活",
+    "ability": "理解识记",
+    "p_value": 0.68,
+    "discrimination": 0.38,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_08",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_npc",
+    "knowledge_point": "人民代表大会制度",
+    "difficulty": 2,
+    "stem": "人民代表大会制度是我国的？",
+    "options": [
+      "A. 基层群众自治制度",
+      "B. 根本政治制度",
+      "C. 基本政治制度",
+      "D. 政党制度"
+    ],
+    "answer_index": 1,
+    "analysis": "人民代表大会制度是我国的根本政治制度；中国共产党领导的多党合作和政治协商制度、民族区域自治制度、基层群众自治制度是基本政治制度。",
+    "domain": "政治生活",
+    "ability": "理解识记",
+    "p_value": 0.84,
+    "discrimination": 0.29,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_09",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_gov_function",
+    "knowledge_point": "政府职能",
+    "difficulty": 3,
+    "stem": "下列属于政府履行社会建设职能的是？",
+    "options": [
+      "A. 组织社会主义经济建设",
+      "B. 组织社会主义文化建设",
+      "C. 健全基本公共服务体系，保障学有所教、病有所医、老有所养",
+      "D. 维护国家长治久安"
+    ],
+    "answer_index": 2,
+    "analysis": "社会建设职能侧重教育、医疗、社保、就业等公共服务；A、D 分别为经济、文化职能，C 为政治职能。",
+    "domain": "政治生活",
+    "ability": "理解识记",
+    "p_value": 0.7,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_10",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_culture_confidence",
+    "knowledge_point": "文化自信",
+    "difficulty": 3,
+    "stem": "坚定文化自信的底气主要来自？",
+    "options": [
+      "A. 外来文化的广泛传播",
+      "B. 流行文化的商业价值",
+      "C. 网络文化的传播速度",
+      "D. 中华优秀传统文化、革命文化和社会主义先进文化"
+    ],
+    "answer_index": 3,
+    "analysis": "文化自信来自中华优秀传统文化、革命文化和社会主义先进文化，来自中国特色社会主义伟大实践。",
+    "domain": "文化生活",
+    "ability": "理解识记",
+    "p_value": 0.71,
+    "discrimination": 0.41,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_11",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_culture_exchange",
+    "knowledge_point": "文化交流与传播",
+    "difficulty": 2,
+    "stem": "对待外来文化，我们应当坚持的正确态度是？",
+    "options": [
+      "A. 以我为主、为我所用",
+      "B. 拒绝一切交流",
+      "C. 全盘否定",
+      "D. 全盘吸收"
+    ],
+    "answer_index": 0,
+    "analysis": "对待外来文化应坚持面向世界、博采众长，以我为主、为我所用，反对封闭主义和照搬照抄。",
+    "domain": "文化生活",
+    "ability": "理解识记",
+    "p_value": 0.87,
+    "discrimination": 0.32,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_12",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_universality",
+    "knowledge_point": "矛盾普遍性与特殊性",
+    "difficulty": 3,
+    "stem": "矛盾的普遍性和特殊性的关系是？",
+    "options": [
+      "A. 特殊性不包含普遍性",
+      "B. 共性与个性、一般与个别的关系",
+      "C. 二者相互独立、互不相干",
+      "D. 二者可以相互替代"
+    ],
+    "answer_index": 1,
+    "analysis": "普遍性寓于特殊性之中，特殊性包含普遍性，二者是共性与个性、一般与个别的关系。",
+    "domain": "生活与哲学",
+    "ability": "理解识记",
+    "p_value": 0.73,
+    "discrimination": 0.43,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_13",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_practice",
+    "knowledge_point": "实践与认识",
+    "difficulty": 2,
+    "stem": "关于实践与认识的关系，下列说法正确的是？",
+    "options": [
+      "A. 认识决定实践",
+      "B. 理论比实践更重要",
+      "C. 实践是认识的来源，也是检验认识真理性的唯一标准",
+      "D. 认识与实践互不影响"
+    ],
+    "answer_index": 2,
+    "analysis": "实践是认识的基础，是认识的来源、发展动力、检验标准和最终目的。",
+    "domain": "生活与哲学",
+    "ability": "理解识记",
+    "p_value": 0.82,
+    "discrimination": 0.27,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_06",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_opium_war",
+    "knowledge_point": "鸦片战争",
+    "difficulty": 2,
+    "stem": "中英《南京条约》中，中国割让给英国的是？",
+    "options": [
+      "A. 新界",
+      "B. 九龙",
+      "C. 澳门",
+      "D. 香港岛"
+    ],
+    "answer_index": 3,
+    "analysis": "1842 年《南京条约》割香港岛给英国；九龙司地方一区在 1860 年《北京条约》中割让，新界为 1898 年租借。",
+    "domain": "中国近代史",
+    "ability": "理解识记",
+    "p_value": 0.83,
+    "discrimination": 0.28,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_15",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_revolution1911",
+    "knowledge_point": "辛亥革命",
+    "difficulty": 3,
+    "stem": "辛亥革命的历史功绩主要是？",
+    "options": [
+      "A. 推翻了清王朝统治，结束了两千多年的君主专制制度",
+      "B. 改变了中国半殖民地半封建社会的性质",
+      "C. 建立了社会主义制度",
+      "D. 完成了反帝反封建的革命任务"
+    ],
+    "answer_index": 0,
+    "analysis": "辛亥革命推翻清王朝、结束君主专制，但没有改变半殖民地半封建社会性质，也未完成反帝反封建任务。",
+    "domain": "中国近代史",
+    "ability": "理解识记",
+    "p_value": 0.7,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_08",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_may4",
+    "knowledge_point": "五四运动",
+    "difficulty": 3,
+    "stem": "五四运动的性质是？",
+    "options": [
+      "A. 资产阶级改良运动",
+      "B. 彻底反帝反封建的爱国革命运动",
+      "C. 社会主义革命",
+      "D. 农民阶级革命运动"
+    ],
+    "answer_index": 1,
+    "analysis": "五四运动是一场以青年学生为先锋、广大人民群众参加的彻底反帝反封建的爱国革命运动，是中国新民主主义革命的开端。",
+    "domain": "中国近代史",
+    "ability": "理解识记",
+    "p_value": 0.7,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_09",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_reform_open",
+    "knowledge_point": "改革开放",
+    "difficulty": 2,
+    "stem": "作出改革开放伟大决策的会议是？",
+    "options": [
+      "A. 1980 年设立经济特区",
+      "B. 1992 年中共十四大",
+      "C. 1978 年中共十一届三中全会",
+      "D. 1976 年粉碎“四人帮”"
+    ],
+    "answer_index": 2,
+    "analysis": "1978 年 12 月中共十一届三中全会作出把党和国家工作重心转移到经济建设上来、实行改革开放的历史性决策。",
+    "domain": "中国现代史",
+    "ability": "理解识记",
+    "p_value": 0.86,
+    "discrimination": 0.31,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_10",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_qin",
+    "knowledge_point": "秦朝郡县制",
+    "difficulty": 2,
+    "stem": "秦朝在地方推行郡县制，其重要作用是？",
+    "options": [
+      "A. 削弱了皇帝的权力",
+      "B. 导致诸侯割据混战",
+      "C. 废除了中央集权",
+      "D. 加强了中央对地方的控制"
+    ],
+    "answer_index": 3,
+    "analysis": "郡县制下郡县长官由中央任免，加强了中央集权和对地方的控制，官僚政治取代贵族政治。",
+    "domain": "中国古代史",
+    "ability": "理解识记",
+    "p_value": 0.87,
+    "discrimination": 0.32,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_11",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_keju",
+    "knowledge_point": "科举制",
+    "difficulty": 2,
+    "stem": "中国古代科举制度正式创立于？",
+    "options": [
+      "A. 隋朝",
+      "B. 唐朝",
+      "C. 宋朝",
+      "D. 汉朝"
+    ],
+    "answer_index": 0,
+    "analysis": "隋朝创立科举制（隋文帝分科考试、隋炀帝设进士科），唐朝进一步完善。",
+    "domain": "中国古代史",
+    "ability": "理解识记",
+    "p_value": 0.88,
+    "discrimination": 0.33,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_12",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_industrial",
+    "knowledge_point": "工业革命",
+    "difficulty": 2,
+    "stem": "第一次工业革命首先开始于？",
+    "options": [
+      "A. 德国",
+      "B. 英国",
+      "C. 美国",
+      "D. 法国"
+    ],
+    "answer_index": 1,
+    "analysis": "18 世纪 60 年代第一次工业革命首先在英国开始，以蒸汽机的改良和广泛应用为标志。",
+    "domain": "世界史",
+    "ability": "理解识记",
+    "p_value": 0.82,
+    "discrimination": 0.27,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_13",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_renaissance",
+    "knowledge_point": "文艺复兴",
+    "difficulty": 2,
+    "stem": "文艺复兴的核心思想是？",
+    "options": [
+      "A. 自由主义",
+      "B. 理性主义",
+      "C. 人文主义",
+      "D. 空想社会主义"
+    ],
+    "answer_index": 2,
+    "analysis": "文艺复兴以人文主义为核心，肯定人的价值和尊严，反对神学对人的束缚。",
+    "domain": "世界史",
+    "ability": "理解识记",
+    "p_value": 0.83,
+    "discrimination": 0.28,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_14",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_cold_war",
+    "knowledge_point": "冷战",
+    "difficulty": 3,
+    "stem": "美苏冷战开始的标志是？",
+    "options": [
+      "A. 马歇尔计划实施",
+      "B. 华约成立",
+      "C. 北约成立",
+      "D. 杜鲁门主义出台"
+    ],
+    "answer_index": 3,
+    "analysis": "1947 年杜鲁门主义出台，标志美苏冷战正式开始；马歇尔计划、北约成立是冷战的具体表现。",
+    "domain": "世界史",
+    "ability": "理解识记",
+    "p_value": 0.69,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_06",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_mediterranean",
+    "knowledge_point": "地中海气候",
+    "difficulty": 3,
+    "stem": "地中海气候的主要特征是？",
+    "options": [
+      "A. 夏季炎热干燥，冬季温和多雨",
+      "B. 全年高温多雨",
+      "C. 夏季高温多雨，冬季温和少雨",
+      "D. 全年温和湿润"
+    ],
+    "answer_index": 0,
+    "analysis": "地中海气候受副热带高气压带和西风带交替控制，夏季炎热干燥、冬季温和多雨。",
+    "domain": "自然地理",
+    "ability": "理解识记",
+    "p_value": 0.68,
+    "discrimination": 0.38,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_07",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_earth_motion",
+    "knowledge_point": "地球运动",
+    "difficulty": 2,
+    "stem": "北半球夏至日（6 月 22 日前后），下列说法正确的是？",
+    "options": [
+      "A. 北半球昼最短、夜最长",
+      "B. 北半球昼最长、夜最短",
+      "C. 全球昼夜等长",
+      "D. 南极圈内出现极昼"
+    ],
+    "answer_index": 1,
+    "analysis": "夏至日太阳直射北回归线，北半球昼最长夜最短，北极圈内出现极昼。",
+    "domain": "自然地理",
+    "ability": "理解识记",
+    "p_value": 0.84,
+    "discrimination": 0.29,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_08",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_monsoon",
+    "knowledge_point": "季风环流",
+    "difficulty": 2,
+    "stem": "我国东部季风区夏季主要盛行？",
+    "options": [
+      "A. 西北风",
+      "B. 西风",
+      "C. 东南风",
+      "D. 东北风"
+    ],
+    "answer_index": 2,
+    "analysis": "夏季亚欧大陆形成低压、太平洋形成高压，风由海洋吹向陆地，我国东部盛行东南季风。",
+    "domain": "自然地理",
+    "ability": "理解识记",
+    "p_value": 0.85,
+    "discrimination": 0.3,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_09",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_current",
+    "knowledge_point": "洋流",
+    "difficulty": 2,
+    "stem": "暖流对其流经沿岸地区气候的影响是？",
+    "options": [
+      "A. 无明显影响",
+      "B. 降温减湿",
+      "C. 降温增湿",
+      "D. 增温增湿"
+    ],
+    "answer_index": 3,
+    "analysis": "暖流使流经海区水温升高、空气湿度增大，对沿岸气候有增温增湿作用。",
+    "domain": "自然地理",
+    "ability": "理解识记",
+    "p_value": 0.86,
+    "discrimination": 0.31,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_14",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_migration",
+    "knowledge_point": "人口迁移",
+    "difficulty": 2,
+    "stem": "影响人口迁移最主要的因素是？",
+    "options": [
+      "A. 经济因素",
+      "B. 土壤因素",
+      "C. 地形因素",
+      "D. 气候因素"
+    ],
+    "answer_index": 0,
+    "analysis": "在多数情况下，经济发展水平差异是影响人口迁移的最主要因素，人们为追求更好就业和收入而迁移。",
+    "domain": "人文地理",
+    "ability": "理解识记",
+    "p_value": 0.84,
+    "discrimination": 0.29,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_11",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_urbanization",
+    "knowledge_point": "城市化",
+    "difficulty": 2,
+    "stem": "城市化过程中常见的“城市病”包括？",
+    "options": [
+      "A. 人口大量减少",
+      "B. 交通拥堵、住房紧张、环境污染",
+      "C. 农业用地大幅增加",
+      "D. 就业机会显著减少"
+    ],
+    "answer_index": 1,
+    "analysis": "城市化过快会带来交通拥堵、住房紧张、环境污染、就业困难等问题。",
+    "domain": "人文地理",
+    "ability": "理解识记",
+    "p_value": 0.88,
+    "discrimination": 0.33,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_12",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_qinling",
+    "knowledge_point": "秦岭—淮河一线",
+    "difficulty": 3,
+    "stem": "秦岭—淮河一线是我国重要的地理分界线，它大致是？",
+    "options": [
+      "A. 季风区与非季风区的分界线",
+      "B. 热带与亚热带的分界线",
+      "C. 1 月 0℃ 等温线、800mm 年等降水量线",
+      "D. 400mm 年等降水量线"
+    ],
+    "answer_index": 2,
+    "analysis": "秦岭—淮河一线大致与 1 月 0℃ 等温线、800mm 年等降水量线一致，是南方与北方地区的分界线。",
+    "domain": "区域地理",
+    "ability": "理解识记",
+    "p_value": 0.67,
+    "discrimination": 0.37,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_13",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_terrain",
+    "knowledge_point": "我国地势特征",
+    "difficulty": 2,
+    "stem": "我国地势的基本特征是？",
+    "options": [
+      "A. 东高西低",
+      "B. 北高南低",
+      "C. 南高北低",
+      "D. 西高东低，呈阶梯状分布"
+    ],
+    "answer_index": 3,
+    "analysis": "我国地势西高东低，呈三级阶梯状分布，有利于海洋湿润气流深入内陆。",
+    "domain": "区域地理",
+    "ability": "理解识记",
+    "p_value": 0.83,
+    "discrimination": 0.28,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_21",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_wenyan_usage",
+    "knowledge_point": "文言虚词与句式",
+    "difficulty": 5,
+    "stem": "下列句子中“之”的意义和用法，与“师道之不传也久矣”中的“之”相同的一项是？",
+    "options": [
+      "A. 句读之不知，惑之不解",
+      "B. 蚓无爪牙之利，筋骨之强",
+      "C. 道之所存，师之所存也",
+      "D. 六艺经传皆通习之"
+    ],
+    "answer_index": 2,
+    "analysis": "例句中的“之”用于主谓之间，取消句子独立性。A 为宾语前置标志，B 为定语后置标志，D 为代词，只有 C 与例句用法相同。",
+    "domain": "古诗文阅读",
+    "ability": "理解识记",
+    "p_value": 0.26,
+    "discrimination": 0.34,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_22",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_argument_analysis",
+    "knowledge_point": "论述类文本论证分析",
+    "difficulty": 5,
+    "stem": "有人担心算法推荐会制造“信息茧房”。但研究发现，用户并非被动接受推送：他们会主动搜索、取消关注、跨平台比对。真正的问题不在于算法本身，而在于平台是否把“停留时长”作为唯一优化目标。若平台改以“用户长期信息多样性”为指标，算法反而可能拓宽视野。下列对这段文字论证的分析，正确的一项是？",
+    "options": [
+      "A. 以“用户会主动搜索”直接否定了信息茧房的存在",
+      "B. 指出信息茧房的成因，并从平台优化目标角度提出改进路径",
+      "C. 用研究发现证明算法推荐利大于弊",
+      "D. 通过对比论证说明用户比平台更重要"
+    ],
+    "answer_index": 1,
+    "analysis": "文段先承认担忧，再以用户能动性限定问题根源，最后落在平台优化目标上，属于分析成因并提出改进路径。A、C、D 均对论证关系作了过度或错误概括。",
+    "domain": "现代文阅读",
+    "ability": "综合迁移",
+    "p_value": 0.24,
+    "discrimination": 0.35,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_23",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_error_sentence",
+    "knowledge_point": "病句辨析",
+    "difficulty": 5,
+    "stem": "下列各句中，没有语病的一项是？",
+    "options": [
+      "A. 通过这次研学活动，使同学们开阔了视野。",
+      "B. 能否坚持科学训练，是运动员取得好成绩的关键。",
+      "C. 学校开展以“书香校园”为主题的阅读活动，营造了浓厚的读书氛围。",
+      "D. 这本书不仅内容丰富，而且插图精美，深受读者所喜爱。"
+    ],
+    "answer_index": 2,
+    "analysis": "A 滥用介词导致主语残缺；B 两面对一面；D “深受……所喜爱”句式杂糅。C 结构完整、搭配得当。",
+    "domain": "语言文字运用",
+    "ability": "分析应用",
+    "p_value": 0.28,
+    "discrimination": 0.33,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_cn_24",
+    "subject": "语文",
+    "knowledge_point_id": "kp_cn_material_idea",
+    "knowledge_point": "材料作文立意",
+    "difficulty": 5,
+    "stem": "有人说，人生像登山，最重要的是登顶；也有人说，沿途的风景同样值得珍惜。下列立意最符合材料辩证关系的一项是？",
+    "options": [
+      "A. 只要能够登顶，过程并不重要",
+      "B. 过程与结果并重，在追求目标中体悟成长",
+      "C. 沿途的风景远比登顶更重要",
+      "D. 人生不必设定任何目标"
+    ],
+    "answer_index": 1,
+    "analysis": "材料呈现“结果”与“过程”两种取向，最佳立意应兼顾二者。A、C 各执一端，D 完全否定目标，均失之偏颇。",
+    "domain": "写作",
+    "ability": "综合迁移",
+    "p_value": 0.27,
+    "discrimination": 0.32,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_21",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_seq_recur",
+    "knowledge_point": "数列递推",
+    "difficulty": 5,
+    "stem": "已知数列 {a_n} 满足 a_1=1，a_{n+1}=2a_n+1（n≥1），则 a_n 等于？",
+    "options": [
+      "A. 2^n−1",
+      "B. 2^n+1",
+      "C. 2^{n−1}−1",
+      "D. 2^{n+1}−1"
+    ],
+    "answer_index": 0,
+    "analysis": "由 a_{n+1}+1=2(a_n+1)，得 {a_n+1} 是以 2 为首项、2 为公比的等比数列，故 a_n+1=2^n，a_n=2^n−1。",
+    "domain": "数列",
+    "ability": "分析应用",
+    "p_value": 0.25,
+    "discrimination": 0.35,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_22",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_conditional_prob",
+    "knowledge_point": "条件概率",
+    "difficulty": 5,
+    "stem": "甲、乙两人独立破译一份密码，甲成功的概率为 1/3，乙成功的概率为 1/4。已知密码被破译，则仅甲破译成功的概率为？",
+    "options": [
+      "A. 1/2",
+      "B. 1/4",
+      "C. 2/3",
+      "D. 3/8"
+    ],
+    "answer_index": 0,
+    "analysis": "密码被破译的概率为 1−(2/3)(3/4)=1/2；仅甲成功的概率为 (1/3)(3/4)=1/4；条件概率为 (1/4)/(1/2)=1/2。",
+    "domain": "概率与统计",
+    "ability": "综合迁移",
+    "p_value": 0.23,
+    "discrimination": 0.36,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_23",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_hyperbola",
+    "knowledge_point": "双曲线离心率",
+    "difficulty": 5,
+    "stem": "已知双曲线 x^2/a^2−y^2/b^2=1（a>0，b>0）的一条渐近线与直线 x+2y=0 垂直，则该双曲线的离心率为？",
+    "options": [
+      "A. √5",
+      "B. √3",
+      "C. 2",
+      "D. √5/2"
+    ],
+    "answer_index": 0,
+    "analysis": "直线 x+2y=0 的斜率为 −1/2，与其垂直的渐近线斜率为 2，即 b/a=2。离心率 e=√(1+b^2/a^2)=√5。",
+    "domain": "解析几何",
+    "ability": "分析应用",
+    "p_value": 0.26,
+    "discrimination": 0.34,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_21",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_inference",
+    "knowledge_point": "阅读推理判断",
+    "difficulty": 5,
+    "stem": "Many students believe that studying longer guarantees better results. However, research on memory suggests that spaced practice — reviewing material at increasing intervals — produces stronger long-term retention than cramming, even when total study time is the same. What can be inferred from the passage?",
+    "options": [
+      "A. Longer study time always leads to better results.",
+      "B. Cramming is more effective than spaced practice.",
+      "C. How material is reviewed matters more than how long it is studied.",
+      "D. Students should never review material."
+    ],
+    "answer_index": 2,
+    "analysis": "文段强调在总学习时间相同的情况下，间隔复习的长期记忆效果更好，说明复习方式比单纯延长学习时间更重要。",
+    "domain": "阅读理解",
+    "ability": "分析应用",
+    "p_value": 0.25,
+    "discrimination": 0.35,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_22",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_cloze_logic",
+    "knowledge_point": "完形填空语境逻辑",
+    "difficulty": 5,
+    "stem": "The scientist's theory was initially ______ by most of her colleagues, but later experiments proved her right.",
+    "options": [
+      "A. dismissed",
+      "B. welcomed",
+      "C. confirmed",
+      "D. copied"
+    ],
+    "answer_index": 0,
+    "analysis": "由转折“but later experiments proved her right”可知，起初她的理论被多数同事否定，“dismissed”最符合语境。",
+    "domain": "完形填空",
+    "ability": "分析应用",
+    "p_value": 0.27,
+    "discrimination": 0.33,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_23",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_nonfinite",
+    "knowledge_point": "非谓语动词",
+    "difficulty": 5,
+    "stem": "______ with unexpected difficulties, the team decided to revise their plan.",
+    "options": [
+      "A. Facing",
+      "B. Faced",
+      "C. To face",
+      "D. Face"
+    ],
+    "answer_index": 1,
+    "analysis": "be faced with 表示“面临”，作状语时用过去分词 Faced with...，与主语 the team 构成被动关系。",
+    "domain": "语法填空",
+    "ability": "理解识记",
+    "p_value": 0.28,
+    "discrimination": 0.32,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_eng_24",
+    "subject": "英语",
+    "knowledge_point_id": "kp_eng_inversion",
+    "knowledge_point": "倒装与强调",
+    "difficulty": 5,
+    "stem": "Not until he had finished all the experiments ______ the importance of careful planning.",
+    "options": [
+      "A. he realized",
+      "B. did he realize",
+      "C. he did realize",
+      "D. realized he"
+    ],
+    "answer_index": 1,
+    "analysis": "Not until 置于句首时，主句需用部分倒装，即“助动词 + 主语 + 谓语”，故用 did he realize。",
+    "domain": "词汇与语法",
+    "ability": "理解识记",
+    "p_value": 0.26,
+    "discrimination": 0.34,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_21",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_induction",
+    "knowledge_point": "电磁感应与功率",
+    "difficulty": 5,
+    "stem": "水平导轨间距为 L，匀强磁场 B 垂直导轨平面，导体棒电阻为 R，以速度 v 匀速运动，导轨电阻不计。若速度增大为 2v，则回路中感应电流的热功率变为原来的？",
+    "options": [
+      "A. 2 倍",
+      "B. 4 倍",
+      "C. 8 倍",
+      "D. 16 倍"
+    ],
+    "answer_index": 1,
+    "analysis": "感应电动势 E=BLv，功率 P=E^2/R∝v^2。速度变为 2 倍，功率变为 4 倍。",
+    "domain": "电磁学",
+    "ability": "分析应用",
+    "p_value": 0.25,
+    "discrimination": 0.35,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_22",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_momentum_energy",
+    "knowledge_point": "动量定理与能量",
+    "difficulty": 5,
+    "stem": "质量为 m 的小球从高 h 处由静止自由下落，与地面碰撞后反弹的最大高度为 h/4。若碰撞时间为 Δt，不计空气阻力，则地面对小球的平均作用力大小约为？",
+    "options": [
+      "A. 3m√(2gh)/(2Δt)",
+      "B. 3m√(2gh)/(2Δt)+mg",
+      "C. m√(2gh)/Δt",
+      "D. 3m√(2gh)/Δt"
+    ],
+    "answer_index": 1,
+    "analysis": "落地速度 v1=√(2gh)，反弹速度 v2=√(2g·h/4)=√(gh/2)。取向上为正，由动量定理 (F−mg)Δt=mv1+mv2，得 F=3m√(2gh)/(2Δt)+mg。",
+    "domain": "力学",
+    "ability": "综合迁移",
+    "p_value": 0.22,
+    "discrimination": 0.36,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_phy_23",
+    "subject": "物理",
+    "knowledge_point_id": "kp_phy_photoelectric",
+    "knowledge_point": "光电效应",
+    "difficulty": 5,
+    "stem": "用频率为 2ν0（ν0 为金属的截止频率）的光照射某金属，逸出光电子的最大初动能为 E。若改用频率为 4ν0 的光照射，则逸出光电子的最大初动能变为？",
+    "options": [
+      "A. 2E",
+      "B. 3E",
+      "C. 4E",
+      "D. 不变"
+    ],
+    "answer_index": 1,
+    "analysis": "由爱因斯坦光电效应方程 E_k=hν−hν0，第一次 E=2hν0−hν0=hν0；第二次 E_k=4hν0−hν0=3hν0=3E。",
+    "domain": "热学与近代物理",
+    "ability": "分析应用",
+    "p_value": 0.24,
+    "discrimination": 0.34,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_21",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_equilibrium_shift",
+    "knowledge_point": "化学平衡移动",
+    "difficulty": 5,
+    "stem": "对于反应 N2(g)+3H2(g)⇌2NH3(g) ΔH<0，在恒容密闭容器中达到平衡后，下列措施既能加快反应速率，又能提高 NH3 平衡产率的是？",
+    "options": [
+      "A. 升高温度",
+      "B. 增大压强",
+      "C. 使用催化剂",
+      "D. 及时分离出 NH3"
+    ],
+    "answer_index": 1,
+    "analysis": "正反应气体分子数减少。增大压强使浓度增大、速率加快，平衡正向移动，NH3 产率提高。升温使平衡逆向移动，催化剂不影响平衡，分离 NH3 会降低速率。",
+    "domain": "化学反应原理",
+    "ability": "综合迁移",
+    "p_value": 0.25,
+    "discrimination": 0.35,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_22",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_crystal",
+    "knowledge_point": "晶胞化学式",
+    "difficulty": 5,
+    "stem": "某离子晶体的晶胞为立方体，A 离子位于顶点，B 离子位于棱心。则该晶体的化学式为？",
+    "options": [
+      "A. AB",
+      "B. AB3",
+      "C. A3B",
+      "D. AB2"
+    ],
+    "answer_index": 1,
+    "analysis": "顶点被 8 个晶胞共用，棱心被 4 个晶胞共用。A：8×1/8=1；B：12×1/4=3。故化学式为 AB3。",
+    "domain": "物质结构",
+    "ability": "分析应用",
+    "p_value": 0.23,
+    "discrimination": 0.36,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_21",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_free_combination",
+    "knowledge_point": "自由组合定律",
+    "difficulty": 5,
+    "stem": "基因型为 AaBb 的个体自交（两对基因独立遗传），后代出现 9:3:3:1 的表现型比例。下列叙述错误的是？",
+    "options": [
+      "A. 两对基因的遗传遵循自由组合定律",
+      "B. 后代中纯合子占 1/2",
+      "C. 后代中与亲本表现型相同的个体占 9/16",
+      "D. 后代中 aabb 个体占 1/16"
+    ],
+    "answer_index": 1,
+    "analysis": "AaBb 自交后代纯合子为 AABB、AAbb、aaBB、aabb，各占 1/16，共 1/4，而非 1/2。其余三项均正确。",
+    "domain": "遗传与进化",
+    "ability": "综合迁移",
+    "p_value": 0.24,
+    "discrimination": 0.35,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_22",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_photosynthesis_respiration",
+    "knowledge_point": "光合作用与呼吸作用",
+    "difficulty": 5,
+    "stem": "将某绿色植物置于密闭透明容器中，在适宜光照下测得 CO2 浓度先下降后保持稳定。下列分析正确的是？",
+    "options": [
+      "A. CO2 浓度稳定时，光合速率等于呼吸速率",
+      "B. CO2 浓度下降过程中，光合速率小于呼吸速率",
+      "C. CO2 浓度稳定时，植物停止进行光合作用",
+      "D. CO2 浓度下降过程中，呼吸速率逐渐增大"
+    ],
+    "answer_index": 0,
+    "analysis": "密闭容器中 CO2 浓度下降说明净光合大于零，即光合速率大于呼吸速率；浓度稳定时二者相等。稳定时植物仍在进行光合作用，只是与呼吸速率相等。",
+    "domain": "细胞与代谢",
+    "ability": "分析应用",
+    "p_value": 0.26,
+    "discrimination": 0.33,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_23",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_adh",
+    "knowledge_point": "水盐平衡调节",
+    "difficulty": 5,
+    "stem": "给正常实验动物注射大量抗利尿激素后，最可能出现的现象是？",
+    "options": [
+      "A. 尿量减少，细胞外液渗透压下降",
+      "B. 尿量增加，细胞外液渗透压升高",
+      "C. 尿量减少，细胞外液渗透压升高",
+      "D. 尿量增加，细胞外液渗透压下降"
+    ],
+    "answer_index": 0,
+    "analysis": "抗利尿激素促进肾小管和集合管对水的重吸收，尿量减少；水分潴留使细胞外液渗透压下降。",
+    "domain": "稳态与调节",
+    "ability": "分析应用",
+    "p_value": 0.27,
+    "discrimination": 0.33,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_21",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_supply_demand",
+    "knowledge_point": "供求与均衡变动",
+    "difficulty": 5,
+    "stem": "某商品的需求曲线与供给曲线相交于 E 点。若该商品的生产技术取得重大突破，其他条件不变，则下列判断正确的是？",
+    "options": [
+      "A. 供给增加，均衡价格下降，均衡数量增加",
+      "B. 供给减少，均衡价格上升，均衡数量减少",
+      "C. 需求增加，均衡价格上升，均衡数量增加",
+      "D. 需求减少，均衡价格下降，均衡数量减少"
+    ],
+    "answer_index": 0,
+    "analysis": "技术进步降低生产成本，使供给曲线右移，供给增加；在需求不变时，均衡价格下降、均衡数量增加。",
+    "domain": "经济生活",
+    "ability": "分析应用",
+    "p_value": 0.25,
+    "discrimination": 0.35,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_22",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_mass_line",
+    "knowledge_point": "群众观点与科学精神",
+    "difficulty": 5,
+    "stem": "“十四五”规划编制过程中，既广泛征求群众意见，又经过专家反复论证。这一做法体现的哲学道理是？",
+    "options": [
+      "A. 人民群众是社会变革的决定力量，应完全按群众意见办事",
+      "B. 坚持群众观点与科学精神的统一，实现主观与客观具体的历史的统一",
+      "C. 意识对物质具有决定作用",
+      "D. 认识具有反复性，真理没有客观性"
+    ],
+    "answer_index": 1,
+    "analysis": "既听取群众意见又进行专家论证，体现了群众观点与科学态度相结合，从实际出发实现主客观统一。A“完全”绝对化，C、D 表述错误。",
+    "domain": "生活与哲学",
+    "ability": "综合迁移",
+    "p_value": 0.26,
+    "discrimination": 0.34,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_23",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_legislation",
+    "knowledge_point": "人大与民主立法",
+    "difficulty": 5,
+    "stem": "某市人大举行立法听证会，听取市民对《生活垃圾分类管理条例（草案）》的意见。这表明？",
+    "options": [
+      "A. 公民直接行使国家立法权",
+      "B. 人大坚持科学立法、民主立法，拓宽公民有序参与渠道",
+      "C. 公民通过社情民意反映制度参与民主监督",
+      "D. 人大是国家权力机关，直接管理社会事务"
+    ],
+    "answer_index": 1,
+    "analysis": "立法听证会是公民参与民主立法的渠道，体现人大推进科学立法、民主立法。国家立法权由全国人大及其常委会行使，公民不能直接行使。",
+    "domain": "政治生活",
+    "ability": "分析应用",
+    "p_value": 0.27,
+    "discrimination": 0.33,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_21",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_self_strengthening",
+    "knowledge_point": "洋务运动",
+    "difficulty": 5,
+    "stem": "19 世纪 60—90 年代，清政府部分官员创办江南制造总局、福州船政局等军事工业。这一举措的直接影响是？",
+    "options": [
+      "A. 使中国走上了资本主义道路",
+      "B. 引进西方机器生产，开启了中国近代化进程",
+      "C. 彻底改变了中国半殖民地半封建社会的性质",
+      "D. 建立了君主立宪制度"
+    ],
+    "answer_index": 1,
+    "analysis": "洋务派创办近代军事工业，引进机器生产和技术，客观上开启了中国的近代化进程；但它未改变社会性质，也未使中国走上资本主义道路。",
+    "domain": "中国近代史",
+    "ability": "分析应用",
+    "p_value": 0.26,
+    "discrimination": 0.34,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_22",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_industrialization",
+    "knowledge_point": "工业革命与城市化",
+    "difficulty": 5,
+    "stem": "18 世纪后期至 19 世纪中期，英国工业革命使大量农村人口涌入城市。这一现象最直接的影响是？",
+    "options": [
+      "A. 城市化进程加快，工人阶级队伍壮大",
+      "B. 英国君主专制得到强化",
+      "C. 农业生产急剧衰退",
+      "D. 世界市场最终形成"
+    ],
+    "answer_index": 0,
+    "analysis": "工业革命吸引农村人口进入城市工厂，推动城市化并壮大工人阶级队伍。英国当时已确立君主立宪制，世界市场最终形成于第二次工业革命后。",
+    "domain": "世界史",
+    "ability": "分析应用",
+    "p_value": 0.28,
+    "discrimination": 0.32,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_23",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_commandery",
+    "knowledge_point": "郡县制",
+    "difficulty": 5,
+    "stem": "秦朝在全国推行郡县制，郡守和县令由中央任免、不得世袭。这一制度的主要作用是？",
+    "options": [
+      "A. 加强了中央对地方的控制，奠定了中央集权制度的基础",
+      "B. 确立了贵族世袭特权",
+      "C. 削弱了皇帝的权力",
+      "D. 结束了土地私有制"
+    ],
+    "answer_index": 0,
+    "analysis": "郡县长官由中央任免、不能世袭，使地方直接听命于中央，加强了中央集权，为后世地方行政制度奠定基础。",
+    "domain": "中国古代史",
+    "ability": "理解识记",
+    "p_value": 0.27,
+    "discrimination": 0.33,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_21",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_summer_solstice",
+    "knowledge_point": "地球运动与昼夜长短",
+    "difficulty": 5,
+    "stem": "北半球夏至日时，下列现象可信的是？",
+    "options": [
+      "A. 北京昼长大于夜长，且昼长达到一年中最大值",
+      "B. 南极圈内出现极昼现象",
+      "C. 赤道上正午太阳高度达到一年中最小值",
+      "D. 北半球各地正午太阳高度均达到一年中最大值"
+    ],
+    "answer_index": 0,
+    "analysis": "夏至日太阳直射北回归线，北半球昼长夜短且昼最长；南极圈内出现极夜；赤道正午太阳高度并非最小；北回归线以南地区正午太阳高度不一定达最大值。",
+    "domain": "自然地理",
+    "ability": "分析应用",
+    "p_value": 0.25,
+    "discrimination": 0.35,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_22",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_location",
+    "knowledge_point": "产业区位选择",
+    "difficulty": 5,
+    "stem": "某电子产品企业将研发中心设在深圳，将组装工厂迁往东南亚。其主要原因是？",
+    "options": [
+      "A. 深圳劳动力成本低",
+      "B. 深圳科技人才集聚、信息通达，东南亚劳动力成本较低",
+      "C. 东南亚市场已完全取代中国市场",
+      "D. 深圳土地资源丰富"
+    ],
+    "answer_index": 1,
+    "analysis": "研发指向科技与信息，深圳人才集聚、信息通达；组装属于劳动密集型环节，东南亚劳动力成本较低，体现区位的差异化选择。",
+    "domain": "人文地理",
+    "ability": "综合迁移",
+    "p_value": 0.26,
+    "discrimination": 0.34,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_23",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_qinling",
+    "knowledge_point": "秦岭—淮河地理分界",
+    "difficulty": 5,
+    "stem": "我国秦岭—淮河一线以南地区，下列特征描述正确的是？",
+    "options": [
+      "A. 以温带落叶阔叶林为主",
+      "B. 冬季河流普遍结冰",
+      "C. 年降水量小于 800 毫米",
+      "D. 以亚热带常绿阔叶林为主，河流无结冰期"
+    ],
+    "answer_index": 3,
+    "analysis": "秦岭—淮河以南为亚热带季风气候，典型植被为亚热带常绿阔叶林，年降水量大于 800 毫米，冬季河流一般不结冰。A、B、C 描述的是以北地区。",
+    "domain": "区域地理",
+    "ability": "理解识记",
+    "p_value": 0.27,
+    "discrimination": 0.33,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_24",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_solid_geometry",
+    "knowledge_point": "立体几何线线角",
+    "difficulty": 4,
+    "stem": "正方体 ABCD-A1B1C1D1 的棱长为 2，则异面直线 A1B 与 B1C 所成的角为？",
+    "options": [
+      "A. 30°",
+      "B. 45°",
+      "C. 60°",
+      "D. 90°"
+    ],
+    "answer_index": 2,
+    "analysis": "建系后 A1B=(2,0,−2)，B1C=(0,2,−2)，数量积为 4，模长均为 2√2，故 cosθ=4/8=1/2，θ=60°。",
+    "domain": "立体几何",
+    "ability": "分析应用",
+    "p_value": 0.48,
+    "discrimination": 0.41,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_math_25",
+    "subject": "数学",
+    "knowledge_point_id": "kp_math_derivative_extreme",
+    "knowledge_point": "导数与极值",
+    "difficulty": 4,
+    "stem": "函数 f(x)=x^3−3x^2+2 的极大值为？",
+    "options": [
+      "A. 2",
+      "B. −2",
+      "C. 0",
+      "D. 1"
+    ],
+    "answer_index": 0,
+    "analysis": "f′(x)=3x^2−6x=3x(x−2)。x<0 时递增，0<x<2 时递减，故 x=0 处取极大值 f(0)=2。",
+    "domain": "函数与导数",
+    "ability": "分析应用",
+    "p_value": 0.46,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_24",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_nanjing_treaty",
+    "knowledge_point": "南京条约的影响",
+    "difficulty": 4,
+    "stem": "《南京条约》中最能反映英国发动鸦片战争根本目的的条款是？",
+    "options": [
+      "A. 割香港岛给英国",
+      "B. 赔款 2100 万银元",
+      "C. 开放广州、厦门、福州、宁波、上海五处为通商口岸",
+      "D. 英商进出口货物缴纳的税款，中国须同英国商定"
+    ],
+    "answer_index": 2,
+    "analysis": "英国发动战争的根本目的是打开中国市场、倾销商品。开放五口通商直接便利其商品输出，最能反映这一目的；割地、赔款是次要目的。",
+    "domain": "中国近代史",
+    "ability": "分析应用",
+    "p_value": 0.44,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_25",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_provisional_constitution",
+    "knowledge_point": "中华民国临时约法",
+    "difficulty": 4,
+    "stem": "《中华民国临时约法》规定“中华民国之主权属于国民全体”，这一规定的历史意义主要在于？",
+    "options": [
+      "A. 彻底完成了反帝反封建任务",
+      "B. 从法律上否定君主专制，确立民主共和制度",
+      "C. 使中国走上了独立富强的道路",
+      "D. 建立了社会主义民主制度"
+    ],
+    "answer_index": 1,
+    "analysis": "主权在民的规定从法律上否定了君主专制，确立了民主共和的政治原则，具有反封建的进步意义，但并未完成反帝反封建任务。",
+    "domain": "中国近代史",
+    "ability": "理解识记",
+    "p_value": 0.47,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_26",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_price_revolution",
+    "knowledge_point": "新航路开辟与价格革命",
+    "difficulty": 4,
+    "stem": "新航路开辟后，大量贵金属流入欧洲，导致物价上涨、封建地主地位下降、资产阶级实力上升。这一现象被称为？",
+    "options": [
+      "A. 商业革命",
+      "B. 价格革命",
+      "C. 工业革命",
+      "D. 光荣革命"
+    ],
+    "answer_index": 1,
+    "analysis": "贵金属大量流入引发欧洲物价普遍上涨，被称为“价格革命”，它加速了封建制度衰落和资本主义发展。商业革命指贸易范围扩大、商路转移等。",
+    "domain": "世界史",
+    "ability": "理解识记",
+    "p_value": 0.48,
+    "discrimination": 0.38,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_his_27",
+    "subject": "历史",
+    "knowledge_point_id": "kp_his_keju",
+    "knowledge_point": "科举制",
+    "difficulty": 4,
+    "stem": "与九品中正制相比，隋唐科举制的主要进步性在于？",
+    "options": [
+      "A. 选官标准由门第出身转向才学，扩大了统治基础",
+      "B. 完全消除了社会等级差别",
+      "C. 仍以地方豪族推荐为主要途径",
+      "D. 只考查诗赋，忽视实际才能"
+    ],
+    "answer_index": 0,
+    "analysis": "科举制以考试成绩选拔官员，打破门第限制，使庶族地主得以参政，扩大了统治基础。它并未消除等级差别，也不是以推荐为主。",
+    "domain": "中国古代史",
+    "ability": "理解识记",
+    "p_value": 0.49,
+    "discrimination": 0.38,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_23",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_substitution",
+    "knowledge_point": "有机反应类型",
+    "difficulty": 4,
+    "stem": "下列反应属于取代反应的是？",
+    "options": [
+      "A. 乙烯使溴水褪色",
+      "B. 苯与浓硝酸在浓硫酸催化下生成硝基苯",
+      "C. 乙醇在铜催化下氧化为乙醛",
+      "D. 乙烯聚合为聚乙烯"
+    ],
+    "answer_index": 1,
+    "analysis": "苯环上的氢被硝基取代，属于取代反应。A 为加成反应，C 为氧化反应，D 为加聚反应。",
+    "domain": "有机化学",
+    "ability": "理解识记",
+    "p_value": 0.47,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_chem_24",
+    "subject": "化学",
+    "knowledge_point_id": "kp_chem_periodic_law",
+    "knowledge_point": "元素周期律",
+    "difficulty": 4,
+    "stem": "下列事实不能用元素周期律解释的是？",
+    "options": [
+      "A. 碱金属从上到下与水反应越来越剧烈",
+      "B. 卤素单质从上到下颜色逐渐加深",
+      "C. 金刚石比石墨硬度大",
+      "D. 同周期元素从左到右原子半径逐渐减小"
+    ],
+    "answer_index": 2,
+    "analysis": "金刚石与石墨是碳的同素异形体，硬度差异源于晶体结构不同，与元素周期律无关。其余三项均可由周期律解释。",
+    "domain": "物质结构",
+    "ability": "分析应用",
+    "p_value": 0.45,
+    "discrimination": 0.41,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_bio_24",
+    "subject": "生物",
+    "knowledge_point_id": "kp_bio_enzyme",
+    "knowledge_point": "酶的特性",
+    "difficulty": 4,
+    "stem": "下列关于酶的叙述，正确的是？",
+    "options": [
+      "A. 酶只能在细胞内发挥作用",
+      "B. 低温会使酶永久失活",
+      "C. 酶通过降低化学反应的活化能来提高反应速率",
+      "D. 所有的酶都是蛋白质"
+    ],
+    "answer_index": 2,
+    "analysis": "酶的作用机理是降低活化能。酶可在细胞外发挥作用；低温抑制酶活性但不破坏结构，可恢复；少数酶是 RNA。",
+    "domain": "细胞与代谢",
+    "ability": "理解识记",
+    "p_value": 0.49,
+    "discrimination": 0.38,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_24",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_exchange_rate",
+    "knowledge_point": "汇率变动的影响",
+    "difficulty": 4,
+    "stem": "若人民币对美元升值，其他条件不变，下列判断正确的是？",
+    "options": [
+      "A. 中国出口美国的商品价格竞争力增强",
+      "B. 中国进口美国商品的成本下降",
+      "C. 中国居民赴美旅游的成本上升",
+      "D. 美国企业到中国投资的成本下降"
+    ],
+    "answer_index": 1,
+    "analysis": "人民币升值意味着同样数量的人民币可兑换更多美元，进口美国商品的成本下降；同时中国出口商品以美元计价上升，竞争力减弱。",
+    "domain": "经济生活",
+    "ability": "分析应用",
+    "p_value": 0.46,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_25",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_specific_contradiction",
+    "knowledge_point": "矛盾的特殊性",
+    "difficulty": 4,
+    "stem": "“因地制宜、对症下药”体现的哲学道理是？",
+    "options": [
+      "A. 矛盾具有特殊性，要坚持具体问题具体分析",
+      "B. 矛盾具有普遍性，要一分为二地看问题",
+      "C. 量变是质变的必要准备",
+      "D. 意识对物质具有决定作用"
+    ],
+    "answer_index": 0,
+    "analysis": "不同地区、不同病症各有特点，要求抓住矛盾的特殊性，具体问题具体分析。B 强调普遍性，C 讲量变质变，D 表述错误。",
+    "domain": "生活与哲学",
+    "ability": "分析应用",
+    "p_value": 0.48,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_26",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_service_gov",
+    "knowledge_point": "转变政府职能",
+    "difficulty": 4,
+    "stem": "某市推行“一网通办”，精简审批流程，让群众和企业少跑腿。这一做法体现？",
+    "options": [
+      "A. 政府直接管理企业生产经营",
+      "B. 转变政府职能，建设服务型政府",
+      "C. 扩大了公民的基本政治权利",
+      "D. 政府代替人民代表大会行使权力"
+    ],
+    "answer_index": 1,
+    "analysis": "“一网通办”优化政务服务、提高行政效率，体现政府转变职能、建设服务型政府。政府不能直接管理企业经营，也不能代替人大行使权力。",
+    "domain": "政治生活",
+    "ability": "分析应用",
+    "p_value": 0.47,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_pol_27",
+    "subject": "政治",
+    "knowledge_point_id": "kp_pol_cultural_innovation",
+    "knowledge_point": "文化传承与创新",
+    "difficulty": 4,
+    "stem": "故宫文创产品将传统文化元素与现代设计相结合，受到消费者欢迎。这启示我们？",
+    "options": [
+      "A. 传统文化只有原样保留才能传承",
+      "B. 要推动优秀传统文化创造性转化、创新性发展",
+      "C. 文化创新可以完全脱离社会实践",
+      "D. 文化创新只需面向世界，不必立足本国"
+    ],
+    "answer_index": 1,
+    "analysis": "故宫文创在继承优秀传统文化的基础上结合现代审美与生活需求，体现了创造性转化、创新性发展。A、C、D 表述均错误。",
+    "domain": "文化生活",
+    "ability": "综合迁移",
+    "p_value": 0.46,
+    "discrimination": 0.4,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_24",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_mediterranean",
+    "knowledge_point": "地中海气候成因",
+    "difficulty": 4,
+    "stem": "地中海气候的成因是？",
+    "options": [
+      "A. 全年受赤道低气压带控制",
+      "B. 副热带高气压带与西风带交替控制",
+      "C. 海陆热力性质差异形成的季风交替控制",
+      "D. 全年受西风带控制"
+    ],
+    "answer_index": 1,
+    "analysis": "地中海气候夏季受副热带高气压带控制，炎热干燥；冬季受西风带控制，温和多雨。",
+    "domain": "自然地理",
+    "ability": "理解识记",
+    "p_value": 0.48,
+    "discrimination": 0.39,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_25",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_migration",
+    "knowledge_point": "人口迁移原因",
+    "difficulty": 4,
+    "stem": "近年来我国人口持续向长三角、珠三角地区集聚，其主要原因是？",
+    "options": [
+      "A. 两地自然环境差异显著",
+      "B. 两地经济发达，就业机会多、收入水平高",
+      "C. 国家政策限制人口流动",
+      "D. 两地气候温暖湿润"
+    ],
+    "answer_index": 1,
+    "analysis": "人口迁移的主要推力是经济因素。长三角、珠三角经济发达、产业集聚，就业机会多、收入水平高，吸引人口迁入。",
+    "domain": "人文地理",
+    "ability": "分析应用",
+    "p_value": 0.49,
+    "discrimination": 0.38,
+    "param_source": "prior"
+  },
+  {
+    "id": "dg_geo_26",
+    "subject": "地理",
+    "knowledge_point_id": "kp_geo_desertification",
+    "knowledge_point": "荒漠化成因",
+    "difficulty": 4,
+    "stem": "我国西北地区土地荒漠化加剧的主要人为原因是？",
+    "options": [
+      "A. 过度开垦、过度放牧及水资源利用不当",
+      "B. 降水稀少，蒸发旺盛",
+      "C. 地形封闭，空气流通不畅",
+      "D. 太阳辐射强，昼夜温差大"
+    ],
+    "answer_index": 0,
+    "analysis": "西北地区荒漠化的自然背景是干旱，但加剧的主要人为原因是过度开垦、过度放牧和水资源利用不当，导致植被破坏、土地退化。",
+    "domain": "区域地理",
+    "ability": "理解识记",
+    "p_value": 0.47,
+    "discrimination": 0.39,
+    "param_source": "prior"
   }
 ];

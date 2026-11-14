@@ -23,17 +23,54 @@ const TOTAL_FULL_SCORE = 750;
 // 默认选科组合（用户未设置时使用）：语数英 + 物理 + 化学 + 生物 = 750
 const DEFAULT_GAOKAO_SUBJECTS = ['语文', '数学', '英语', '物理', '化学', '生物'];
 
-// ---------- AI学情诊断题库（34题/9科，数据源：backend/data/diagnostic-bank.json） ----------
+// ---------- AI学情诊断题库 & 命题蓝图 ----------
+const fs = require('fs');
+const path = require('path');
 const DIAGNOSTIC_BANK = require('./data/diagnostic-bank.json').questions;
+const BLUEPRINT = require('./data/diagnostic-blueprint.json');
+
+const BANK_MAP = {};
+DIAGNOSTIC_BANK.forEach(q => { BANK_MAP[q.id] = q; });
+
+// 题目参数校准文件：真实作答样本（n≥8）会覆盖先验 p 值
+const CALIBRATION_FILE = path.join(__dirname, 'data', 'diagnostic-calibration.json');
+try {
+    if (fs.existsSync(CALIBRATION_FILE)) {
+        const cal = JSON.parse(fs.readFileSync(CALIBRATION_FILE, 'utf8'));
+        Object.keys(cal.items || {}).forEach(id => {
+            if (!BANK_MAP[id]) return;
+            BANK_MAP[id].p_value = cal.items[id].p_value;
+            BANK_MAP[id].param_source = 'empirical';
+            BANK_MAP[id].calibrated_n = cal.items[id].n;
+        });
+    }
+} catch (e) { console.warn('[diagnostic] 校准文件读取失败', e.message); }
 
 const KP_META = {};
 DIAGNOSTIC_BANK.forEach(q => {
     KP_META[q.knowledge_point_id] = {
-        id: q.knowledge_point_id, subject: q.subject, name: q.knowledge_point, difficulty: q.difficulty
+        id: q.knowledge_point_id, subject: q.subject, name: q.knowledge_point,
+        difficulty: q.difficulty, domain: q.domain
     };
 });
 
 function round2(v) { return Math.round(v * 100) / 100; }
+function round3(v) { return Math.round(v * 1000) / 1000; }
+function hashStr(s) {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 100000;
+    return h;
+}
+
+// 难度分档：基础/中档/难（来自蓝图定义）
+function bandOf(q) {
+    const d = Number(q.difficulty);
+    const bands = BLUEPRINT.difficulty_bands || {};
+    for (const name of Object.keys(bands)) {
+        if ((bands[name].levels || []).indexOf(d) !== -1) return name;
+    }
+    return '中档';
+}
 
 // ---------- 诊断结果计算 ----------
 // 从 goal.subjects 中提取选科名称数组（兼容字符串数组和 {name,target} 对象数组）
@@ -43,109 +80,434 @@ function extractSubjectNames(subjects) {
     return names.length ? names : null;
 }
 
+// 3+1+2 选科归一：语数外 + 首选(物理/历史) + 再选 2 科
+function normalizeSelection(subjectNames) {
+    const names = (subjectNames && subjectNames.length) ? subjectNames.slice() : DEFAULT_GAOKAO_SUBJECTS.slice();
+    const st = BLUEPRINT.structure;
+    const required = st.required.filter(s => names.indexOf(s) !== -1);
+    const req = required.length ? required : st.required.slice();
+    const first = st.first_choice.filter(s => names.indexOf(s) !== -1);
+    const firstChoice = first.length ? first[0] : (names.indexOf('历史') !== -1 ? '历史' : '物理');
+    const electives = st.electives.filter(s => names.indexOf(s) !== -1 && s !== firstChoice);
+    st.electives.forEach(s => {
+        if (electives.length < 2 && s !== firstChoice && electives.indexOf(s) === -1) electives.push(s);
+    });
+    return {
+        subjects: req.concat([firstChoice], electives.slice(0, 2)),
+        firstChoice,
+        electives: electives.slice(0, 2)
+    };
+}
+
+// 蓝图难度目标：按配额把 100% 拆到各难度档，最大余数法保证总和等于配额
+function bandTargets(quota) {
+    const bands = BLUEPRINT.difficulty_bands || {};
+    const names = Object.keys(bands);
+    const rows = names.map(name => {
+        const x = quota * (Number(bands[name].target) || 0);
+        return { name, x, base: Math.floor(x), frac: x - Math.floor(x) };
+    });
+    let remain = quota - rows.reduce((s, r) => s + r.base, 0);
+    rows.slice().sort((a, b) => b.frac - a.frac).forEach(r => {
+        if (remain > 0) {
+            const row = rows.find(x => x.name === r.name);
+            row.base++;
+            remain--;
+        }
+    });
+    const out = {};
+    rows.forEach(r => { out[r.name] = r.base; });
+    return out;
+}
+
+// 按命题蓝图 + 选科分层组卷（同一天同一学生结果稳定，便于断点续答）
+function selectQuestions(subjectNames, seed) {
+    const sel = normalizeSelection(subjectNames);
+    const picked = [];
+    const quotas = {};
+    sel.subjects.forEach(subject => {
+        const quota = BLUEPRINT.subject_quota[subject] || 0;
+        const pool = DIAGNOSTIC_BANK.filter(q => q.subject === subject);
+        const used = {};
+        const byBand = {};
+        const targets = bandTargets(quota);
+        // 先按蓝图目标抽题：难 → 基础 → 中档（优先保障高难题配额）
+        ['难', '基础', '中档'].forEach(band => {
+            const cfg = BLUEPRINT.difficulty_bands[band];
+            if (!cfg) return;
+            const want = targets[band] || 0;
+            byBand[band] = pool
+                .filter(q => !used[q.id] && (cfg.levels || []).indexOf(Number(q.difficulty)) !== -1)
+                .sort((a, b) => hashStr(seed + a.id) - hashStr(seed + b.id))
+                .slice(0, want);
+            byBand[band].forEach(q => { used[q.id] = true; });
+        });
+        // 展示顺序仍按 基础 → 中档 → 难，由易到难
+        const chosen = [];
+        ['基础', '中档', '难'].forEach(band => {
+            (byBand[band] || []).forEach(q => { if (chosen.length < quota) chosen.push(q); });
+        });
+        // 某档题不足时，用 p 值最接近中位难度的题补足配额
+        if (chosen.length < quota) {
+            pool.filter(q => !used[q.id])
+                .sort((a, b) => Math.abs(a.p_value - 0.6) - Math.abs(b.p_value - 0.6))
+                .forEach(q => { if (chosen.length < quota) { chosen.push(q); used[q.id] = true; } });
+        }
+        // 强制领域覆盖：每个必考领域至少 1 题（等量替换，不改变题量与难度结构）
+        const requiredDomains = ((BLUEPRINT.domains || {})[subject] || []).map(d => d.name);
+        const domainCount = {};
+        chosen.forEach(q => { domainCount[q.domain] = (domainCount[q.domain] || 0) + 1; });
+        requiredDomains.forEach(domain => {
+            if (domainCount[domain]) return;
+            const cands = pool
+                .filter(q => !used[q.id] && q.domain === domain)
+                .sort((a, b) => hashStr(seed + a.id) - hashStr(seed + b.id));
+            if (!cands.length) return;
+            const cand = cands[0];
+            // 只替换“所在领域题数 > 1”的题目，避免拆掉已覆盖的领域
+            const victims = chosen
+                .filter(q => (domainCount[q.domain] || 0) > 1)
+                .sort((a, b) => {
+                    const sa = (bandOf(a) === bandOf(cand) ? 100 : 0) + (domainCount[a.domain] || 0);
+                    const sb = (bandOf(b) === bandOf(cand) ? 100 : 0) + (domainCount[b.domain] || 0);
+                    return sb - sa || hashStr(seed + a.id) - hashStr(seed + b.id);
+                });
+            if (!victims.length) return;
+            const victim = victims[0];
+            chosen[chosen.indexOf(victim)] = cand;
+            used[cand.id] = true;
+            domainCount[victim.domain]--;
+            domainCount[domain] = (domainCount[domain] || 0) + 1;
+        });
+        // 展示顺序：基础 → 中档 → 难
+        const bandOrder = ['基础', '中档', '难'];
+        chosen.sort((a, b) => bandOrder.indexOf(bandOf(a)) - bandOrder.indexOf(bandOf(b)) || a.id.localeCompare(b.id));
+        quotas[subject] = chosen.length;
+        chosen.forEach(q => picked.push(q));
+    });
+    return { questions: picked, quotas, selection: sel };
+}
+
+// 猜测校正后的能力估计：4 选 1 盲猜期望正确率 1/k
+function thetaOf(correct, n, k) {
+    if (!n) return 0;
+    const kk = k || 4;
+    const p = correct / n;
+    return Math.max(0, Math.min(1, (p - 1 / kk) / (1 - 1 / kk)));
+}
+// 小样本经验贝叶斯收缩，避免 1 题定生死
+function shrink(theta, n) {
+    const w = 1.5;
+    return (theta * n + 0.5 * w) / (n + w);
+}
+function proportionSE(p, n) { return n > 0 ? Math.sqrt(Math.max(0, p * (1 - p)) / n) : 0; }
+function confidenceOf(n) {
+    const th = BLUEPRINT.confidence_thresholds || { high: 10, medium: 4 };
+    if (n >= th.high) return '高';
+    if (n >= th.medium) return '中';
+    return '低';
+}
+// KR-20：二分题内部一致性信度（必须基于考生群体 × 同题矩阵，单人作答无法估计）
+// 取与本次组卷重叠 ≥20% 的考生，保留所有人都作答过的公共题，考生数 ≥3 且公共题 ≥10 才计算
+function kr20(session) {
+    const db = store.db();
+    const qids = session.question_ids || [];
+    if (qids.length < 10) return null;
+    const minOverlap = Math.max(10, Math.ceil(qids.length * 0.2));
+    const byUser = {};
+    db.answer_records.forEach(r => {
+        if (qids.indexOf(r.question_id) === -1) return;
+        if (!byUser[r.user_id]) byUser[r.user_id] = {};
+        byUser[r.user_id][r.question_id] = r.is_correct ? 1 : 0;
+    });
+    const matrix = Object.keys(byUser)
+        .map(u => byUser[u])
+        .filter(m => Object.keys(m).length >= minOverlap);
+    if (matrix.length < 3) return null;
+    const common = qids.filter(id => matrix.every(m => m[id] !== undefined));
+    if (common.length < 10) return null;
+
+    const totals = matrix.map(m => common.reduce((s, id) => s + m[id], 0));
+    const meanT = totals.reduce((a, b) => a + b, 0) / totals.length;
+    const varT = totals.reduce((a, b) => a + (b - meanT) * (b - meanT), 0) / totals.length;
+    if (varT <= 0) return null;
+    const sumPQ = common.reduce((s, id) => {
+        const pi = matrix.reduce((acc, m) => acc + m[id], 0) / matrix.length;
+        return s + pi * (1 - pi);
+    }, 0);
+    const value = Math.max(0, Math.min(1, (common.length / (common.length - 1)) * (1 - sumPQ / varT)));
+    return { value: round3(value), examinees: matrix.length, items: common.length };
+}
+
 function computeStates(userId, session, subjectNames) {
-    // 限定只统计用户选考的科目，避免 9 科累加超过 750
-    const validSubjects = (subjectNames && subjectNames.length) ? subjectNames : DEFAULT_GAOKAO_SUBJECTS;
     const db = store.db();
     const records = db.answer_records.filter(r => r.user_id === userId && r.session_id === session.session_id);
-
-    // 按知识点聚合
-    const kpAgg = {};
-    records.forEach(r => {
-        const id = r.knowledge_point_id || 'unknown';
-        if (!kpAgg[id]) kpAgg[id] = { total: 0, correct: 0, difficulty: r.difficulty || 3, subject: r.subject };
-        kpAgg[id].total++;
-        if (r.is_correct) kpAgg[id].correct++;
+    const items = records.map(r => {
+        const q = BANK_MAP[r.question_id] || {};
+        return {
+            record: r,
+            subject: r.subject || q.subject || '未知',
+            knowledge_point_id: r.knowledge_point_id || q.knowledge_point_id || 'unknown',
+            domain: q.domain || '未分类',
+            ability: q.ability || '理解识记',
+            p: Number(q.p_value) || 0.6,
+            k: (q.options && q.options.length) || 4
+        };
     });
 
+    // 本次组卷实际涉及的科目（兼容旧版 34 题会话）
+    const sessionSubjects = [];
+    (session.question_ids || []).forEach(id => {
+        const q = BANK_MAP[id];
+        if (q && sessionSubjects.indexOf(q.subject) === -1) sessionSubjects.push(q.subject);
+    });
+    const validSubjects = sessionSubjects.length ? sessionSubjects
+        : ((subjectNames && subjectNames.length) ? subjectNames : DEFAULT_GAOKAO_SUBJECTS);
+
+    // ---- 知识点层（单题结论标低置信）----
+    const kpAgg = {};
+    items.forEach(it => {
+        const id = it.knowledge_point_id;
+        if (!kpAgg[id]) kpAgg[id] = { n: 0, correct: 0, subject: it.subject, domain: it.domain, k: it.k };
+        kpAgg[id].n++;
+        if (it.record.is_correct) kpAgg[id].correct++;
+    });
     const knowledgeStates = Object.keys(kpAgg).map(id => {
-        const meta = KP_META[id] || { id, subject: kpAgg[id].subject, name: id, difficulty: kpAgg[id].difficulty };
-        const agg = kpAgg[id];
-        const accuracy = agg.correct / agg.total;
-        // 掌握度：正确率为主，难度做轻微加权
-        const diffWeight = 1 - Math.min(0.2, (meta.difficulty - 3) * 0.05);
-        const mastery = round2(Math.max(0, Math.min(1, accuracy * diffWeight)));
+        const meta = KP_META[id] || { id, subject: kpAgg[id].subject, name: id, domain: kpAgg[id].domain };
+        const a = kpAgg[id];
+        const theta = shrink(thetaOf(a.correct, a.n, a.k), a.n);
         return {
             user_id: userId,
             knowledge_point_id: id,
             knowledge_point: meta.name,
             subject: meta.subject,
-            mastery,
-            accuracy: round2(accuracy),
-            attempts: agg.total,
-            correct: agg.correct,
+            domain: meta.domain,
+            mastery: round2(theta),
+            accuracy: round2(a.correct / a.n),
+            attempts: a.n,
+            correct: a.correct,
+            confidence: confidenceOf(a.n),
             updated_at: store.nowIso()
         };
     }).sort((a, b) => a.mastery - b.mastery);
-
     db.knowledge_states[userId] = knowledgeStates;
 
-    // 能力状态：按学科聚合（仅用户选考科目）
+    // ---- 知识领域层（诊断结论主体，避免 1 题定生死）----
+    const domainAgg = {};
+    items.forEach(it => {
+        const key = it.subject + '|' + it.domain;
+        if (!domainAgg[key]) domainAgg[key] = { subject: it.subject, domain: it.domain, n: 0, correct: 0, k: it.k };
+        domainAgg[key].n++;
+        if (it.record.is_correct) domainAgg[key].correct++;
+    });
+    const domainStates = Object.keys(domainAgg).map(key => {
+        const a = domainAgg[key];
+        return {
+            subject: a.subject,
+            domain: a.domain,
+            mastery: round2(shrink(thetaOf(a.correct, a.n, a.k), a.n)),
+            accuracy: round2(a.correct / a.n),
+            attempts: a.n,
+            correct: a.correct,
+            confidence: confidenceOf(a.n)
+        };
+    }).sort((a, b) => a.mastery - b.mastery);
+
+    // ---- 学科能力层 ----
     const abilityStates = validSubjects.map(subject => {
         const meta = SUBJECT_META[subject];
         if (!meta) return null;
-        const ks = knowledgeStates.filter(k => k.subject === subject);
-        if (!ks.length) return null;
-        const total = ks.reduce((s, k) => s + k.attempts, 0);
-        const correct = ks.reduce((s, k) => s + k.correct, 0);
-        const accuracy = total ? correct / total : 0;
-        const mastery = ks.reduce((s, k) => s + k.mastery, 0) / ks.length;
-        const estimated = Math.round(meta.full_score * (0.4 + 0.55 * mastery));
+        const sub = items.filter(it => it.subject === subject);
+        if (!sub.length) return null;
+        const n = sub.length;
+        const correct = sub.filter(it => it.record.is_correct).length;
+        const p = correct / n;
+        const k = sub[0].k || 4;
+        const theta = thetaOf(correct, n, k);
+        const thetaAdj = shrink(theta, n);
+        const se = proportionSE(p, n) / (1 - 1 / k);
+        const sem = round2(se * meta.full_score);
+        const ci = Math.round(1.96 * sem);
+        const estimated = Math.round(meta.full_score * thetaAdj);
         let level = '基础';
-        if (mastery >= 0.8) level = '优势';
-        else if (mastery >= 0.6) level = '进阶';
+        if (thetaAdj >= 0.8) level = '优势';
+        else if (thetaAdj >= 0.6) level = '进阶';
+        const dimensions = (BLUEPRINT.ability_dimensions || []).map(dim => {
+            const ds = sub.filter(it => it.ability === dim);
+            const dn = ds.length;
+            const dc = ds.filter(it => it.record.is_correct).length;
+            return {
+                dimension: dim,
+                attempts: dn,
+                correct: dc,
+                mastery: dn ? round2(shrink(thetaOf(dc, dn, k), dn)) : null,
+                confidence: confidenceOf(dn)
+            };
+        }).filter(d => d.attempts > 0);
         return {
             user_id: userId,
             subject,
             color: meta.color,
             icon: meta.icon,
             full_score: meta.full_score,
-            attempts: total,
+            attempts: n,
             correct,
-            accuracy: round2(accuracy),
-            mastery: round2(mastery),
+            accuracy: round2(p),
+            mastery: round2(thetaAdj),
+            guessing_corrected: round2(theta),
             estimated_score: estimated,
+            score_range: [Math.max(0, estimated - ci), Math.min(meta.full_score, estimated + ci)],
+            sem,
+            confidence: confidenceOf(n),
             level,
+            dimensions,
             updated_at: store.nowIso()
         };
     }).filter(Boolean);
-
     db.ability_states[userId] = abilityStates;
     store.save();
 
     const totalQ = records.length;
     const totalCorrect = records.filter(r => r.is_correct).length;
     const accuracy = totalQ ? totalCorrect / totalQ : 0;
-    // 只累加选考科目估分，并硬上限到 750
+    const correctedAccuracy = thetaOf(totalCorrect, totalQ, 4);
     const estimatedScore = Math.min(
         abilityStates.reduce((s, a) => s + a.estimated_score, 0),
         TOTAL_FULL_SCORE
     );
+    const reliability = kr20(session);
+    const reliabilityValue = reliability ? reliability.value : null;
+    let overallConfidence = '低';
+    if (totalQ >= 60 && (reliabilityValue === null || reliabilityValue >= 0.8)) overallConfidence = '高';
+    else if (totalQ >= 30) overallConfidence = '中';
+    if (reliabilityValue !== null && reliabilityValue < 0.6) overallConfidence = '低';
 
-    return { knowledgeStates, abilityStates, totalQ, totalCorrect, accuracy, estimatedScore };
+    return {
+        knowledgeStates, domainStates, abilityStates,
+        totalQ, totalCorrect, accuracy, correctedAccuracy,
+        estimatedScore,
+        reliability: reliabilityValue,
+        reliabilityMeta: reliability,
+        overallConfidence, sessionSubjects: validSubjects
+    };
+}
+
+// 组卷覆盖度：题量、知识领域、难度配比、信度
+function buildCoverage(session, st) {
+    const qids = session.question_ids || [];
+    const counts = {}, domainCounts = {}, bands = {};
+    qids.forEach(id => {
+        const q = BANK_MAP[id];
+        if (!q) return;
+        counts[q.subject] = (counts[q.subject] || 0) + 1;
+        const dk = q.subject + '|' + q.domain;
+        domainCounts[dk] = (domainCounts[dk] || 0) + 1;
+        const b = bandOf(q);
+        bands[b] = (bands[b] || 0) + 1;
+    });
+    const quota = session.subject_quotas || {};
+    const subjects = st.sessionSubjects.map(subject => {
+        const reqDomains = (BLUEPRINT.domains[subject] || []).filter(d => d.required).map(d => d.name);
+        const covered = reqDomains.filter(name => domainCounts[subject + '|' + name]);
+        return {
+            subject,
+            planned: quota[subject] || 0,
+            actual: counts[subject] || 0,
+            domains_required: reqDomains.length,
+            domains_covered: covered.length,
+            missing_domains: reqDomains.filter(name => covered.indexOf(name) === -1)
+        };
+    });
+    const totalPlanned = subjects.reduce((s, x) => s + x.planned, 0);
+    const totalActual = subjects.reduce((s, x) => s + x.actual, 0);
+    let delta = 0;
+    Object.keys(BLUEPRINT.difficulty_bands).forEach(band => {
+        const target = BLUEPRINT.difficulty_bands[band].target || 0;
+        const actual = totalActual ? (bands[band] || 0) / totalActual : 0;
+        delta += Math.abs(actual - target);
+    });
+    const gaps = [];
+    if (totalActual < totalPlanned) gaps.push('题库题量不足，实组 ' + totalActual + '/' + totalPlanned + ' 题');
+    subjects.forEach(s => {
+        if (s.missing_domains.length) gaps.push(s.subject + ' 未覆盖：' + s.missing_domains.join('、'));
+    });
+    const hardRatio = totalActual ? (bands['难'] || 0) / totalActual : 0;
+    if (hardRatio < 0.1) gaps.push('高难题占比 ' + Math.round(hardRatio * 100) + '%，低于蓝图 20%，顶尖水平区分度有限');
+    if (st.reliability !== null && st.reliability < 0.8) gaps.push('整卷信度 KR-20=' + st.reliability + '，低于 0.8');
+    return {
+        blueprint_version: BLUEPRINT.version,
+        total_planned: totalPlanned,
+        total_actual: totalActual,
+        completeness: totalPlanned ? round2(totalActual / totalPlanned) : 0,
+        difficulty_distribution: bands,
+        difficulty_compliance: round3(Math.max(0, 1 - delta / 2)),
+        reliability_kr20: st.reliability,
+        confidence: st.overallConfidence,
+        subjects,
+        gaps
+    };
 }
 
 function buildReport(userId, session) {
     const goal = store.getGoal(userId) || {};
     const subjectNames = extractSubjectNames(goal.subjects);
-    const { knowledgeStates, abilityStates, totalQ, totalCorrect, accuracy, estimatedScore } = computeStates(userId, session, subjectNames);
+    const st = computeStates(userId, session, subjectNames);
     const targetScore = Number(goal.target_score) || 600;
+    const selSubjects = st.sessionSubjects;
+    const inScope = subject => selSubjects.indexOf(subject) !== -1;
+    const minItems = BLUEPRINT.min_items_for_conclusion || 2;
 
-    const selSubjects = subjectNames || DEFAULT_GAOKAO_SUBJECTS;
-    const weak = knowledgeStates.filter(k => k.mastery < 0.6 && selSubjects.indexOf(k.subject) !== -1).slice(0, 5);
-    const strong = knowledgeStates.filter(k => k.mastery >= 0.75 && selSubjects.indexOf(k.subject) !== -1);
+    // 结论以"≥2 题的知识领域"为主，避免单题定性
+    let weak = st.domainStates
+        .filter(d => inScope(d.subject) && d.attempts >= minItems && d.mastery < 0.6)
+        .slice(0, 5)
+        .map(d => ({
+            subject: d.subject, knowledge_point: d.domain, domain: d.domain,
+            mastery: d.mastery, accuracy: d.accuracy, attempts: d.attempts, confidence: d.confidence
+        }));
+    if (!weak.length) {
+        weak = st.knowledgeStates
+            .filter(k => inScope(k.subject) && k.mastery < 0.6)
+            .slice(0, 5)
+            .map(k => ({
+                subject: k.subject, knowledge_point: k.knowledge_point, domain: k.domain,
+                mastery: k.mastery, accuracy: k.accuracy, attempts: k.attempts, confidence: k.confidence
+            }));
+    }
+    const strong = st.domainStates
+        .filter(d => inScope(d.subject) && d.attempts >= minItems && d.mastery >= 0.75)
+        .slice(0, 5)
+        .map(d => ({
+            subject: d.subject, knowledge_point: d.domain,
+            mastery: d.mastery, attempts: d.attempts, confidence: d.confidence
+        }));
+
+    const coverage = buildCoverage(session, st);
+    // 总分置信区间：各科测量误差相互独立，方差按平方和合成（而非直接相加区间）
+    const seTotal = Math.sqrt(st.abilityStates.reduce((s, a) => s + (a.sem * a.sem), 0));
+    const ciTotal = Math.round(1.96 * seTotal);
+    const low = Math.max(0, st.estimatedScore - ciTotal);
+    const high = Math.min(TOTAL_FULL_SCORE, st.estimatedScore + ciTotal);
 
     const paragraphs = [];
-    paragraphs.push('本次AI学情诊断共作答 ' + totalQ + ' 题，答对 ' + totalCorrect + ' 题，整体正确率 ' + Math.round(accuracy * 100) + '%。');
-    if (abilityStates.length) {
-        const best = abilityStates.slice().sort((a, b) => b.mastery - a.mastery)[0];
-        const worst = abilityStates.slice().sort((a, b) => a.mastery - b.mastery)[0];
-        paragraphs.push('学科能力上，' + best.subject + '表现最好（掌握度 ' + Math.round(best.mastery * 100) + '%），' + worst.subject + '相对薄弱（掌握度 ' + Math.round(worst.mastery * 100) + '%）。');
+    paragraphs.push('本次AI学情诊断实作答 ' + st.totalQ + ' 题（覆盖 ' + selSubjects.length + ' 科），答对 ' + st.totalCorrect
+        + ' 题，原始正确率 ' + Math.round(st.accuracy * 100) + '%，扣除猜对因素后的能力估计为 ' + Math.round(st.correctedAccuracy * 100) + '%。');
+    if (st.abilityStates.length) {
+        const best = st.abilityStates.slice().sort((a, b) => b.mastery - a.mastery)[0];
+        const worst = st.abilityStates.slice().sort((a, b) => a.mastery - b.mastery)[0];
+        paragraphs.push('学科能力上，' + best.subject + '表现最好（掌握度 ' + Math.round(best.mastery * 100)
+            + '%），' + worst.subject + '相对薄弱（掌握度 ' + Math.round(worst.mastery * 100) + '%）。');
     }
     if (weak.length) {
-        paragraphs.push('当前薄弱知识点集中在：' + weak.map(w => w.subject + '·' + w.knowledge_point).join('、') + '，建议优先安排专项训练。');
+        paragraphs.push('薄弱领域集中在：' + weak.map(w => w.subject + '·' + w.knowledge_point + '（' + w.confidence + '置信）').join('、')
+            + '，建议优先安排专项训练。');
     }
-    paragraphs.push('基于诊断数据估算当前水平约 ' + estimatedScore + ' 分，距离目标 ' + targetScore + ' 分还有 ' + Math.max(0, targetScore - estimatedScore) + ' 分的提升空间。');
+    paragraphs.push('本次估分 ' + st.estimatedScore + ' 分（95% 参考区间 ' + low + '～' + high + ' 分），距离目标 '
+        + targetScore + ' 分还有 ' + Math.max(0, targetScore - st.estimatedScore) + ' 分的提升空间。');
+    paragraphs.push('诊断质量：信度 KR-20=' + (st.reliability === null ? '样本不足'
+        : st.reliability + '（' + st.reliabilityMeta.examinees + ' 名考生 × ' + st.reliabilityMeta.items + ' 道公共题）')
+        + '，整体置信度' + st.overallConfidence + '，蓝图完成度 ' + Math.round(coverage.completeness * 100) + '%。'
+        + (coverage.gaps.length ? '局限：' + coverage.gaps.slice(0, 2).join('；') + '。' : ''));
 
     const report = {
         report_id: store.uid('rep'),
@@ -154,34 +516,68 @@ function buildReport(userId, session) {
         created_at: store.nowIso(),
         generated_from: 'diagnostic',
         summary: {
-            total_questions: totalQ,
-            correct_count: totalCorrect,
-            accuracy: round2(accuracy),
-            accuracy_pct: Math.round(accuracy * 100),
-            current_level: estimatedScore,
-            estimated_score: estimatedScore,
+            total_questions: st.totalQ,
+            correct_count: st.totalCorrect,
+            accuracy: round2(st.accuracy),
+            accuracy_pct: Math.round(st.accuracy * 100),
+            corrected_accuracy: round2(st.correctedAccuracy),
+            corrected_accuracy_pct: Math.round(st.correctedAccuracy * 100),
+            current_level: st.estimatedScore,
+            estimated_score: st.estimatedScore,
+            score_range: [low, high],
             target_score: targetScore,
-            score_gap: Math.max(0, targetScore - estimatedScore),
-            mastery_avg: abilityStates.length ? round2(abilityStates.reduce((s, a) => s + a.mastery, 0) / abilityStates.length) : 0
+            score_gap: Math.max(0, targetScore - st.estimatedScore),
+            mastery_avg: st.abilityStates.length ? round2(st.abilityStates.reduce((s, a) => s + a.mastery, 0) / st.abilityStates.length) : 0,
+            reliability_kr20: st.reliability,
+            confidence: st.overallConfidence,
+            coverage_rate: coverage.completeness
         },
         weak_points: weak.map(w => ({
-            subject: w.subject, knowledge_point: w.knowledge_point,
-            mastery: w.mastery, accuracy: w.accuracy,
+            subject: w.subject, knowledge_point: w.knowledge_point, domain: w.domain,
+            mastery: w.mastery, accuracy: w.accuracy, attempts: w.attempts, confidence: w.confidence,
             suggestion: '先看知识点讲解，再完成 8-10 道专项题，完成后立即复盘错题。'
         })),
-        strengths: strong.map(w => ({
-            subject: w.subject, knowledge_point: w.knowledge_point, mastery: w.mastery
-        })),
-        ability_profile: abilityStates.map(a => ({
+        strengths: strong,
+        ability_profile: st.abilityStates.map(a => ({
             subject: a.subject, level: a.level, mastery: a.mastery,
-            accuracy: a.accuracy, estimated_score: a.estimated_score, full_score: a.full_score
+            accuracy: a.accuracy, estimated_score: a.estimated_score, full_score: a.full_score,
+            score_range: a.score_range, sem: a.sem, confidence: a.confidence,
+            attempts: a.attempts, dimensions: a.dimensions
         })),
+        coverage,
         paragraphs
     };
 
     store.db().ai_diagnosis_reports[userId] = report;
     store.save();
     return report;
+}
+
+// 用真实作答统计校准题目 p 值（样本 n≥8 才生效），并落盘
+function calibrateItems() {
+    const db = store.db();
+    const agg = {};
+    db.answer_records.forEach(r => {
+        if (!BANK_MAP[r.question_id]) return;
+        if (!agg[r.question_id]) agg[r.question_id] = { n: 0, correct: 0 };
+        agg[r.question_id].n++;
+        if (r.is_correct) agg[r.question_id].correct++;
+    });
+    const items = {};
+    Object.keys(agg).forEach(id => {
+        if (agg[id].n >= 8) items[id] = { p_value: round3(agg[id].correct / agg[id].n), n: agg[id].n };
+    });
+    try {
+        fs.writeFileSync(CALIBRATION_FILE, JSON.stringify({
+            updated_at: store.nowIso(), min_n: 8, items
+        }, null, 2) + '\n');
+    } catch (e) { console.warn('[diagnostic] 校准写入失败', e.message); }
+    Object.keys(items).forEach(id => {
+        BANK_MAP[id].p_value = items[id].p_value;
+        BANK_MAP[id].param_source = 'empirical';
+        BANK_MAP[id].calibrated_n = items[id].n;
+    });
+    return { empirical_items: Object.keys(items).length, min_n: 8 };
 }
 
 function buildPlan(userId, report) {
@@ -320,40 +716,69 @@ module.exports = function registerStudentApi(app, ctx) {
     app.post('/api/diagnostic/start', requireUser, (req, res) => {
         const db = store.db();
         const userId = req.user.id;
-        // 已有进行中的会话则复用
+        // 已有进行中的会话则复用（保留断点续答）
         let session = Object.values(db.diagnostic_sessions)
             .find(s => s.user_id === userId && s.status === 'in_progress');
         if (!session) {
+            const goal = store.getGoal(userId) || {};
+            const sel = selectQuestions(extractSubjectNames(goal.subjects), userId + '|' + store.todayKey());
             session = {
                 session_id: store.uid('ds'),
                 user_id: userId,
                 status: 'in_progress',
-                question_ids: DIAGNOSTIC_BANK.map(q => q.id),
+                question_ids: sel.questions.map(q => q.id),
+                subject_quotas: sel.quotas,
+                selection: {
+                    first_choice: sel.selection.firstChoice,
+                    electives: sel.selection.electives,
+                    subjects: sel.selection.subjects
+                },
+                blueprint_version: BLUEPRINT.version,
                 started_at: store.nowIso(),
                 submitted_at: null,
                 date_key: store.todayKey()
             };
             db.diagnostic_sessions[session.session_id] = session;
             store.save();
-            store.addBehaviorEvent(userId, 'diagnostic_started', { session_id: session.session_id });
+            store.addBehaviorEvent(userId, 'diagnostic_started', {
+                session_id: session.session_id, total: session.question_ids.length
+            });
         }
         const answered = db.answer_records
             .filter(r => r.user_id === userId && r.session_id === session.session_id)
             .reduce((m, r) => { m[r.question_id] = r; return m; }, {});
+        const ids = session.question_ids || [];
+        const subjectCounts = {};
+        ids.forEach(id => {
+            const q = BANK_MAP[id];
+            if (q) subjectCounts[q.subject] = (subjectCounts[q.subject] || 0) + 1;
+        });
 
         res.json(ok({
             session_id: session.session_id,
             status: session.status,
             started_at: session.started_at,
-            total_questions: DIAGNOSTIC_BANK.length,
-            questions: DIAGNOSTIC_BANK.map(q => ({
-                id: q.id, subject: q.subject, knowledge_point_id: q.knowledge_point_id,
-                knowledge_point: q.knowledge_point, difficulty: q.difficulty,
-                stem: q.stem, options: q.options,
-                answered: !!answered[q.id],
-                answer_index: answered[q.id] ? answered[q.id].answer_index : null,
-                is_correct: answered[q.id] ? !!answered[q.id].is_correct : null
-            }))
+            total_questions: ids.length,
+            subject_counts: subjectCounts,
+            blueprint: {
+                version: BLUEPRINT.version,
+                subject_quotas: session.subject_quotas || {},
+                first_choice: session.selection ? session.selection.first_choice : null,
+                electives: session.selection ? session.selection.electives : []
+            },
+            questions: ids.map(id => {
+                const q = BANK_MAP[id];
+                if (!q) return null;
+                return {
+                    id: q.id, subject: q.subject, knowledge_point_id: q.knowledge_point_id,
+                    knowledge_point: q.knowledge_point, difficulty: q.difficulty,
+                    domain: q.domain, ability: q.ability,
+                    stem: q.stem, options: q.options,
+                    answered: !!answered[q.id],
+                    answer_index: answered[q.id] ? answered[q.id].answer_index : null,
+                    is_correct: answered[q.id] ? !!answered[q.id].is_correct : null
+                };
+            }).filter(Boolean)
         }));
     });
 
@@ -395,7 +820,8 @@ module.exports = function registerStudentApi(app, ctx) {
         if (s.status !== 'in_progress') return fail(res, 400, '诊断已提交，不能继续作答');
 
         const { question_id, answer_index, duration_sec } = req.body || {};
-        const q = DIAGNOSTIC_BANK.find(x => x.id === question_id);
+        if ((s.question_ids || []).indexOf(question_id) === -1) return fail(res, 400, '该题不属于本次诊断');
+        const q = BANK_MAP[question_id];
         if (!q) return fail(res, 400, '题目不存在');
         const idx = Number(answer_index);
         if (!(idx >= 0 && idx < q.options.length)) return fail(res, 400, '答案无效');
@@ -460,12 +886,14 @@ module.exports = function registerStudentApi(app, ctx) {
             report_id: report.report_id,
             plan_id: plan.plan_id
         });
+        const calibration = calibrateItems();
 
         res.json(ok({
             session_id: s.session_id,
             status: 'completed',
             report,
             plan,
+            calibration,
             knowledge_states: db.knowledge_states[req.user.id] || [],
             ability_states: db.ability_states[req.user.id] || []
         }));

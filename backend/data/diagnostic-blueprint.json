@@ -1,0 +1,92 @@
+{
+  "version": "2026-11",
+  "name": "新高考 3+1+2 学情诊断命题蓝图",
+  "updated_at": "2026-11-14",
+  "total_items": 100,
+  "structure": {
+    "required": ["语文", "数学", "英语"],
+    "first_choice": ["物理", "历史"],
+    "electives": ["化学", "生物", "政治", "地理"]
+  },
+  "subject_quota": {
+    "语文": 20,
+    "数学": 20,
+    "英语": 20,
+    "物理": 14,
+    "历史": 14,
+    "化学": 13,
+    "生物": 13,
+    "政治": 13,
+    "地理": 13
+  },
+  "difficulty_bands": {
+    "基础": { "levels": [2, 3], "target": 0.4 },
+    "中档": { "levels": [4], "target": 0.4 },
+    "难": { "levels": [5], "target": 0.2 }
+  },
+  "min_items_for_conclusion": 2,
+  "confidence_thresholds": { "high": 10, "medium": 4 },
+  "guessing_options": 4,
+  "ability_dimensions": ["理解识记", "分析应用", "综合迁移"],
+  "domains": {
+    "语文": [
+      { "id": "chn_modern", "name": "现代文阅读", "required": true },
+      { "id": "chn_ancient", "name": "古诗文阅读", "required": true },
+      { "id": "chn_language", "name": "语言文字运用", "required": true },
+      { "id": "chn_writing", "name": "写作", "required": true }
+    ],
+    "数学": [
+      { "id": "math_function", "name": "函数与导数", "required": true },
+      { "id": "math_sequence", "name": "数列", "required": true },
+      { "id": "math_trig", "name": "三角函数", "required": true },
+      { "id": "math_vector", "name": "平面向量", "required": true },
+      { "id": "math_solid", "name": "立体几何", "required": true },
+      { "id": "math_analytic", "name": "解析几何", "required": true },
+      { "id": "math_prob", "name": "概率与统计", "required": true },
+      { "id": "math_complex", "name": "复数与集合", "required": true }
+    ],
+    "英语": [
+      { "id": "eng_reading", "name": "阅读理解", "required": true },
+      { "id": "eng_cloze", "name": "完形填空", "required": true },
+      { "id": "eng_grammar_fill", "name": "语法填空", "required": true },
+      { "id": "eng_writing", "name": "写作", "required": true },
+      { "id": "eng_grammar", "name": "词汇与语法", "required": true }
+    ],
+    "物理": [
+      { "id": "phy_mechanics", "name": "力学", "required": true },
+      { "id": "phy_electric", "name": "电磁学", "required": true },
+      { "id": "phy_optics", "name": "光学", "required": true },
+      { "id": "phy_thermal", "name": "热学与近代物理", "required": true }
+    ],
+    "化学": [
+      { "id": "chem_basic", "name": "基本概念与计算", "required": true },
+      { "id": "chem_principle", "name": "化学反应原理", "required": true },
+      { "id": "chem_organic", "name": "有机化学", "required": true },
+      { "id": "chem_structure", "name": "物质结构", "required": true },
+      { "id": "chem_element", "name": "元素化合物", "required": true }
+    ],
+    "生物": [
+      { "id": "bio_cell", "name": "细胞与代谢", "required": true },
+      { "id": "bio_genetics", "name": "遗传与进化", "required": true },
+      { "id": "bio_regulation", "name": "稳态与调节", "required": true },
+      { "id": "bio_ecosystem", "name": "生态系统", "required": true }
+    ],
+    "政治": [
+      { "id": "pol_economy", "name": "经济生活", "required": true },
+      { "id": "pol_politics", "name": "政治生活", "required": true },
+      { "id": "pol_culture", "name": "文化生活", "required": true },
+      { "id": "pol_philosophy", "name": "生活与哲学", "required": true }
+    ],
+    "历史": [
+      { "id": "his_ancient", "name": "中国古代史", "required": true },
+      { "id": "his_modern", "name": "中国近代史", "required": true },
+      { "id": "his_contemporary", "name": "中国现代史", "required": true },
+      { "id": "his_world", "name": "世界史", "required": true }
+    ],
+    "地理": [
+      { "id": "geo_natural", "name": "自然地理", "required": true },
+      { "id": "geo_human", "name": "人文地理", "required": true },
+      { "id": "geo_region", "name": "区域地理", "required": true }
+    ]
+  }
+}

@@ -135,6 +135,9 @@ if [[ "$ONLY_TARGETS" == "all" || "$ONLY_TARGETS" == *"data"* ]]; then
   cp -r backend/data dist/data
   # prototype/data/ 用于开发时本地代理的 fallback
   cp -r backend/data prototype/data
+  # 敏感数据不进 CDN：用户库、员工账号、题目校准
+  rm -f dist/data/learning-db.json dist/data/staff.json dist/data/diagnostic-calibration.json
+  rm -f prototype/data/learning-db.json prototype/data/staff.json prototype/data/diagnostic-calibration.json
   PAGE_COUNT=$(ls backend/data/pages/*.json 2>/dev/null | wc -l)
   PRACTICE_COUNT=$(node -e "const j=require('./backend/data/pages/practice-real-exam.json'); const d=j.data||j; console.log(d.exams?.length||'?');")
   echo "  pages/*.json:     $PAGE_COUNT 个"
@@ -150,6 +153,7 @@ if [[ "$ONLY_TARGETS" == "all" || "$ONLY_TARGETS" == *"functions"* ]]; then
   mkdir -p dist/functions/api
   cp "functions/api/[[path]].js" "dist/functions/api/"
   cp "functions/api/_diagnostic-bank.js" "dist/functions/api/"
+  cp "functions/api/_diagnostic-blueprint.js" "dist/functions/api/"
   cp "functions/api/_page-data.js" "dist/functions/api/"
   node --check "functions/api/[[path]].js" && ok "Functions JS 语法校验通过 ✅" || fail "Functions JS 语法错误"
   wc -l "functions/api/[[path]].js" | awk '{print "  Functions 行数:", $1}'
@@ -199,14 +203,14 @@ else
   fail "practice-real-exam exams=$ACTUAL ❌ 预期 93，可能数据源又漂了！"
 fi
 
-# critical: 诊断题库必须与数据源一致（34 题）
+# critical: 诊断题库必须与数据源一致（脚本自动生成，禁止硬编码题数）
 BANK_SRC=$(node -e "const b=require('./backend/data/diagnostic-bank.json'); console.log((b.questions||[]).length);")
 BANK_DIST=$(node -e "const b=require('./dist/data/diagnostic-bank.json'); console.log((b.questions||[]).length);")
 BANK_FN=$(grep -c '"id": "dg_' dist/functions/api/_diagnostic-bank.js || true)
-if [ "$BANK_SRC" = "34" ] && [ "$BANK_DIST" = "34" ] && [ "$BANK_FN" = "34" ]; then
-  ok "诊断题库 34 题 ✅（JSON/静态/ Functions 三处一致）"
+if [ "$BANK_SRC" = "$BANK_DIST" ] && [ "$BANK_SRC" = "$BANK_FN" ] && [ "$BANK_SRC" -ge 100 ]; then
+  ok "诊断题库 $BANK_SRC 题 ✅（JSON/静态/ Functions 三处一致）"
 else
-  fail "诊断题库不一致 ❌ src=$BANK_SRC dist=$BANK_DIST functions=$BANK_FN"
+  fail "诊断题库不一致 ❌ src=$BANK_SRC dist=$BANK_DIST functions=$BANK_FN（要求 ≥100 且三处相等）"
 fi
 
 # ---------- 8. Dry run? ----------

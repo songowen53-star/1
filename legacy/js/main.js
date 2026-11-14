@@ -150,7 +150,7 @@ async function loadAppData() {
         // 1) radar —— 只在用户没保存时才用后端诊断数据填充
         const radarCfg = moduleConfigs['radar'] || {};
         if (!radarCfg.items || radarCfg.items.length === 0) {
-            radarCfg.items = (predictReport.predicted_subjects || []).map(s => ({ subject: s.subject, score: s.score || 0 }));
+            radarCfg.items = (predictReport.predicted_subjects || []).map(s => ({ subject: s.subject, score: s.score || 0, max_score: s.max_score || s.full_score }));
         }
         moduleConfigs['radar'] = radarCfg;
 
@@ -259,12 +259,15 @@ function renderSubjectScores(subjectScores) {
     if (!subjectScores) return;
     const container = document.querySelector('.subject-scores');
     if (!container) return;
-    container.innerHTML = subjectScores.map(s => `
+    const defaults = { '语文': 150, '数学': 150, '英语': 150, '物理': 100, '化学': 100, '生物': 100, '政治': 100, '历史': 100, '地理': 100 };
+    container.innerHTML = subjectScores.map(s => {
+        const max = s.max_score || s.full_score || defaults[s.subject] || 100;
+        return `
         <div class="sub-score">
             <div class="sub-name">${s.subject}</div>
-            <div class="sub-num">${s.score}/${s.max_score}</div>
-        </div>
-    `).join('');
+            <div class="sub-num">${s.score}/${max}</div>
+        </div>`;
+    }).join('');
     // 更新总分
     const total = subjectScores.reduce((sum, s) => sum + s.score, 0);
     const radarScore = document.querySelector('.radar-score strong');
@@ -435,11 +438,20 @@ function renderExamPredict(report) {
 
 // 更新雷达图（用各科得分率作为掌握率）
 function updateRadarChart(subjectScores) {
-    if (!subjectScores) return;
+    if (!Array.isArray(subjectScores) || !subjectScores.length) return;
     const chart = Chart.getChart('radarChart');
     if (!chart) return;
-    const currentData = subjectScores.map(s => Math.round(s.score / s.max_score * 100));
+    const defaults = { '语文': 150, '数学': 150, '英语': 150, '物理': 100, '化学': 100, '生物': 100, '政治': 100, '历史': 100, '地理': 100 };
+    const names = subjectScores.map(s => s.subject);
+    const currentData = subjectScores.map(s => {
+        const max = Number(s.max_score || s.full_score || defaults[s.subject] || 100);
+        const score = Number(s.score) || 0;
+        return Math.max(0, Math.min(100, Math.round(score / max * 100)));
+    });
+    // 标签随选科动态变化，避免固定 9 科与 6 科数据错位导致雷达图空白
+    chart.data.labels = names;
     chart.data.datasets[0].data = currentData;
+    chart.data.datasets[1].data = names.map(() => 88);
     chart.update();
 }
 
@@ -1171,7 +1183,7 @@ function streamAIReplyInto(bubbleEl, messagesEl, question) {
                     attr.innerHTML = '<i class="fas ' + data.icon + '" style="color:' + data.color + ';"></i> ' +
                         '<b style="color:' + data.color + ';">' + data.modelName + '</b> ' +
                         '<span style="background:' + data.color + ';color:white;padding:1px 5px;border-radius:4px;font-size:9px;">' + data.badge + '</span> ' +
-                        '· ' + data.license + ' · ' + data.role + ' · ' + data.engine + ' 推理 · ' +
+                        '· ' + data.license + ' · ' + data.role + ' · ' + (data.engineLabel || (data.engine + ' 推理')) + ' · ' +
                         '<span style="color:#10B981;">' + data.tokens + ' tokens</span> · ' +
                         '<span style="color:#9CA3AF;">RAG 检索 ' + data.retrievalCount + ' 条</span>';
                     bubbleEl.appendChild(attr);
@@ -1723,28 +1735,59 @@ async function showQuestionDetail(questionId) {
     openModal('答题训练', '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin" style="font-size:24px;color:#3B82F6;"></i></div>');
     const q = await api.getQuestion(questionId);
     if (!q) {
-        openModal('答题训练', '<p>题目加载失败</p>');
+        openModal('答题训练', '<p style="text-align:center;padding:20px;color:#EF4444;">题目加载失败，请关闭后重试</p>');
         return;
     }
 
     const subjectColor = { '数学': '#3B82F6', '英语': '#8B5CF6', '物理': '#F59E0B', '化学': '#10B981', '语文': '#EF4444' };
-    const diffStars = (d) => '★'.repeat(d) + '☆'.repeat(5 - d);
+    const diffStars = (d) => '★'.repeat(d || 3) + '☆'.repeat(5 - (d || 3));
     const startTime = Date.now();
+    // 题型/分值/考点兼容：组卷题目没有 score，knowledge_point 是字符串
+    const scoreMap = { '选择题': 5, '填空题': 5, '计算题': 12, '解答题': 12, '推断题': 12, '写作': 25, '完形填空': 10 };
+    const score = q.score || scoreMap[q.type] || 10;
+    const kp = typeof q.knowledge_point === 'string' ? q.knowledge_point : ((q.knowledge_point && q.knowledge_point.name) || '');
+    const isChoice = Array.isArray(q.options) && q.options.length > 0;
+
+    window.__currentQuestion = q;
+    window.__pickedOption = '';
+    window.__pickOption = function (letter) {
+        window.__pickedOption = letter;
+        document.querySelectorAll('#q-options [data-opt]').forEach(el => {
+            const on = el.getAttribute('data-opt') === letter;
+            el.style.borderColor = on ? '#3B82F6' : '#E5E7EB';
+            el.style.background = on ? '#EFF6FF' : '#F9FAFB';
+            const badge = el.querySelector('.opt-badge');
+            if (badge) { badge.style.background = on ? '#3B82F6' : '#E5E7EB'; badge.style.color = on ? 'white' : '#374151'; }
+        });
+    };
+
+    const optionsHTML = isChoice ? `
+        <div id="q-options" style="margin-bottom:16px;">
+            ${q.options.map((opt, i) => {
+                const letter = String.fromCharCode(65 + i);
+                const text = String(opt).replace(/^\s*[A-Da-d][.、．)）]\s*/, '');
+                return `<div data-opt="${letter}" onclick="window.__pickOption('${letter}')" style="display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;cursor:pointer;">
+                    <div class="opt-badge" style="width:28px;height:28px;border-radius:50%;background:#E5E7EB;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#374151;flex-shrink:0;">${letter}</div>
+                    <div style="font-size:14px;color:#1F2937;flex:1;">${formatMathPlain(text)}</div>
+                </div>`;
+            }).join('')}
+        </div>` : `
+        <div style="margin-bottom:16px;">
+            <label style="font-size:13px;color:#6B7280;display:block;margin-bottom:6px;">你的答案：</label>
+            <textarea id="answer-input" style="width:100%;min-height:80px;border:1px solid #E5E7EB;border-radius:8px;padding:10px;font-size:13px;outline:none;" placeholder="请输入你的答案..."></textarea>
+        </div>`;
 
     const bodyHTML = `
         <div style="margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
                 <span style="background:${subjectColor[q.subject] || '#6B7280'};color:white;font-size:12px;padding:3px 10px;border-radius:4px;">${q.subject}</span>
-                <span style="font-size:12px;color:#9CA3AF;">${q.type} | ${q.score}分</span>
+                <span style="font-size:12px;color:#9CA3AF;">${q.type || '题目'} | ${score}分</span>
                 <span style="font-size:12px;color:#F59E0B;">${diffStars(q.difficulty)}</span>
             </div>
-            ${q.knowledge_point ? `<div style="font-size:12px;color:#3B82F6;margin-bottom:10px;">考点：${q.knowledge_point.name}</div>` : ''}
-            <div style="font-size:14px;line-height:1.7;color:#1F2937;background:#F9FAFB;padding:14px;border-radius:8px;">${q.content || q.title || ''}</div>
+            ${kp ? `<div style="font-size:12px;color:#3B82F6;margin-bottom:10px;">考点：${kp}</div>` : ''}
+            <div style="font-size:14px;line-height:1.7;color:#1F2937;background:#F9FAFB;padding:14px;border-radius:8px;">${formatMathPlain(q.content || q.title || '')}</div>
         </div>
-        <div style="margin-bottom:16px;">
-            <label style="font-size:13px;color:#6B7280;display:block;margin-bottom:6px;">你的答案：</label>
-            <textarea id="answer-input" style="width:100%;min-height:80px;border:1px solid #E5E7EB;border-radius:8px;padding:10px;font-size:13px;outline:none;" placeholder="请输入你的答案..."></textarea>
-        </div>
+        ${optionsHTML}
         <div id="answer-result" style="display:none;"></div>
         <div class="modal-footer" style="border:none;padding:20px 0 0;">
             <button class="modal-btn secondary" onclick="closeModal()">关闭</button>
@@ -1756,9 +1799,12 @@ async function showQuestionDetail(questionId) {
 
 // 提交答案处理
 async function submitAnswerHandler(questionId, startTime) {
+    const q = window.__currentQuestion || {};
+    const isChoice = Array.isArray(q.options) && q.options.length > 0;
     const input = document.getElementById('answer-input');
-    if (!input || !input.value.trim()) {
-        showToast('请输入答案后再提交', 'warning');
+    const userAnswer = isChoice ? (window.__pickedOption || '') : ((input && input.value.trim()) || '');
+    if (!userAnswer) {
+        showToast(isChoice ? '请先选择一个选项' : '请输入答案后再提交', 'warning');
         return;
     }
     const timeCost = Math.round((Date.now() - startTime) / 1000);
@@ -1766,21 +1812,23 @@ async function submitAnswerHandler(questionId, startTime) {
     resultDiv.style.display = 'block';
     resultDiv.innerHTML = '<div style="text-align:center;padding:10px;"><i class="fas fa-spinner fa-spin" style="color:#3B82F6;"></i> 提交中...</div>';
 
-    const result = await api.submitAnswer(questionId, input.value.trim(), timeCost);
-    if (!result) {
-        resultDiv.innerHTML = '<div style="color:#EF4444;padding:10px;">提交失败，请重试</div>';
-        return;
-    }
+    const result = await api.submitAnswer(questionId, userAnswer, timeCost);
+    // 兜底：接口异常时本地判题，仍展示答案与解析
+    const res = result || {};
+    const localCorrect = String(q.answer || '').toUpperCase().indexOf(String(userAnswer).toUpperCase()) === 0;
 
-    const isCorrect = result.is_correct;
+    const isCorrect = typeof res.is_correct === 'boolean' ? res.is_correct : localCorrect;
+    // 兼容：组卷题后端未回传时回退到题目自带答案/解析
+    const correctAnswer = formatMathPlain(res.correct_answer || q.answer || '—');
+    const analysisText = formatMathPlain(res.analysis || q.analysis || '暂无解析');
     resultDiv.innerHTML = `
         <div style="padding:14px;border-radius:8px;margin-bottom:12px;background:${isCorrect ? '#ECFDF5' : '#FEF2F2'};border:1px solid ${isCorrect ? '#10B981' : '#EF4444'};">
             <div style="font-weight:600;color:${isCorrect ? '#10B981' : '#EF4444'};margin-bottom:8px;">
                 <i class="fas ${isCorrect ? 'fa-check-circle' : 'fa-times-circle'}"></i> ${isCorrect ? '回答正确！' : '回答错误'}
                 <span style="font-size:12px;color:#9CA3AF;font-weight:normal;margin-left:8px;">用时 ${timeCost}秒</span>
             </div>
-            <div style="font-size:13px;color:#374151;margin-bottom:6px;"><strong>正确答案：</strong>${result.correct_answer}</div>
-            <div style="font-size:13px;color:#6B7280;line-height:1.6;"><strong>解析：</strong>${result.analysis}</div>
+            <div style="font-size:13px;color:#374151;margin-bottom:6px;"><strong>正确答案：</strong>${correctAnswer}</div>
+            <div style="font-size:13px;color:#6B7280;line-height:1.6;"><strong>解析：</strong>${analysisText}</div>
         </div>
     `;
     showToast(isCorrect ? '回答正确！掌握率已更新' : '回答错误，查看解析', isCorrect ? 'success' : 'warning');
@@ -1851,19 +1899,33 @@ async function handleWeekChange(value) {
     }
 }
 
+// 输入框回车发送：兼容中文输入法
+// - 组合期间（拼音候选）回车用于选词，不能触发发送
+// - 部分输入法/浏览器在 compositionend 之后才派发回车，此时 isComposing 已是 false，
+//   需用 justComposed 窗口兜住，否则会把拼音直接发出去并清空输入框
+function bindImeSafeEnter(input, sendFn) {
+    if (!input || input._imeEnterBound) return;
+    input._imeEnterBound = true;
+    let composing = false;
+    let justComposed = false;
+    input.addEventListener('compositionstart', function() { composing = true; });
+    input.addEventListener('compositionend', function() {
+        composing = false;
+        justComposed = true;
+        setTimeout(function() { justComposed = false; }, 60);
+    });
+    input.addEventListener('keydown', function(e) {
+        if (e.key !== 'Enter') return;
+        if (composing || justComposed || e.isComposing || e.keyCode === 229) return;
+        e.preventDefault();
+        sendFn();
+    });
+}
+
 // ========== 其他交互 ==========
 function initInteractions() {
-    // AI 学习教练输入框：支持中文输入法（isComposing 期间 Enter 确认候选词，不触发发送）
-    const chatInput = document.getElementById('chat-input');
-    if (chatInput && !chatInput._imeBound) {
-        chatInput._imeBound = true;
-        chatInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) {
-                e.preventDefault();
-                sendChatMessage();
-            }
-        });
-    }
+    // AI 学习教练悬浮窗输入框：回车发送（中文输入法组合期间不触发）
+    bindImeSafeEnter(document.getElementById('chat-input'), sendChatMessage);
 
     // 搜索框焦点效果
     const searchInput = document.querySelector('.search-box input');
@@ -3402,11 +3464,11 @@ window.buildExamDetailHtml = function(e, extraMetaHtml) {
     if (!e) return '<div style="padding:15px;">题目数据加载失败</div>';
     let html = '<div style="padding:14px;max-height:60vh;overflow-y:auto;">';
     if (extraMetaHtml) html += `<div style="background:#F9FAFB;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:12px;color:#374151;line-height:1.8;">${extraMetaHtml}</div>`;
-    const q = e.question || e.q || '暂无题干';
+    const q = formatMathPlain(e.question || e.q || '暂无题干');
     html += `<div style="font-size:14px;color:#111827;line-height:1.8;white-space:pre-wrap;word-break:break-word;margin-bottom:14px;">${q}</div>`;
     if (e.options && e.options.length) {
         html += '<div style="margin-bottom:14px;">';
-        e.options.forEach(opt => { html += `<div style="background:#F9FAFB;border-radius:8px;padding:10px 12px;margin-bottom:6px;font-size:13px;color:#374151;">${opt}</div>`; });
+        e.options.forEach(opt => { html += `<div style="background:#F9FAFB;border-radius:8px;padding:10px 12px;margin-bottom:6px;font-size:13px;color:#374151;">${formatMathPlain(String(opt))}</div>`; });
         html += '</div>';
     }
     const ansId = 'ans-' + Math.random().toString(36).substr(2,9);
@@ -3415,9 +3477,9 @@ window.buildExamDetailHtml = function(e, extraMetaHtml) {
         <button onclick="(function(b){var a=document.getElementById('${ansId}');a.style.display=a.style.display==='none'?'block':'none';b.innerText=a.style.display==='block'?'隐藏答案':'查看答案';})(this);" style="flex:1;background:#10B981;color:white;border:none;padding:10px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;"><i class="fas fa-check-circle"></i> 查看答案</button>
         <button onclick="(function(b){var a=document.getElementById('${anaId}');a.style.display=a.style.display==='none'?'block':'none';b.innerText=a.style.display==='block'?'隐藏解析':'查看解析';})(this);" style="flex:1;background:#3B82F6;color:white;border:none;padding:10px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;"><i class="fas fa-lightbulb"></i> 查看解析</button>
     </div>`;
-    html += `<div id="${ansId}" style="display:none;background:#F0FDF4;border-left:3px solid #10B981;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;color:#065F46;line-height:1.7;white-space:pre-wrap;word-break:break-word;margin-bottom:10px;"><b>✅ 参考答案</b><br>${e.answer || '暂无答案'}</div>`;
-    let ana = e.analysis || '暂无解析';
-    if (e.error_reason) ana += `\n\n📌 <b>错误原因分析</b>\n${e.error_reason}`;
+    html += `<div id="${ansId}" style="display:none;background:#F0FDF4;border-left:3px solid #10B981;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;color:#065F46;line-height:1.7;white-space:pre-wrap;word-break:break-word;margin-bottom:10px;"><b>✅ 参考答案</b><br>${formatMathPlain(e.answer || '暂无答案')}</div>`;
+    let ana = formatMathPlain(e.analysis || '暂无解析');
+    if (e.error_reason) ana += '\n\n📌 <b>错误原因分析</b>\n' + formatMathPlain(e.error_reason);
     html += `<div id="${anaId}" style="display:none;background:#FFFBEB;border-left:3px solid #F59E0B;padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;color:#92400E;line-height:1.7;white-space:pre-wrap;word-break:break-word;"><b>💡 详细解析</b><br>${ana}</div>`;
     html += '</div>';
     return html;
@@ -3749,12 +3811,12 @@ async function renderMistakesPage(container) {
                 </div>
                 <span style="color:#EF4444;font-size:12px;"><i class="fas fa-times-circle"></i> 错误</span>
             </div>
-            ${m.content || m.question ? `<div style="font-size:13px;color:#6B7280;line-height:1.6;margin-bottom:8px;">${(m.content || m.question).substring(0, 80)}${(m.content||m.question).length>80?'...':''}</div>` : ''}
-            ${m.correct_answer ? `<div style="margin-top:6px;padding:8px 10px;background:#FEF2F2;border-radius:6px;font-size:12px;color:#991B1B;"><i class="fas fa-check"></i> <strong>正确答案:</strong> ${m.correct_answer}</div>` : ''}
-            ${m.analysis ? `<div style="margin-top:6px;padding:8px 10px;background:#EFF6FF;border-radius:6px;font-size:12px;color:#1E40AF;"><i class="fas fa-lightbulb"></i> <strong>解析:</strong> ${m.analysis}</div>` : ''}
+            ${m.content || m.question ? `<div style="font-size:13px;color:#6B7280;line-height:1.6;margin-bottom:8px;">${formatMathPlain(escapeHtml((m.content || m.question).substring(0, 80)))}${(m.content||m.question).length>80?'...':''}</div>` : ''}
+            ${m.correct_answer ? `<div style="margin-top:6px;padding:8px 10px;background:#FEF2F2;border-radius:6px;font-size:12px;color:#991B1B;"><i class="fas fa-check"></i> <strong>正确答案:</strong> ${formatMathPlain(escapeHtml(m.correct_answer))}</div>` : ''}
+            ${m.analysis ? `<div style="margin-top:6px;padding:8px 10px;background:#EFF6FF;border-radius:6px;font-size:12px;color:#1E40AF;"><i class="fas fa-lightbulb"></i> <strong>解析:</strong> ${formatMathPlain(escapeHtml(m.analysis))}</div>` : ''}
             <div style="display:flex;justify-content:space-between;margin-top:8px;">
-                <span style="font-size:11px;color:#9CA3AF;">${m.created_at || m.date || ''}</span>
-                <button onclick="markMistakeReviewed(${i})" style="background:${m.reviewed?'#10B981':'#F3F4F6'};color:${m.reviewed?'white':'#6B7280'};border:none;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-weight:600;">
+                <span style="font-size:11px;color:#9CA3AF;">${m.answered_at ? m.answered_at.slice(0, 10) : (m.created_at || m.date || '')}</span>
+                <button onclick="markMistakeReviewed('${m.id}', this)" style="background:${m.reviewed?'#10B981':'#F3F4F6'};color:${m.reviewed?'white':'#6B7280'};border:none;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-weight:600;">
                     <i class="fas ${m.reviewed?'fa-check-circle':'fa-circle'}"></i> ${m.reviewed?'已复习':'标记已复习'}
                 </button>
             </div>
@@ -3784,8 +3846,15 @@ window.filterMistakeBySubject = function(subj) {
     });
 };
 
-window.markMistakeReviewed = function(idx) {
-    // 本地状态切换（演示）
+window.markMistakeReviewed = async function(id, btn) {
+    try {
+        await api.request('/api/answers/' + id + '/review', { method: 'POST', body: JSON.stringify({}) });
+    } catch (e) {}
+    if (btn) {
+        btn.style.background = '#10B981';
+        btn.style.color = 'white';
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> 已复习';
+    }
     showToast('已标记为已复习','success');
 };
 
@@ -3801,12 +3870,13 @@ function renderAIExplainPage(container) {
                     </div>
                 </div>
                 <div style="display:flex;gap:10px;">
-                    <input type="text" id="ai-explain-input" placeholder="输入题目或知识点，如：圆锥曲线第二问怎么做？" style="flex:1;padding:10px 14px;border:1px solid #E5E7EB;border-radius:10px;outline:none;font-size:14px;" onkeydown="if(event.key==='Enter') sendAIExplain()">
+                    <input type="text" id="ai-explain-input" placeholder="输入题目或知识点，如：圆锥曲线第二问怎么做？" style="flex:1;padding:10px 14px;border:1px solid #E5E7EB;border-radius:10px;outline:none;font-size:14px;">
                     <button class="btn-primary" onclick="sendAIExplain()"><i class="fas fa-paper-plane"></i> 发送</button>
                 </div>
             </div>
         </div>
     `;
+    bindImeSafeEnter(document.getElementById('ai-explain-input'), sendAIExplain);
 }
 
 function sendAIExplain() {
@@ -3874,24 +3944,8 @@ async function renderAICoachPage(container) {
                 </div>
             </div></div>`;
 
-        // 使用 composition 标记变量，兼容所有浏览器和输入法的中文输入
-        (function() {
-            const input = document.getElementById('ai-coach-input');
-            if (!input) return;
-            let composing = false;
-            input.addEventListener('compositionstart', function() { composing = true; });
-            input.addEventListener('compositionend', function() { composing = false; });
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    // IME 正在组合候选词时，让浏览器处理，不触发发送
-                    if (composing || e.isComposing || e.keyCode === 229 || e.code === '229') {
-                        return;
-                    }
-                    e.preventDefault();
-                    window.__coachSend();
-                }
-            });
-        })();
+        // 中文输入法兼容：组合候选期间的回车只用于选词，不发送
+        bindImeSafeEnter(document.getElementById('ai-coach-input'), function() { window.__coachSend(); });
 
         window.__coachSend = function() {
             const input = document.getElementById('ai-coach-input');
@@ -3995,9 +4049,38 @@ async function renderAIDiagnosisPage(container) {
     const weakPoints = (report && report.weak_points) || [];
     const weakHtml = weakPoints.slice(0, 5).map(w => `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px dashed #F3F4F6;">
-            <div style="font-size:13px;color:#374151;"><span style="color:#EF4444;font-weight:600;">${escapeHtml(w.subject || '')}</span> · ${escapeHtml(w.knowledge_point || '')}</div>
+            <div style="font-size:13px;color:#374151;"><span style="color:#EF4444;font-weight:600;">${escapeHtml(w.subject || '')}</span> · ${escapeHtml(w.knowledge_point || '')}
+                <span style="font-size:10px;color:#9CA3AF;margin-left:4px;">${w.attempts ? w.attempts + '题 · ' + (w.confidence || '低') + '置信' : ''}</span>
+            </div>
             <span style="font-size:12px;color:#9CA3AF;">掌握 ${Math.round(Number(w.mastery || 0) * 100)}%</span>
         </div>`).join('');
+
+    const cov = (report && report.coverage) ? report.coverage : null;
+    const covHtml = cov ? `
+        <div class="card" style="margin-top:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <div style="font-weight:700;font-size:14px;"><i class="fas fa-shield-halved" style="color:#4F46E5;"></i> 诊断质量与覆盖度</div>
+                <span style="font-size:11px;color:#4F46E5;background:#EEF2FF;padding:2px 8px;border-radius:8px;">置信度 ${escapeHtml(cov.confidence || '低')}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;">
+                <div style="background:#F9FAFB;border-radius:10px;padding:10px;text-align:center;">
+                    <div style="font-size:18px;font-weight:700;color:#4F46E5;">${Math.round(Number(cov.completeness || 0) * 100)}%</div>
+                    <div style="font-size:11px;color:#6B7280;">蓝图完成度</div>
+                </div>
+                <div style="background:#F9FAFB;border-radius:10px;padding:10px;text-align:center;">
+                    <div style="font-size:18px;font-weight:700;color:#10B981;">${cov.reliability_kr20 === null || cov.reliability_kr20 === undefined ? '<span style="font-size:12px;color:#9CA3AF;">样本不足</span>' : cov.reliability_kr20}</div>
+                    <div style="font-size:11px;color:#6B7280;">KR-20 信度</div>
+                </div>
+                <div style="background:#F9FAFB;border-radius:10px;padding:10px;text-align:center;">
+                    <div style="font-size:18px;font-weight:700;color:#F59E0B;">${Math.round(Number(cov.difficulty_compliance || 0) * 100)}%</div>
+                    <div style="font-size:11px;color:#6B7280;">难度匹配</div>
+                </div>
+            </div>
+            <div style="font-size:12px;color:#6B7280;line-height:1.8;">
+                实作答 ${cov.total_actual} / 计划 ${cov.total_planned} 题 · 难度分布 ${Object.keys(cov.difficulty_distribution || {}).map(k => k + ' ' + cov.difficulty_distribution[k]).join(' / ')}
+            </div>
+            ${(cov.gaps || []).length ? `<div style="margin-top:8px;font-size:11px;color:#B45309;background:#FFFBEB;border-radius:8px;padding:8px 10px;line-height:1.7;">说明：${cov.gaps.map(escapeHtml).join('；')}</div>` : ''}
+        </div>` : '';
 
     const paragraphs = (report && report.paragraphs) || [];
     const paragraphHtml = paragraphs.map(p => `
@@ -4028,11 +4111,11 @@ async function renderAIDiagnosisPage(container) {
                     <div style="font-size:14px;font-weight:700;margin-bottom:4px;">新高考 3+1+2 学情诊断</div>
                     <div style="font-size:11px;opacity:.85;">必考 3 门 + 首选 1 门 + 再选 2 门</div>
                 </div>
-                <div style="font-size:11px;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:10px;">${report ? '已诊断' : '待诊断'}</div>
+                <div style="font-size:11px;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:10px;">${report ? '已诊断 · ' + escapeHtml(summary.confidence || '低') + '置信' : '待诊断'}</div>
             </div>
             <div style="display:flex;gap:28px;margin-top:18px;">
-                <div><div style="font-size:24px;font-weight:700;line-height:1.2;">${estimated}</div><div style="font-size:11px;opacity:.85;">预估总分</div></div>
-                <div><div style="font-size:24px;font-weight:700;line-height:1.2;">${accuracy}</div><div style="font-size:11px;opacity:.85;">答题正确率</div></div>
+                <div><div style="font-size:24px;font-weight:700;line-height:1.2;">${estimated}</div><div style="font-size:11px;opacity:.85;">预估总分${summary.score_range ? '（' + summary.score_range[0] + '～' + summary.score_range[1] + '）' : ''}</div></div>
+                <div><div style="font-size:24px;font-weight:700;line-height:1.2;">${accuracy}</div><div style="font-size:11px;opacity:.85;">原始正确率</div></div>
                 <div><div style="font-size:24px;font-weight:700;line-height:1.2;">${subjects.length}</div><div style="font-size:11px;opacity:.85;">诊断科目</div></div>
             </div>
         </div>
@@ -4044,6 +4127,7 @@ async function renderAIDiagnosisPage(container) {
             ${barsHtml}
             <div style="margin-top:8px;font-size:11px;color:#9CA3AF;">必考：语文 / 数学 / 英语 · 首选：物理或历史 · 再选：化学 / 生物 / 政治 / 地理 中选 2 门</div>
         </div>
+        ${covHtml}
         ${reportBlock}
         <div style="display:flex;gap:10px;margin-top:16px;">
             <button onclick="goDiagnostic()" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;font-size:14px;font-weight:600;cursor:pointer;">
@@ -4088,7 +4172,7 @@ async function renderAIQAPage(container) {
             </div></div>
             <div class="row"><div class="card" style="flex:1;display:flex;gap:8px;align-items:center;">
                 <div onclick="alert(\'拍照提问功能开发中\')" style="width:40px;height:40px;border-radius:50%;background:#F3F4F6;color:#3B82F6;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;"><i class="fas ${data.camera_icon||'fa-camera'}"></i></div>
-                <input type="text" id="ai-qa-input" placeholder="${data.input_placeholder||'输入你的问题...'}" style="flex:1;padding:10px 16px;border:1.5px solid #E5E7EB;border-radius:22px;font-size:14px;outline:none;" onkeydown="if(event.key==='Enter') window.__qaSend()">
+                <input type="text" id="ai-qa-input" placeholder="${data.input_placeholder||'输入你的问题...'}" style="flex:1;padding:10px 16px;border:1.5px solid #E5E7EB;border-radius:22px;font-size:14px;outline:none;">
                 <div onclick="window.__qaSend()" style="width:40px;height:40px;border-radius:50%;background:#3B82F6;color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;"><i class="fas fa-paper-plane"></i></div>
             </div></div>`;
 
@@ -4117,6 +4201,7 @@ async function renderAIQAPage(container) {
             const input = document.getElementById('ai-qa-input');
             if (input) { input.value = q; window.__qaSend(); }
         };
+        bindImeSafeEnter(document.getElementById('ai-qa-input'), function() { window.__qaSend(); });
     } catch(e) { console.warn('AI答疑加载失败', e); }
 }
 
@@ -4461,19 +4546,35 @@ async function renderHotpointsPage(container) {
         window.__hotpointsData = data;
         window.__renderHotpointsList = function(subj) {
             const points = (hotpoints[subj] || []);
+            if (!points.length) {
+                return '<div style="text-align:center;padding:30px;color:#9CA3AF;"><i class="fas fa-info-circle" style="font-size:20px;margin-bottom:8px;"></i><div style="font-size:13px;">该学科暂无高频考点数据</div></div>';
+            }
             return points.map((p, i) => {
-                return '<div style="background:white;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;" onclick="switchPage(\'home-task-learn\')">' +
+                const mastery = p.mastery || 0;
+                const masteryColor = mastery >= 75 ? '#10B981' : mastery >= 60 ? '#F59E0B' : '#EF4444';
+                const detail = '<div style="padding:8px;line-height:1.6;">' +
+                    '<div style="font-size:15px;font-weight:600;margin-bottom:10px;color:#111827;">' + p.name + '</div>' +
+                    '<div style="font-size:13px;color:#6B7280;margin-bottom:6px;">近5年出现 ' + (p.freq || 0) + '次 · 推荐练习 ' + (p.exercises || 0) + '题 · 掌握率 ' + mastery + '%</div>' +
+                    (p.analysis ? '<div style="font-size:13px;font-weight:600;color:#374151;margin-top:10px;margin-bottom:4px;"><i class="fas fa-chart-bar" style="color:#3B82F6;"></i> 考情分析</div><div style="font-size:12px;color:#6B7280;">' + p.analysis + '</div>' : '') +
+                    (p.types ? '<div style="font-size:13px;font-weight:600;color:#374151;margin-top:10px;margin-bottom:4px;"><i class="fas fa-list" style="color:#8B5CF6;"></i> 典型题型</div><div style="font-size:12px;color:#6B7280;">' + p.types + '</div>' : '') +
+                    (p.tips ? '<div style="font-size:13px;font-weight:600;color:#374151;margin-top:10px;margin-bottom:4px;"><i class="fas fa-lightbulb" style="color:#F59E0B;"></i> 解题技巧</div><div style="font-size:12px;color:#6B7280;">' + p.tips + '</div>' : '') +
+                    '</div>';
+                return '<div style="background:white;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;" data-detail="' + escapeHtml(detail) + '" onclick="openModal(\'考点详情\', this.getAttribute(\'data-detail\'))">' +
                     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">' +
-                    '<div style="width:28px;height:28px;border-radius:50%;background:'+(p.color||'#EF4444')+';color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">'+(i+1)+'</div>' +
-                    '<span style="font-size:14px;font-weight:700;color:'+(p.color||'#EF4444')+';">'+p.name+'</span>' +
-                    '<span style="margin-left:auto;font-size:11px;background:#FEE2E2;color:#991B1B;padding:2px 8px;border-radius:6px;font-weight:600;"><i class="fas fa-fire"></i> '+(p.frequency||'高频')+'</span>' +
+                    '<div style="width:28px;height:28px;border-radius:50%;background:#FEF3C7;color:#92400E;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">' + (i + 1) + '</div>' +
+                    '<span style="font-size:14px;font-weight:700;color:#111827;">' + p.name + '</span>' +
+                    '<i class="fas fa-chevron-right" style="margin-left:auto;font-size:12px;color:#9CA3AF;"></i>' +
                     '</div>' +
-                    '<div style="font-size:12px;color:#6B7280;margin-bottom:8px;">'+(p.desc||'')+'</div>' +
-                    '<div style="display:flex;gap:12px;font-size:11px;color:#9CA3AF;">' +
-                    '<span>出现频率 '+(p.rate||0)+'%</span>' +
-                    '<span>掌握率 '+(p.mastery||0)+'%</span>' +
-                    '<span>预计 '+(p.time||15)+'min</span>' +
-                    '</div></div>';
+                    '<div style="display:flex;gap:12px;font-size:12px;color:#6B7280;margin-bottom:8px;flex-wrap:wrap;">' +
+                    '<span><i class="fas fa-fire" style="color:#EF4444;"></i> 近5年出现 ' + (p.freq || 0) + '次</span>' +
+                    '<span>推荐练习 <span style="color:#3B82F6;font-weight:600;">' + (p.exercises || 0) + '</span> 题</span>' +
+                    '</div>' +
+                    '<div style="display:flex;align-items:center;gap:8px;">' +
+                    '<span style="font-size:11px;color:#6B7280;flex-shrink:0;">掌握率</span>' +
+                    '<div style="flex:1;height:6px;background:#F3F4F6;border-radius:3px;overflow:hidden;"><div style="height:100%;width:' + mastery + '%;background:' + masteryColor + ';border-radius:3px;"></div></div>' +
+                    '<span style="font-size:12px;font-weight:600;color:' + masteryColor + ';">' + mastery + '%</span>' +
+                    '</div>' +
+                    '</div>';
             }).join('');
         };
 
@@ -4492,7 +4593,8 @@ async function renderHotpointsPage(container) {
             <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
                 <i class="fas fa-info-circle" style="color:#3B82F6;"></i><span style="font-size:12px;color:#2563EB;">${data.info||'高频考点是历年高考出现频率最高的知识点'}</span>
             </div>
-            <div id="hotpoints-list">${window.__renderHotpointsList(subjects[0]||'数学')}</div>`;
+            <div id="hotpoints-list">${window.__renderHotpointsList(subjects[0]||'数学')}</div>
+            <button onclick="switchPage('home-task-learn')" style="width:100%;margin-top:4px;padding:12px;border:none;border-radius:10px;background:#3B82F6;color:white;font-size:14px;font-weight:600;cursor:pointer;"><i class="fas fa-bolt"></i> 开始高频考点专项训练</button>`;
     } catch(e) { console.warn('高频考点加载失败', e); }
 }
 
@@ -4938,11 +5040,13 @@ function renderLearnSessionQuestion(el) {
     if (q.options && Array.isArray(q.options)) {
         optionsHtml = q.options.map((opt, i) => {
             const letter = String.fromCharCode(65 + i);
-            return '<div onclick="window.__selectAnswer(\'' + letter + '\')" data-opt="' + letter + '" style="display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor=\'#3B82F6\';this.style.background=\'#EFF6FF\'" onmouseout="this.style.borderColor=\'#E5E7EB\';this.style.background=\'#F9FAFB\'"><div style="width:28px;height:28px;border-radius:50%;background:#E5E7EB;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#374151;flex-shrink:0;">' + letter + '</div><div style="font-size:14px;color:#1F2937;flex:1;white-space:pre-wrap;">' + opt + '</div></div>';
+            const text = formatMathPlain(String(opt).replace(/^\s*[A-Da-d][.、．)）]\s*/, ''));
+            return '<div onclick="window.__selectAnswer(\'' + letter + '\')" data-opt="' + letter + '" style="display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor=\'#3B82F6\';this.style.background=\'#EFF6FF\'" onmouseout="this.style.borderColor=\'#E5E7EB\';this.style.background=\'#F9FAFB\'"><div style="width:28px;height:28px;border-radius:50%;background:#E5E7EB;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#374151;flex-shrink:0;">' + letter + '</div><div style="font-size:14px;color:#1F2937;flex:1;white-space:pre-wrap;">' + text + '</div></div>';
         }).join('');
     }
+    const kpName = q.knowledge_point_name || (typeof q.knowledge_point === 'string' ? q.knowledge_point : (q.knowledge_point && q.knowledge_point.name) || '');
 
-    el.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="display:flex;align-items:center;gap:8px;"><span class="' + cls + '" style="padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">' + q.subject + '</span><span style="font-size:11px;color:#6B7280;">' + (q.type||'选择题') + '</span><span style="font-size:11px;color:#6B7280;">难度' + '★'.repeat(q.difficulty||3) + '</span></div><span style="font-size:12px;color:#6B7280;">第 ' + (session.index+1) + '/' + session.questions.length + ' 题</span></div><div style="font-size:15px;line-height:1.8;margin-bottom:16px;white-space:pre-wrap;color:#111827;font-weight:500;">' + (q.content || q.title || '') + '</div>' + (q.knowledge_point_name ? '<div style="font-size:11px;color:#6B7280;margin-bottom:12px;"><i class="fas fa-tag"></i> 知识点：' + q.knowledge_point_name + '</div>' : '') + '<div id="learn-options">' + optionsHtml + '</div><div id="learn-feedback" style="margin-top:12px;"></div><div style="display:flex;justify-content:space-between;margin-top:16px;"><button onclick="window.__prevQuestion()" style="padding:8px 16px;background:white;color:#6B7280;border:1px solid #E5E7EB;border-radius:8px;font-size:13px;cursor:pointer;' + (session.index===0?'opacity:0.5;cursor:not-allowed;':'') + '"><i class="fas fa-chevron-left"></i> 上一题</button><button onclick="window.__nextQuestion()" style="padding:8px 16px;background:#3B82F6;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">下一题 <i class="fas fa-chevron-right"></i></button></div>';
+    el.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="display:flex;align-items:center;gap:8px;"><span class="' + cls + '" style="padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">' + q.subject + '</span><span style="font-size:11px;color:#6B7280;">' + (q.type||'选择题') + '</span><span style="font-size:11px;color:#6B7280;">难度' + '★'.repeat(q.difficulty||3) + '</span></div><span style="font-size:12px;color:#6B7280;">第 ' + (session.index+1) + '/' + session.questions.length + ' 题</span></div><div style="font-size:15px;line-height:1.8;margin-bottom:16px;white-space:pre-wrap;color:#111827;font-weight:500;">' + formatMathPlain(q.content || q.title || '') + '</div>' + (kpName ? '<div style="font-size:11px;color:#6B7280;margin-bottom:12px;"><i class="fas fa-tag"></i> 知识点：' + kpName + '</div>' : '') + '<div id="learn-options">' + optionsHtml + '</div><div id="learn-feedback" style="margin-top:12px;"></div><div style="display:flex;justify-content:space-between;margin-top:16px;"><button onclick="window.__prevQuestion()" style="padding:8px 16px;background:white;color:#6B7280;border:1px solid #E5E7EB;border-radius:8px;font-size:13px;cursor:pointer;' + (session.index===0?'opacity:0.5;cursor:not-allowed;':'') + '"><i class="fas fa-chevron-left"></i> 上一题</button><button onclick="window.__nextQuestion()" style="padding:8px 16px;background:#3B82F6;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">下一题 <i class="fas fa-chevron-right"></i></button></div>';
 
     window.__selectAnswer = function(letter) {
         const opts = document.querySelectorAll('#learn-options [data-opt]');
@@ -4952,7 +5056,7 @@ function renderLearnSessionQuestion(el) {
         const feedback = document.getElementById('learn-feedback');
         const correct = q.answer && q.answer.indexOf(letter) >= 0;
         if (feedback) {
-            feedback.innerHTML = '<div style="padding:12px;border-radius:8px;background:' + (correct ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)') + ';border:1px solid ' + (correct ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)') + ';"><div style="font-size:13px;font-weight:700;color:' + (correct ? '#10B981' : '#EF4444') + ';margin-bottom:4px;"><i class="fas ' + (correct ? 'fa-check-circle' : 'fa-times-circle') + '"></i> ' + (correct ? '回答正确！' : '回答错误') + '</div><div style="font-size:12px;color:#6B7280;margin-bottom:6px;">正确答案：' + q.answer + '</div>' + (q.analysis ? '<div style="font-size:12px;color:#374151;line-height:1.6;">' + q.analysis + '</div>' : '') + '</div>';
+            feedback.innerHTML = '<div style="padding:12px;border-radius:8px;background:' + (correct ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)') + ';border:1px solid ' + (correct ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)') + ';"><div style="font-size:13px;font-weight:700;color:' + (correct ? '#10B981' : '#EF4444') + ';margin-bottom:4px;"><i class="fas ' + (correct ? 'fa-check-circle' : 'fa-times-circle') + '"></i> ' + (correct ? '回答正确！' : '回答错误') + '</div><div style="font-size:12px;color:#6B7280;margin-bottom:6px;">正确答案：' + formatMathPlain(q.answer || '') + '</div>' + (q.analysis ? '<div style="font-size:12px;color:#374151;line-height:1.6;">' + formatMathPlain(q.analysis) + '</div>' : '') + '</div>';
         }
     };
     window.__nextQuestion = function() {
@@ -5003,9 +5107,7 @@ async function loadVolunteerTab(key) {
     if (!content) return;
     content.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><i class="fas fa-spinner fa-spin" style="font-size:24px;margin-bottom:8px;"></i><div style="font-size:13px;">加载中…</div></div>';
     try {
-        const resp = await fetch(`/api/page-data/college-${key}`);
-        const json = await resp.json();
-        const data = json.data;
+        const data = await api.getPageData('college-' + key);
         if (!data) { content.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;"><div style="font-size:13px;">暂无数据</div></div>'; return; }
         if (key === 'recommend') renderCollegeRecommendTab(content, data);
         else if (key === 'major') renderCollegeMajorTab(content, data);
@@ -6308,7 +6410,7 @@ async function startInlineDiagnosis() {
     host.innerHTML = `<div class="card" style="text-align:center;padding:48px 24px;">
         <i class="fas fa-spinner fa-spin" style="font-size:26px;color:#4F46E5;"></i>
         <div style="font-size:14px;font-weight:600;color:#374151;margin-top:14px;">正在为你准备诊断题目…</div>
-        <div style="font-size:12px;color:#9CA3AF;margin-top:6px;">6 门选科 · 共 34 题 · 约 10 分钟</div>
+        <div style="font-size:12px;color:#9CA3AF;margin-top:6px;">按你的 3+1+2 选科组卷 · 共 100 题 · 约 25 分钟</div>
     </div>`;
     let data = null;
     try { data = await api.startDiagnostic(); } catch (e) { data = null; }
@@ -6338,9 +6440,10 @@ function renderInlineQuiz() {
 
     const optionHtml = (q.options || []).map((opt, i) => {
         const on = i === selected;
+        const text = String(opt).replace(/^[A-Da-d][.、．)]\s*/, '');
         return `<div onclick="selectDiagOption(${i})" style="display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border-radius:12px;cursor:pointer;transition:all .18s;border:1.5px solid ${on ? '#4F46E5' : '#E5E7EB'};background:${on ? '#EEF2FF' : '#FFFFFF'};">
             <span style="width:24px;height:24px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;${on ? 'background:#4F46E5;color:#fff;' : 'background:#F3F4F6;color:#6B7280;'}">${letters[i] || ''}</span>
-            <span style="font-size:14px;line-height:1.8;color:${on ? '#1E3A8A' : '#374151'};font-weight:${on ? '600' : '400'};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;">${formatMathPlain(escapeHtml(opt))}</span>
+            <span style="font-size:14px;line-height:1.8;color:${on ? '#1E3A8A' : '#374151'};font-weight:${on ? '600' : '400'};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;">${formatMathPlain(escapeHtml(text))}</span>
         </div>`;
     }).join('');
 
@@ -6573,23 +6676,9 @@ function applyModuleConfig(key, config) {
             break;
 
         case 'radar':
-            const scoresContainer = document.querySelector('.subject-scores');
-            if (scoresContainer && config.items) {
-                scoresContainer.innerHTML = config.items.map(s => `
-                    <div class="sub-score">
-                        <div class="sub-name">${s.subject}</div>
-                        <div class="sub-num">${s.score}/${s.max_score}</div>
-                    </div>
-                `).join('');
-                const total = config.items.reduce((sum, s) => sum + s.score, 0);
-                const radarScore = document.querySelector('.radar-score strong');
-                if (radarScore) radarScore.textContent = total;
-                // 更新雷达图
-                const chart = Chart.getChart('radarChart');
-                if (chart) {
-                    chart.data.datasets[0].data = config.items.map(s => Math.round(s.score / s.max_score * 100));
-                    chart.update();
-                }
+            if (config.items && config.items.length) {
+                renderSubjectScores(config.items);
+                updateRadarChart(config.items);
             }
             break;
 

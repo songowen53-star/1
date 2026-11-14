@@ -3445,8 +3445,8 @@ registerPage('home-diagnostic', 'AI学情诊断', '首页', 'fa-stethoscope', ()
             <div class="proto-card" style="padding:20px;">
                 <div style="font-size:18px;font-weight:800;">AI学情诊断</div>
                 <div style="font-size:12px;color:#6B7280;line-height:1.8;margin-top:8px;">
-                    共 34 道题，覆盖语文、数学、英语、物理、化学、生物、政治、历史、地理 9 个学科。<br>
-                    系统会记录你的每题作答，计算知识掌握度与能力状态，并生成 AI 诊断报告和第一套学习计划。
+                    共 100 道题，按你的 3+1+2 选科组卷：语数外各 20 题，首选科目 14 题，再选科目各 13 题。<br>
+                    题目按命题蓝图分层抽取，覆盖各科必考知识领域；系统会计算猜测校正后的能力、95% 置信区间与 KR-20 信度，并生成 AI 诊断报告和第一套学习计划。
                 </div>
                 <div onclick="window.__DIAG_START__()" id="diag-start-btn" style="margin-top:18px;background:linear-gradient(135deg,#3B82F6,#1D4ED8);color:#fff;border-radius:12px;padding:13px;text-align:center;font-size:15px;font-weight:700;cursor:pointer;">
                     <i class="fas fa-play"></i> 开始 AI 学情诊断
@@ -3522,16 +3522,46 @@ registerPage('home-diagnostic', 'AI学情诊断', '首页', 'fa-stethoscope', ()
         const c = document.getElementById('diag-container');
         if (!c) return;
         const s = report.summary || {};
+        const range = (s.score_range && s.score_range.length === 2) ? '（' + s.score_range[0] + '～' + s.score_range[1] + '）' : '';
         let html = `
             <div class="proto-card" style="padding:18px;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);">
-                <div style="font-size:12px;color:#1D4ED8;font-weight:700;"><i class="fas fa-file-medical-alt"></i> AI诊断报告</div>
+                <div style="font-size:12px;color:#1D4ED8;font-weight:700;"><i class="fas fa-file-medical-alt"></i> AI诊断报告 ${s.confidence ? '· ' + s.confidence + '置信' : ''}</div>
                 <div style="display:flex;gap:18px;margin-top:12px;align-items:flex-end;">
-                    <div><div style="font-size:11px;color:#6B7280;">当前水平</div><div style="font-size:30px;font-weight:800;color:#1D4ED8;">${s.estimated_score}<span style="font-size:13px;">分</span></div></div>
-                    <div><div style="font-size:11px;color:#6B7280;">正确率</div><div style="font-size:20px;font-weight:700;">${s.accuracy_pct}%</div></div>
+                    <div><div style="font-size:11px;color:#6B7280;">预估总分</div><div style="font-size:30px;font-weight:800;color:#1D4ED8;">${s.estimated_score}<span style="font-size:13px;">分</span></div><div style="font-size:10px;color:#6B7280;">${range}</div></div>
+                    <div><div style="font-size:11px;color:#6B7280;">原始正确率</div><div style="font-size:20px;font-weight:700;">${s.accuracy_pct}%</div></div>
                     <div><div style="font-size:11px;color:#6B7280;">距目标</div><div style="font-size:20px;font-weight:700;color:#F59E0B;">${s.score_gap}分</div></div>
                 </div>
+                <div style="font-size:11px;color:#1D4ED8;margin-top:6px;">${s.corrected_accuracy_pct != null ? '扣除猜对因素后能力 ' + s.corrected_accuracy_pct + '%' : ''}</div>
                 <div style="font-size:12px;color:#374151;line-height:1.9;margin-top:12px;">${(report.paragraphs || []).join('<br>')}</div>
             </div>`;
+
+        // 诊断质量与覆盖度
+        const cov = report.coverage;
+        if (cov) {
+            const dist = cov.difficulty_distribution || {};
+            html += `<div class="proto-card" style="margin-top:12px;padding:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <div style="font-size:14px;font-weight:800;"><i class="fas fa-shield-alt" style="color:#8B5CF6;"></i> 诊断质量与覆盖度</div>
+                    ${Tag((cov.confidence || '低') + '置信', cov.confidence === '高' ? 'green' : (cov.confidence === '中' ? 'orange' : 'red'))}
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                    <div style="background:#F9FAFB;border-radius:10px;padding:10px;text-align:center;">
+                        <div style="font-size:18px;font-weight:800;color:#3B82F6;">${Math.round((cov.completeness || 0) * 100)}%</div>
+                        <div style="font-size:10px;color:#6B7280;">蓝图完成度</div>
+                    </div>
+                    <div style="background:#F9FAFB;border-radius:10px;padding:10px;text-align:center;">
+                        <div style="font-size:18px;font-weight:800;color:#8B5CF6;">${cov.reliability_kr20 == null ? '样本不足' : cov.reliability_kr20}</div>
+                        <div style="font-size:10px;color:#6B7280;">KR-20 信度</div>
+                    </div>
+                    <div style="background:#F9FAFB;border-radius:10px;padding:10px;text-align:center;">
+                        <div style="font-size:18px;font-weight:800;color:#10B981;">${Math.round((cov.difficulty_compliance || 0) * 100)}%</div>
+                        <div style="font-size:10px;color:#6B7280;">难度匹配</div>
+                    </div>
+                </div>
+                <div style="font-size:11px;color:#6B7280;margin-top:10px;">实作答 ${cov.total_actual || 0} / 计划 ${cov.total_planned || 0} 题 · 难度分布 基础 ${dist['基础'] || 0} / 中档 ${dist['中档'] || 0} / 难 ${dist['难'] || 0}</div>
+                ${(cov.gaps && cov.gaps.length) ? '<div style="font-size:11px;color:#B45309;background:#FFFBEB;border-radius:8px;padding:8px;margin-top:8px;"><i class="fas fa-info-circle"></i> ' + cov.gaps.join('；') + '</div>' : ''}
+            </div>`;
+        }
 
         html += `<div class="proto-card" style="margin-top:12px;padding:16px;">
             <div style="font-size:14px;font-weight:800;margin-bottom:10px;"><i class="fas fa-exclamation-triangle" style="color:#F59E0B;"></i> 薄弱知识点</div>`;
@@ -3539,7 +3569,8 @@ registerPage('home-diagnostic', 'AI学情诊断', '首页', 'fa-stethoscope', ()
             report.weak_points.forEach(function(w) {
                 html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #F3F4F6;">
                     <div><div style="font-size:13px;font-weight:600;">${w.subject} · ${w.knowledge_point}</div>
-                    <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">${w.suggestion}</div></div>
+                    <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">${w.suggestion}</div>
+                    <div style="font-size:10px;color:#9CA3AF;margin-top:2px;">${w.attempts || 0} 题 · ${w.confidence || '—'}置信</div></div>
                     <div style="font-size:14px;font-weight:700;color:#EF4444;">${Math.round(w.mastery * 100)}%</div>
                 </div>`;
             });
@@ -3551,13 +3582,20 @@ registerPage('home-diagnostic', 'AI学情诊断', '首页', 'fa-stethoscope', ()
         html += `<div class="proto-card" style="margin-top:12px;padding:16px;">
             <div style="font-size:14px;font-weight:800;margin-bottom:10px;"><i class="fas fa-chart-radar" style="color:#8B5CF6;"></i> 能力画像</div>`;
         (report.ability_profile || []).forEach(function(a) {
-            html += `<div style="margin-bottom:10px;">
+            const ar = (a.score_range && a.score_range.length === 2) ? ' · ' + a.score_range[0] + '～' + a.score_range[1] : '';
+            html += `<div style="margin-bottom:12px;">
                 <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-                    <span style="font-weight:600;">${a.subject} · ${a.level}</span>
-                    <span style="color:#6B7280;">${Math.round(a.mastery * 100)}%（估分 ${a.estimated_score}/${a.full_score}）</span>
+                    <span style="font-weight:600;">${a.subject} · ${a.level}${a.confidence ? ' · ' + a.confidence + '置信' : ''}</span>
+                    <span style="color:#6B7280;">${Math.round(a.mastery * 100)}%（估分 ${a.estimated_score}/${a.full_score}${ar}）</span>
                 </div>
-                ${Progress(Math.round(a.mastery * 100), '#8B5CF6')}
-            </div>`;
+                ${Progress(Math.round(a.mastery * 100), '#8B5CF6')}`;
+            (a.dimensions || []).forEach(function(d) {
+                if (d.mastery == null) return;
+                html += `<div style="display:flex;justify-content:space-between;font-size:10px;color:#9CA3AF;margin-top:4px;">
+                    <span>${d.dimension} · ${d.attempts} 题</span><span>${Math.round(d.mastery * 100)}%</span>
+                </div>`;
+            });
+            html += `</div>`;
         });
         html += `</div>`;
 
