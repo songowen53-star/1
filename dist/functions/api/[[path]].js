@@ -584,7 +584,8 @@ async function buildReport(env, userId, session, records) {
     // 结论以“≥2 题的知识领域”为主，避免单题定性
     let weak = st.domainStates
         .filter(d => inScope(d.subject) && d.attempts >= minItems && d.mastery < 0.6)
-        .slice(0, 5);
+        .slice(0, 5)
+        .map(d => ({ ...d, knowledge_point: d.domain }));
     if (!weak.length) {
         weak = st.knowledgeStates
             .filter(k => inScope(k.subject) && k.mastery < 0.6)
@@ -592,7 +593,8 @@ async function buildReport(env, userId, session, records) {
     }
     let strong = st.domainStates
         .filter(d => inScope(d.subject) && d.attempts >= minItems && d.mastery >= 0.75)
-        .slice(0, 5);
+        .slice(0, 5)
+        .map(d => ({ ...d, knowledge_point: d.domain }));
 
     const coverage = buildCoverage(session, st, reliability);
     // 总分区间：各科测量误差独立，方差按平方和合成
