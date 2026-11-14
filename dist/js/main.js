@@ -280,10 +280,10 @@ function renderGrowthRecord(summary) {
     const values = document.querySelectorAll('.growth-value');
     const changes = document.querySelectorAll('.growth-change');
     if (values.length >= 4) {
-        values[0].textContent = summary.duration_hours + ' 小时';
-        values[1].textContent = summary.questions_count + ' 题';
-        values[2].textContent = summary.correct_rate + '%';
-        values[3].textContent = summary.points + ' 分';
+        values[0].textContent = (summary.duration_hours != null ? summary.duration_hours : 0) + ' 小时';
+        values[1].textContent = (summary.questions_count != null ? summary.questions_count : 0) + ' 题';
+        values[2].textContent = (summary.correct_rate != null ? summary.correct_rate : 0) + '%';
+        values[3].textContent = (summary.points != null ? summary.points : 0) + ' 分';
     }
     if (changes.length >= 3 && summary.changes) {
         const c = summary.changes;
@@ -420,7 +420,8 @@ function renderExamPredict(report) {
     // 更新置信度
     const confidence = document.querySelector('.confidence');
     if (confidence) {
-        confidence.innerHTML = `置信度：<strong>${report.confidence}%</strong>`;
+        const confVal = (report.confidence != null && report.confidence !== '') ? report.confidence : null;
+        confidence.innerHTML = confVal == null ? '置信度：<strong>--</strong>' : `置信度：<strong>${confVal}%</strong>`;
     }
     // 更新圆环图（用985概率作为百分比）
     const p985 = report.probability && report.probability.p985 != null ? report.probability.p985 : 0;
@@ -1868,7 +1869,7 @@ async function showExamReport() {
         <div class="info-row"><span class="info-label">211概率</span><span class="info-value" style="color:${report.probability.p211 >= 50 ? '#10B981' : '#F59E0B'};">${report.probability.p211}%</span></div>
         <div class="info-row"><span class="info-label">一本概率</span><span class="info-value" style="color:#10B981;">${report.probability.yiben}%</span></div>
         <div class="info-row"><span class="info-label">趋势影响</span><span class="info-value" style="color:${report.trend_impact >= 0 ? '#10B981' : '#EF4444'};">${report.trend_impact >= 0 ? '+' : ''}${report.trend_impact}分</span></div>
-        <div class="info-row"><span class="info-label">置信度</span><span class="info-value">${report.confidence}%</span></div>
+        <div class="info-row"><span class="info-label">置信度</span><span class="info-value">${report.confidence != null ? report.confidence + '%' : '--'}</span></div>
         ${subjectHTML ? '<div style="margin-top:12px;font-size:13px;color:#6B7280;font-weight:600;">各科预测得分</div>' + subjectHTML : ''}
         ${adviceHTML ? `<div style="margin-top:16px;padding:12px;background:#EFF6FF;border-radius:8px;"><div style="font-size:13px;font-weight:600;color:#1F2937;margin-bottom:6px;">AI提分建议</div>${adviceHTML}</div>` : ''}
         <div style="margin-top:8px;font-size:11px;color:#9CA3AF;text-align:center;">模型：${report.model || 'AI预测模型'}</div>
